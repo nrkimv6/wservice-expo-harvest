@@ -112,7 +112,7 @@
 	<div class="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pb-24 pt-5 sm:px-5">
 		<AlertBanner message={alertMessage} mode={alertMode} />
 
-		<section class="rounded-[32px] border border-border bg-white/[0.04] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
+		<section class="rounded-[32px] border border-border bg-navy-surface p-5 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
 			<div class="flex items-start justify-between gap-4">
 				<div>
 					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
@@ -122,8 +122,8 @@
 					<p class="mt-3 text-sm leading-6 text-muted-foreground">박람회 사은품, 하나도 놓치지 마세요</p>
 				</div>
 
-				<div class="rounded-2xl border border-orange/20 bg-orange/10 px-3 py-2 text-right">
-					<p class="text-[10px] uppercase tracking-[0.18em] text-orange">Live Queue</p>
+				<div class="rounded-2xl border border-gold/20 bg-gold/10 px-3 py-2 text-right">
+					<p class="text-[10px] uppercase tracking-[0.18em] text-gold">Live Queue</p>
 					<p class="mt-1 text-sm font-semibold text-foreground">{items.length} booths</p>
 					<p class="mt-1 text-[10px] text-white/55">
 						{#if liveAlertMessage}
@@ -140,18 +140,18 @@
 			</div>
 
 			<div class="mt-5 grid gap-3 sm:grid-cols-3">
-				<div class="rounded-2xl border border-border bg-black/20 p-3">
-					<MapPinned size={18} class="text-orange" />
+				<div class="rounded-2xl border border-border bg-navy-elevated p-3">
+					<MapPinned size={18} class="text-gold" />
 					<p class="mt-3 text-sm font-semibold text-foreground">Map First</p>
 					<p class="mt-1 text-xs leading-5 text-muted-foreground">핀으로 부스 위치를 먼저 고정</p>
 				</div>
-				<div class="rounded-2xl border border-border bg-black/20 p-3">
-					<Search size={18} class="text-orange" />
+				<div class="rounded-2xl border border-border bg-navy-elevated p-3">
+					<Search size={18} class="text-gold" />
 					<p class="mt-3 text-sm font-semibold text-foreground">Search + Filter</p>
 					<p class="mt-1 text-xs leading-5 text-muted-foreground">미션 허들 기준으로 바로 압축</p>
 				</div>
-				<div class="rounded-2xl border border-border bg-black/20 p-3">
-					<Route size={18} class="text-orange" />
+				<div class="rounded-2xl border border-border bg-navy-elevated p-3">
+					<Route size={18} class="text-gold" />
 					<p class="mt-3 text-sm font-semibold text-foreground">Local State</p>
 					<p class="mt-1 text-xs leading-5 text-muted-foreground">메모와 완료 상태를 이 기기에 저장</p>
 				</div>

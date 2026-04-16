@@ -22,12 +22,12 @@
 			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">부스 안내도</h2>
 		</div>
 
-		<div class="rounded-full border border-border bg-black/30 px-3 py-1 text-xs text-muted-foreground">
+		<div class="rounded-full border border-border bg-navy-elevated px-3 py-1 text-xs text-muted-foreground">
 			Pins {items.length}
 		</div>
 	</div>
 
-	<div class="relative aspect-[16/10] overflow-hidden rounded-[28px] border border-border bg-[radial-gradient(circle_at_top,_rgba(255,94,0,0.14),_transparent_30%),linear-gradient(180deg,_rgba(255,255,255,0.03),_transparent)]">
+	<div class="relative aspect-[16/10] overflow-hidden rounded-[28px] border border-border bg-navy-surface">
 		<div class="pointer-events-none absolute inset-0">
 			{#each rows as _, index}
 				<div
@@ -62,7 +62,7 @@
 					item.isCompleted
 						? 'border-mint/35 bg-mint/20 text-mint glow-mint'
 						: item.isBookmarked
-							? 'border-orange/35 bg-orange/20 text-orange glow-orange'
+							? 'border-gold/60 bg-gold/20 text-gold glow-gold'
 							: 'border-border bg-navy-elevated text-foreground'
 				]}
 				aria-label={`${item.title} 상세 보기 - ${item.isCompleted ? '완료' : item.isBookmarked ? '찜' : '기본'}`}

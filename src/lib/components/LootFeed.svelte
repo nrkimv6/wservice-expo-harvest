@@ -73,7 +73,7 @@
 			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">이벤트 리스트</h2>
 		</div>
 
-		<div class="rounded-full border border-orange/25 bg-orange/10 px-3 py-1 text-xs font-semibold text-orange">
+		<div class="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-xs font-semibold text-mint">
 			Farmed {doneCount}/{items.length}
 		</div>
 	</div>

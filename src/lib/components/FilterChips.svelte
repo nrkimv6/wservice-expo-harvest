@@ -27,7 +27,7 @@
 			class={[
 				'flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition',
 				active.includes(category)
-					? 'glow-orange bg-orange text-black'
+					? 'glow-gold bg-gold text-black'
 					: 'border border-border bg-navy-elevated text-foreground'
 			]}
 			aria-pressed={active.includes(category)}

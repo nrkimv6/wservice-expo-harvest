@@ -62,7 +62,7 @@
 				<div class="mt-4 flex items-start justify-between gap-3">
 					<div>
 						<div class="flex flex-wrap items-center gap-2">
-							<span class="rounded-full bg-orange/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-orange">
+							<span class="rounded-full bg-gold/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gold">
 								{item.time}
 							</span>
 							<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] text-muted-foreground">
@@ -91,8 +91,8 @@
 					</button>
 				</div>
 
-				<div class="mt-5 rounded-[24px] border border-orange/20 bg-orange/8 p-4">
-					<div class="flex items-center gap-2 text-orange">
+				<div class="mt-5 rounded-[24px] border border-gold/20 bg-gold/10 p-4">
+					<div class="flex items-center gap-2 text-gold">
 						<Gift size={16} />
 						<p class="text-sm font-semibold">Prize</p>
 					</div>
@@ -126,7 +126,7 @@
 						class={[
 							'flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition',
 							item.isBookmarked
-								? 'border-orange bg-orange text-black'
+								? 'border-gold/40 bg-gold/15 text-gold'
 								: 'border-border bg-navy-elevated text-foreground'
 						]}
 						aria-label={item.isBookmarked ? '찜 해제' : '찜하기'}
@@ -141,8 +141,8 @@
 						class={[
 							'flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition',
 							item.isCompleted
-								? 'border-mint bg-mint text-black'
-								: 'border-border bg-black/25 text-foreground'
+								? 'border-mint bg-mint/15 text-mint'
+								: 'border-gold bg-gold text-black glow-gold'
 						]}
 						aria-label={item.isCompleted ? '완료 해제' : '완료 처리'}
 						onclick={() => onToggleComplete(item.id)}

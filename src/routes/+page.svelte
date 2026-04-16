@@ -39,7 +39,7 @@
 
 	const valueProps = [
 		'한 손 조작을 전제로 한 모바일 우선 레이아웃',
-		'Pitch Black + Neon Orange 톤으로 시간 압박감 강조',
+		'Deep Navy + Gold 톤으로 시간 임박 감각 강조',
 		'오프라인 진입을 고려한 캐시 우선 구조'
 	];
 </script>
@@ -53,8 +53,8 @@
 </svelte:head>
 
 <div class="mx-auto flex min-h-dvh w-full max-w-6xl flex-col px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-	<div class="mb-6 overflow-hidden rounded-full border border-[#ff5e00]/35 bg-black/45 py-2">
-		<div class="ticker-track flex min-w-max gap-8 px-4 text-[11px] font-medium uppercase tracking-[0.22em] text-[#ff8b4d]">
+	<div class="mb-6 overflow-hidden rounded-full border border-gold/35 bg-navy-surface py-2">
+		<div class="ticker-track flex min-w-max gap-8 px-4 text-[11px] font-medium uppercase tracking-[0.22em] text-gold-glow">
 			{#each [...alertItems, ...alertItems] as item}
 				<span class="whitespace-nowrap">{item}</span>
 			{/each}
@@ -62,15 +62,15 @@
 	</div>
 
 	<section class="grid gap-6 lg:grid-cols-[1.25fr_0.9fr]">
-		<div class="rounded-[32px] border border-white/10 bg-white/[0.04] p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_24px_60px_rgba(0,0,0,0.45)] sm:p-8">
-			<div class="mb-5 inline-flex items-center gap-2 rounded-full border border-[#ff5e00]/35 bg-[#ff5e00]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#ff9a66]">
+		<div class="rounded-[32px] border border-border bg-navy-surface p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_24px_60px_rgba(0,0,0,0.45)] sm:p-8">
+			<div class="mb-5 inline-flex items-center gap-2 rounded-full border border-gold/35 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-gold-glow">
 				<Radio size={14} />
 				Offline-Ready MVP
 			</div>
 
 			<h1 class="max-w-3xl font-['Space_Grotesk'] text-4xl font-bold leading-none text-white sm:text-5xl">
 				박람회 현장에서
-				<span class="block text-[#ff5e00]">이벤트 파밍 효율을 극대화하는 화면</span>
+				<span class="block text-gold">이벤트 파밍 효율을 극대화하는 화면</span>
 			</h1>
 
 			<p class="mt-5 max-w-2xl text-sm leading-7 text-white/70 sm:text-base">
@@ -88,13 +88,13 @@
 			</div>
 		</div>
 
-		<div class="rounded-[32px] border border-[#ff5e00]/20 bg-[#151515] p-6 shadow-[0_18px_48px_rgba(0,0,0,0.4)]">
+		<div class="rounded-[32px] border border-gold/20 bg-navy-surface p-6 shadow-[0_18px_48px_rgba(0,0,0,0.4)]">
 			<div class="flex items-center justify-between">
 				<div>
 					<p class="text-xs uppercase tracking-[0.28em] text-white/45">Preview Stack</p>
 					<h2 class="mt-2 font-['Space_Grotesk'] text-2xl font-semibold text-white">Core Loop</h2>
 				</div>
-				<div class="rounded-full border border-[#ff5e00]/30 bg-[#ff5e00]/10 px-3 py-1 text-xs font-semibold text-[#ff9a66]">
+				<div class="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold-glow">
 					MVP
 				</div>
 			</div>
@@ -102,7 +102,7 @@
 			<div class="mt-6 space-y-3">
 				<div class="rounded-2xl border border-white/8 bg-black/30 p-4">
 					<div class="flex items-center gap-3">
-						<AlarmClockCheck class="text-[#ff5e00]" size={20} />
+						<AlarmClockCheck class="text-gold" size={20} />
 						<div>
 							<p class="text-sm font-semibold text-white">시간 임박 이벤트 먼저 확인</p>
 							<p class="text-xs text-white/55">선착순, 룰렛, 타임세일형 이벤트 우선 노출</p>
@@ -112,7 +112,7 @@
 
 				<div class="rounded-2xl border border-white/8 bg-black/30 p-4">
 					<div class="flex items-center gap-3">
-						<MapPinned class="text-[#ff5e00]" size={20} />
+						<MapPinned class="text-gold" size={20} />
 						<div>
 							<p class="text-sm font-semibold text-white">지도와 리스트를 교차 탐색</p>
 							<p class="text-xs text-white/55">부스 위치, 경품, 미션 허들을 한 번에 확인</p>
@@ -122,7 +122,7 @@
 
 				<div class="rounded-2xl border border-white/8 bg-black/30 p-4">
 					<div class="flex items-center gap-3">
-						<ChartNoAxesCombined class="text-[#ff5e00]" size={20} />
+						<ChartNoAxesCombined class="text-gold" size={20} />
 						<div>
 							<p class="text-sm font-semibold text-white">완료/관심 상태로 파밍 밀도 제어</p>
 							<p class="text-xs text-white/55">완료 부스 흐림 처리, 관심 부스 재집중</p>
@@ -136,7 +136,7 @@
 	<section class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 		{#each featureCards as feature}
 			<div class="rounded-[28px] border border-white/8 bg-white/[0.035] p-5">
-				<feature.icon class="text-[#ff5e00]" size={22} />
+				<feature.icon class="text-gold" size={22} />
 				<h3 class="mt-5 font-['Space_Grotesk'] text-xl font-semibold text-white">{feature.title}</h3>
 				<p class="mt-3 text-sm leading-6 text-white/65">{feature.body}</p>
 			</div>
@@ -156,8 +156,8 @@
 				</ul>
 			</div>
 
-			<div class="rounded-3xl border border-[#ff5e00]/15 bg-[#ff5e00]/[0.06] p-5">
-				<p class="text-sm font-semibold text-[#ffae80]">다음 단계 후보</p>
+			<div class="rounded-3xl border border-gold/15 bg-gold/10 p-5">
+				<p class="text-sm font-semibold text-gold-glow">다음 단계 후보</p>
 				<ul class="mt-4 space-y-3 text-sm text-white/72">
 					<li>Supabase 실데이터와 Realtime 배너 연결</li>
 					<li>전시장 이미지 맵 + 핀치줌 교체</li>
@@ -167,7 +167,7 @@
 
 				<a
 					href="/app"
-					class="mt-5 inline-flex items-center justify-center rounded-2xl bg-[#ff5e00] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#ff8b4d]"
+					class="mt-5 inline-flex items-center justify-center rounded-2xl bg-gold px-4 py-3 text-sm font-semibold text-black transition hover:bg-gold-glow"
 				>
 					파밍 화면 열기
 				</a>

@@ -1,5 +1,11 @@
 # DONE
 
+- [x] 2026-04-16: 원본 디자인 ZIP 기준 색상 테마 재정렬
+  - `C:\Users\Narang\Downloads\exhibition-loot-boss-main.zip`의 `src/index.css`, `tailwind.config.ts`, 주요 컴포넌트를 직접 대조
+  - 기존 Pitch Black + Orange 재매핑을 원본의 Deep Navy + Gold + Mint 팔레트로 다시 조정
+  - `/`, `/app`, 에러 화면, 공통 컴포넌트의 하드코딩 색상과 Tailwind 토큰을 함께 정리
+  - `npm run check`, `npm run build`로 재검증 완료
+
 - [x] 2026-04-16: `/app` 파밍 UI 1차 구현
   - `/app` 라우트와 6개 UI 컴포넌트(AlertBanner, ExhibitionMap, LootFeed, LootCard, FilterChips, BoothDetailSheet) 추가
   - 부스 mock 데이터, 지도 핀, 검색/필터, 바텀시트 상세 흐름 연결

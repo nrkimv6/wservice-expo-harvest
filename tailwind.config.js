@@ -4,23 +4,23 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				orange: {
-					DEFAULT: '#ff5e00',
-					dim: '#cc4b00',
-					glow: '#ff8b4d'
+				gold: {
+					DEFAULT: 'hsl(45 90% 55%)',
+					dim: 'hsl(45 60% 35%)',
+					glow: 'hsl(45 100% 65%)'
 				},
 				navy: {
-					deep: '#050505',
-					surface: '#0f0f0f',
-					elevated: '#1a1a1a'
+					deep: 'hsl(222 55% 5%)',
+					surface: 'hsl(222 40% 12%)',
+					elevated: 'hsl(222 35% 16%)'
 				},
 				mint: {
-					DEFAULT: '#34d399',
-					dim: '#065f46'
+					DEFAULT: 'hsl(160 60% 45%)',
+					dim: 'hsl(160 30% 30%)'
 				},
-				border: 'rgba(255,255,255,0.1)',
-				foreground: '#f6efe9',
-				'muted-foreground': 'rgba(255,255,255,0.5)'
+				border: 'hsl(222 25% 20%)',
+				foreground: 'hsl(45 20% 90%)',
+				'muted-foreground': 'hsl(220 15% 55%)'
 			},
 			fontFamily: {
 				heading: ['"Space Grotesk"', '"IBM Plex Sans KR"', 'system-ui', 'sans-serif']

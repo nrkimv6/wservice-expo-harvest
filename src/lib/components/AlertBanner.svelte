@@ -10,7 +10,7 @@
 </script>
 
 <div
-	class="overflow-hidden rounded-2xl bg-gradient-to-r from-orange via-orange-glow to-orange px-3 py-3 text-black shadow-[0_12px_30px_rgba(255,94,0,0.22)]"
+	class="ticker-gradient overflow-hidden rounded-2xl px-3 py-3 text-black shadow-[0_12px_30px_hsl(45_90%_55%_/_0.22)]"
 	role="status"
 	aria-live="polite"
 >

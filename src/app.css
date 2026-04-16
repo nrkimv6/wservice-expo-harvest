@@ -7,8 +7,8 @@
 @layer base {
 	:root {
 		color-scheme: dark;
-		--eh-bg: #050505;
-		--eh-text: #f6efe9;
+		--eh-bg: hsl(222 55% 5%);
+		--eh-text: hsl(45 20% 90%);
 	}
 
 	html,
@@ -117,12 +117,16 @@
 		animation: slide-in-from-bottom 0.3s ease-out;
 	}
 
-	.glow-orange {
-		box-shadow: 0 0 20px rgba(255, 94, 0, 0.28);
+	.glow-gold {
+		box-shadow: 0 0 20px hsl(45 90% 55% / 0.3), 0 0 60px hsl(45 90% 55% / 0.1);
 	}
 
 	.glow-mint {
-		box-shadow: 0 0 20px rgba(52, 211, 153, 0.25);
+		box-shadow: 0 0 15px hsl(160 60% 45% / 0.3);
+	}
+
+	.ticker-gradient {
+		background: linear-gradient(90deg, hsl(45 90% 55%), hsl(45 100% 65%), hsl(45 90% 55%));
 	}
 
 	.no-scrollbar {

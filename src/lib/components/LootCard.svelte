@@ -16,11 +16,15 @@
 <article
 	class={[
 		'relative rounded-[26px] border border-border bg-navy-surface p-4 transition',
-		item.isCompleted ? 'opacity-60' : 'hover:border-orange/40'
+		item.isCompleted
+			? 'border-mint/20 bg-mint/5 opacity-60'
+			: item.isBookmarked
+				? 'border-gold/30 bg-navy-elevated'
+				: 'hover:border-gold/40'
 	]}
 >
 	{#if item.isBookmarked && !item.isCompleted}
-		<div class="absolute right-0 top-0 h-0 w-0 border-l-[24px] border-t-[24px] border-l-transparent border-t-orange"></div>
+		<div class="absolute right-0 top-0 h-0 w-0 border-l-[24px] border-t-[24px] border-l-transparent border-t-gold"></div>
 	{/if}
 
 	<div class="flex gap-3">
@@ -56,7 +60,7 @@
 				<span
 					class={[
 						'rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]',
-						isTimeLimited ? 'bg-orange/15 text-orange' : 'bg-white/5 text-muted-foreground'
+						isTimeLimited ? 'bg-gold/15 text-gold' : 'bg-white/5 text-muted-foreground'
 					]}
 				>
 					{item.time}
@@ -75,7 +79,7 @@
 				{item.title}
 			</h3>
 
-			<div class="mt-3 flex items-center gap-2 text-sm text-orange">
+			<div class="mt-3 flex items-center gap-2 text-sm text-gold">
 				<Gift size={16} />
 				<span>{item.prize}</span>
 			</div>
