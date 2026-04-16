@@ -2,7 +2,7 @@
 
 전시회/박람회 현장에서 부스 이벤트를 빠르게 훑고, 시간 제한 이벤트를 놓치지 않도록 돕는 모바일 우선 웹앱입니다.
 
-현재 상태는 MVP 부트스트랩 단계입니다. 핵심 기술 스택과 문서 구조를 먼저 정리했고, 실제 지도/리스트/메모/실시간 이벤트 기능은 다음 단계에서 구현합니다.
+현재 상태는 MVP UI 골격 단계입니다. `/app` 라우트에 지도/리스트/상세/메모 흐름을 붙였고, 상단 배너는 일정 기반 fallback 위에 Supabase Realtime broadcast 메시지를 우선 노출하도록 연결했습니다.
 
 ## 문서
 
@@ -21,7 +21,8 @@
 ## 현재 포함 범위
 
 - 앱 기본 브랜딩과 랜딩 페이지
-- Supabase 클라이언트 및 auth-worker 연동용 기본 설정
+- `/app` 실제 파밍 화면 라우트와 모바일 우선 UI
+- Supabase Realtime broadcast 기반 상단 알림 배너 연결
 - 프로젝트별 `.env.example`, `wrangler.toml`, `package.json` 정리
 
 ## 의도적으로 제외한 템플릿 잔여물
@@ -55,5 +56,30 @@ npm run dev
 
 - `auth-worker`에 `expo-harvest` 앱 등록
 - 전시장 지도 이미지/부스 이벤트 스키마 설계
-- 로컬 메모/북마크/완료 상태 저장 구조 구현
 - 오프라인 캐시 전략 추가
+
+## Realtime 배너 규약
+
+클라이언트는 Supabase Realtime channel `expo-harvest-alerts`의 broadcast event `alert`를 구독합니다.
+
+지원 payload 예시:
+
+```json
+{
+	"message": "10분 뒤 A-12 룰렛 시작!",
+	"expiresAt": "2026-04-16T06:45:00.000Z"
+}
+```
+
+또는 구조화 payload:
+
+```json
+{
+	"boothName": "NVIDIA Roulette",
+	"minutesLeft": 12,
+	"location": "Hall A-12",
+	"expiresAt": "2026-04-16T06:45:00.000Z"
+}
+```
+
+`expiresAt`이 없으면 3분 뒤 fallback 일정 배너로 자동 복귀합니다.

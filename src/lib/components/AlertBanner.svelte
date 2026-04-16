@@ -3,9 +3,10 @@
 
 	type Props = {
 		message: string;
+		mode?: 'fallback' | 'live';
 	};
 
-	let { message }: Props = $props();
+	let { message, mode = 'fallback' }: Props = $props();
 </script>
 
 <div
@@ -16,7 +17,7 @@
 	<div class="flex items-center gap-3">
 		<div class="flex shrink-0 items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em]">
 			<Zap size={16} class="animate-pulse-glow" />
-			<span>Hot Drop</span>
+			<span>{mode === 'live' ? 'Live Feed' : 'Hot Drop'}</span>
 		</div>
 
 		<div class="relative flex-1 overflow-hidden">

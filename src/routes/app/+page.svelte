@@ -6,10 +6,15 @@
 	import ExhibitionMap from '$lib/components/ExhibitionMap.svelte';
 	import LootFeed from '$lib/components/LootFeed.svelte';
 	import { initialLootItems, type LootItem } from '$lib/data/lootItems';
+	import { subscribeToAlertFeed, type AlertChannelStatus } from '$lib/realtime/alertFeed';
 	import { hydrateLootItems, persistLootItems } from '$lib/stores/farmState';
 
 	let items = $state<LootItem[]>(initialLootItems);
 	let selectedId = $state<string | null>(null);
+	let liveAlertMessage = $state<string | null>(null);
+	let alertChannelStatus = $state<AlertChannelStatus>('connecting');
+
+	let clearLiveAlertTimer: ReturnType<typeof setTimeout> | null = null;
 
 	const selectedItem = $derived(items.find((item) => item.id === selectedId) ?? null);
 
@@ -25,7 +30,7 @@
 			.sort((left, right) => parseTimeValue(left.time) - parseTimeValue(right.time))[0];
 	});
 
-	const alertMessage = $derived.by(() => {
+	const fallbackAlertMessage = $derived.by(() => {
 		if (!nextHotItem) {
 			return '지금 바로 파밍 가능한 상시 이벤트를 탐색하세요';
 		}
@@ -33,8 +38,37 @@
 		return `${nextHotItem.time} ${nextHotItem.title} 이벤트 임박 → ${nextHotItem.location}`;
 	});
 
+	const alertMessage = $derived(liveAlertMessage || fallbackAlertMessage);
+	const alertMode = $derived(liveAlertMessage ? 'live' : 'fallback');
+
 	onMount(() => {
 		items = hydrateLootItems(initialLootItems);
+
+		const unsubscribe = subscribeToAlertFeed({
+			onAlert(message, expiresAt) {
+				liveAlertMessage = message;
+
+				if (clearLiveAlertTimer) {
+					clearTimeout(clearLiveAlertTimer);
+				}
+
+				const timeoutMs = Math.max(expiresAt - Date.now(), 5_000);
+				clearLiveAlertTimer = setTimeout(() => {
+					liveAlertMessage = null;
+					clearLiveAlertTimer = null;
+				}, timeoutMs);
+			},
+			onStatusChange(status) {
+				alertChannelStatus = status;
+			}
+		});
+
+		return () => {
+			if (clearLiveAlertTimer) {
+				clearTimeout(clearLiveAlertTimer);
+			}
+			unsubscribe();
+		};
 	});
 
 	$effect(() => {
@@ -76,7 +110,7 @@
 
 <div class="safe-top safe-bottom min-h-dvh bg-navy-deep pb-8">
 	<div class="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pb-24 pt-5 sm:px-5">
-		<AlertBanner message={alertMessage} />
+		<AlertBanner message={alertMessage} mode={alertMode} />
 
 		<section class="rounded-[32px] border border-border bg-white/[0.04] p-5 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
 			<div class="flex items-start justify-between gap-4">
@@ -91,6 +125,17 @@
 				<div class="rounded-2xl border border-orange/20 bg-orange/10 px-3 py-2 text-right">
 					<p class="text-[10px] uppercase tracking-[0.18em] text-orange">Live Queue</p>
 					<p class="mt-1 text-sm font-semibold text-foreground">{items.length} booths</p>
+					<p class="mt-1 text-[10px] text-white/55">
+						{#if liveAlertMessage}
+							Realtime override
+						{:else if alertChannelStatus === 'connected'}
+							Realtime standby
+						{:else if alertChannelStatus === 'connecting'}
+							Realtime connecting
+						{:else}
+							Fallback schedule
+						{/if}
+					</p>
 				</div>
 			</div>
 

@@ -7,6 +7,11 @@
   - 모달 접근성(role/aria, Escape 닫기, 포커스 이동, body scroll lock) 보강
   - headless Playwright로 `/app` 인터랙션과 키보드 접근성 검증 완료
 
+- [x] 2026-04-16: 실시간 상단 알림 배너 데이터 연결
+  - Supabase Realtime broadcast channel `expo-harvest-alerts` 구독 추가
+  - live alert 없을 때는 일정 기반 fallback 배너 유지
+  - `expiresAt` 기준으로 live alert 자동 만료 후 fallback 복귀
+
 - [x] 2026-04-16: expo-harvest 부트스트랩 생성
   - `_sample/sveltekit-supabase` 기반으로 새 프로젝트 디렉토리 생성
   - 앱 slug, env, wrangler 설정을 `expo-harvest` 기준으로 정리
