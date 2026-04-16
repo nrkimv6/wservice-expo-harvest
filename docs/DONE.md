@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-16: dev 서버 실행 중 build 잠금 충돌 방지
+  - `package.json`의 `build`를 `scripts/run-build.mjs` wrapper로 전환하고 `build:raw`를 raw `vite build`로 분리
+  - Windows에서 repo/path 기준으로 `npm run dev` 동시 실행을 감지해 `.svelte-kit/cloudflare` 충돌 시 명시적 실패 메시지 출력
+  - `npm run build`, `npm run build:raw`, dev 동시 실행 재현, `npm run check`로 검증 완료
+
 - [x] 2026-04-16: 원본 디자인 ZIP 기준 색상 테마 재정렬
   - `C:\Users\Narang\Downloads\exhibition-loot-boss-main.zip`의 `src/index.css`, `tailwind.config.ts`, 주요 컴포넌트를 직접 대조
   - 기존 Pitch Black + Orange 재매핑을 원본의 Deep Navy + Gold + Mint 팔레트로 다시 조정

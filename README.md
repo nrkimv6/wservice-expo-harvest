@@ -42,6 +42,8 @@ npm install
 npm run dev
 ```
 
+`npm run build`는 Windows에서 `.svelte-kit/cloudflare` 충돌을 먼저 점검하는 wrapper를 거칩니다. raw Vite 빌드가 필요하면 `npm run build:raw`를 사용하세요.
+
 ## 환경 변수
 
 `.env.example` 기준:

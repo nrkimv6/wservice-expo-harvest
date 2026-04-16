@@ -97,3 +97,8 @@ npm run build
 1. `/app` 상단 hero 구성을 원본 `Index.tsx` 밀도에 더 가깝게 축소
 2. 랜딩 `/`의 카드 레이아웃을 원본 톤에 더 가깝게 단순화
 3. 아이콘/폰트 weight/spacing까지 원본 기준으로 미세 조정
+
+## 연관 메모
+
+- `2026-04-16_fix-build-lock-while-dev-server-running.md`는 테마 정렬과 별개인 Windows build 잠금 충돌 대응이다.
+- build-lock 대응은 `package.json`의 build wrapper, `scripts/run-build.mjs`, `README.md`의 로컬 충돌 안내를 다루며, 이 보고서의 색상 정렬 범위에는 포함하지 않는다.
