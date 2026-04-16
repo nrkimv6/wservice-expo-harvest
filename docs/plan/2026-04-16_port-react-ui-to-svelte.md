@@ -3,8 +3,8 @@
 > 작성일시: 2026-04-16 14:14
 > 기준커밋: 2c15c99
 > 대상 프로젝트: expo-harvest
-> 상태: 초안
-> 진행률: 0/54 (0%)
+> 상태: 구현중
+> 진행률: 48/54 (89%)
 > 요약: 랜딩 페이지만 있어 실제 파밍 UX 확인 불가 — AI 생성 React 프로토타입(exhibition-loot-boss)의 레이아웃/컴포넌트/타이포그래피/간격/인터랙션/접근성을 Svelte 5로 이식, 색상만 타겟 Pitch Black + Neon Orange 테마로 재매핑
 
 ---
@@ -186,83 +186,83 @@ Svelte-check는 a11y 경고를 내므로 소스에 없어도 필수 보강:
 
 ### Phase 0: 선행 점검 (코드 미수정)
 
-1. [ ] **전역 레이아웃 간섭 점검** — `+layout.svelte` 영향 분석
-   - [ ] `src/routes/+layout.svelte`의 radial-gradient 배경이 `/app` 컬럼(`max-w-lg mx-auto`)과 시각적으로 어울리는지 판단 기준 수립 (어울리면 상속, 아니면 `/app/+layout.svelte` 추가 결정 근거 기록)
-   - [ ] `v{__APP_VERSION__}` 워터마크(`fixed bottom-2 right-3`)가 `BoothDetailSheet z-50` 아래에 보이는지 z-index 관계 확인
+1. [x] **전역 레이아웃 간섭 점검** — `+layout.svelte` 영향 분석
+   - [x] `src/routes/+layout.svelte`의 radial-gradient 배경이 `/app` 컬럼(`max-w-lg mx-auto`)과 시각적으로 어울리는지 판단 기준 수립 (어울리면 상속, 아니면 `/app/+layout.svelte` 추가 결정 근거 기록)
+   - [x] `v{__APP_VERSION__}` 워터마크(`fixed bottom-2 right-3`)가 `BoothDetailSheet z-50` 아래에 보이는지 z-index 관계 확인
 
-2. [ ] **app.html 메타 보강** — theme-color 추가
-   - [ ] `src/app.html`: `<meta name="theme-color" content="#050505" />`를 viewport 바로 아래에 추가
+2. [x] **app.html 메타 보강** — theme-color 추가
+   - [x] `src/app.html`: `<meta name="theme-color" content="#050505" />`를 viewport 바로 아래에 추가
 
 ### Phase 1: 디자인 토큰 & 데이터 기반
 
-3. [ ] **Tailwind 색상 팔레트 확장** — React 토큰명을 타겟 Pitch Black+Orange 값으로 재매핑
-   - [ ] `tailwind.config.js`: `theme.extend.colors`에 `orange: {DEFAULT: '#ff5e00', dim: '#cc4b00', glow: '#ff8b4d'}`, `navy: {deep: '#050505', surface: '#0f0f0f', elevated: '#1a1a1a'}`, `mint: {DEFAULT: '#34d399', dim: '#065f46'}`, `border: 'rgba(255,255,255,0.1)'`, `foreground: '#f6efe9'`, `muted-foreground: 'rgba(255,255,255,0.5)'` 추가
-   - [ ] `tailwind.config.js`: `theme.extend.fontFamily.heading = ['"Space Grotesk"', '"IBM Plex Sans KR"', 'system-ui', 'sans-serif']` 추가 (소스 `font-heading` 대응)
+3. [x] **Tailwind 색상 팔레트 확장** — React 토큰명을 타겟 Pitch Black+Orange 값으로 재매핑
+   - [x] `tailwind.config.js`: `theme.extend.colors`에 `orange: {DEFAULT: '#ff5e00', dim: '#cc4b00', glow: '#ff8b4d'}`, `navy: {deep: '#050505', surface: '#0f0f0f', elevated: '#1a1a1a'}`, `mint: {DEFAULT: '#34d399', dim: '#065f46'}`, `border: 'rgba(255,255,255,0.1)'`, `foreground: '#f6efe9'`, `muted-foreground: 'rgba(255,255,255,0.5)'` 추가
+   - [x] `tailwind.config.js`: `theme.extend.fontFamily.heading = ['"Space Grotesk"', '"IBM Plex Sans KR"', 'system-ui', 'sans-serif']` 추가 (소스 `font-heading` 대응)
 
-4. [ ] **app.css 유틸리티 & 키프레임 추가** — 소스 index.css의 ticker/glow/pulse 유틸 이관
-   - [ ] `src/app.css`: `@keyframes pulse-glow` 추가 (0,100%: opacity 1 / 50%: opacity 0.7)
-   - [ ] `src/app.css`: `@keyframes ticker-linear` 추가 (0% translateX(100%) → 100% translateX(-100%)) **기존 `.ticker-track`은 랜딩 전용으로 유지**, 신규 `.animate-ticker`는 ticker-linear 12s linear infinite
-   - [ ] `src/app.css`: `@layer utilities`에 `.animate-pulse-glow` (2s ease-in-out infinite), `.glow-orange` (box-shadow 0 0 20px rgba(255,94,0,0.3), 0 0 60px rgba(255,94,0,0.1)), `.glow-mint` (0 0 15px rgba(52,211,153,0.3)), `.no-scrollbar` (`scrollbar-width: none; &::-webkit-scrollbar{display:none}`) 추가
-   - [ ] `src/app.css`: `@keyframes slide-in-from-bottom` + `.animate-sheet-in` 유틸 추가 (BoothDetailSheet Svelte transition 보조용. fly transition 사용 시 생략 가능 — 구현 시 결정)
+4. [x] **app.css 유틸리티 & 키프레임 추가** — 소스 index.css의 ticker/glow/pulse 유틸 이관
+   - [x] `src/app.css`: `@keyframes pulse-glow` 추가 (0,100%: opacity 1 / 50%: opacity 0.7)
+   - [x] `src/app.css`: `@keyframes ticker-linear` 추가 (0% translateX(100%) → 100% translateX(-100%)) **기존 `.ticker-track`은 랜딩 전용으로 유지**, 신규 `.animate-ticker`는 ticker-linear 12s linear infinite
+   - [x] `src/app.css`: `@layer utilities`에 `.animate-pulse-glow` (2s ease-in-out infinite), `.glow-orange` (box-shadow 0 0 20px rgba(255,94,0,0.3), 0 0 60px rgba(255,94,0,0.1)), `.glow-mint` (0 0 15px rgba(52,211,153,0.3)), `.no-scrollbar` (`scrollbar-width: none; &::-webkit-scrollbar{display:none}`) 추가
+   - [x] `src/app.css`: `@keyframes slide-in-from-bottom` + `.animate-sheet-in` 유틸 추가 (BoothDetailSheet Svelte transition 보조용. fly transition 사용 시 생략 가능 — 구현 시 결정)
 
-5. [ ] **데이터 타입 & mock 데이터 이식** — LootItem 타입 + CATEGORIES + initialLootItems 8건
-   - [ ] `src/lib/data/lootItems.ts`: `LootCategory` 유니온 타입, `LootItem` 인터페이스, `CATEGORIES` 배열, `initialLootItems: LootItem[]` 8건 — React `mockData.ts` 내용 **영어 그대로 유지** (mock 구조 검증용)
+5. [x] **데이터 타입 & mock 데이터 이식** — LootItem 타입 + CATEGORIES + initialLootItems 8건
+   - [x] `src/lib/data/lootItems.ts`: `LootCategory` 유니온 타입, `LootItem` 인터페이스, `CATEGORIES` 배열, `initialLootItems: LootItem[]` 8건 — React `mockData.ts` 내용 **영어 그대로 유지** (mock 구조 검증용)
 
 ### Phase 2: 원자 컴포넌트 이식
 
-6. [ ] **FilterChips.svelte** — 카테고리 다중선택 칩 (의존성 없음)
-   - [ ] `src/lib/components/FilterChips.svelte`: `{ active: LootCategory[]; onToggle: (c: LootCategory) => void }` props ($props), `chipIcons` 맵 6종, `{#each CATEGORIES as cat}`, 활성(`bg-orange text-black glow-orange`) / 비활성(`bg-navy-elevated text-muted-foreground border border-border`), `aria-pressed={isActive}`, 가로 스크롤(`.no-scrollbar overflow-x-auto`), `transition-all duration-150 active:scale-95`
+6. [x] **FilterChips.svelte** — 카테고리 다중선택 칩 (의존성 없음)
+   - [x] `src/lib/components/FilterChips.svelte`: `{ active: LootCategory[]; onToggle: (c: LootCategory) => void }` props ($props), `chipIcons` 맵 6종, `{#each CATEGORIES as cat}`, 활성(`bg-orange text-black glow-orange`) / 비활성(`bg-navy-elevated text-muted-foreground border border-border`), `aria-pressed={isActive}`, 가로 스크롤(`.no-scrollbar overflow-x-auto`), `transition-all duration-150 active:scale-95`
 
-7. [ ] **AlertBanner.svelte** — 단일 메시지 티커 배너
-   - [ ] `src/lib/components/AlertBanner.svelte`: `{ message: string }` props, `role="status" aria-live="polite"`, 컨테이너 `bg-gradient-to-r from-orange via-orange-glow to-orange`, Zap 아이콘(`animate-pulse-glow text-black shrink-0`) + 메시지 span(`animate-ticker font-heading font-semibold text-sm text-black whitespace-nowrap`) + 인라인 Clock 아이콘
+7. [x] **AlertBanner.svelte** — 단일 메시지 티커 배너
+   - [x] `src/lib/components/AlertBanner.svelte`: `{ message: string }` props, `role="status" aria-live="polite"`, 컨테이너 `bg-gradient-to-r from-orange via-orange-glow to-orange`, Zap 아이콘(`animate-pulse-glow text-black shrink-0`) + 메시지 span(`animate-ticker font-heading font-semibold text-sm text-black whitespace-nowrap`) + 인라인 Clock 아이콘
 
-8. [ ] **LootCard.svelte** — 리스트 아이템 카드 (3상태)
-   - [ ] `src/lib/components/LootCard.svelte`: `{ item: LootItem; onToggleComplete; onSelect }` props, `const isTimeLimited = $derived(item.time !== 'Always')`, 좌측 토글 버튼(`aria-label={item.isCompleted ? '미완료로 변경' : '완료 처리'} aria-pressed={item.isCompleted}`, CheckCircle2/Circle, `active:scale-90 transition-transform`), 콘텐츠 버튼(`onclick={() => onSelect(item.id)}`), 시간 뱃지(시간제한=`bg-orange/15 text-orange` / Always=`bg-white/5 text-muted-foreground`), 카테고리(라틴 유지 `uppercase tracking-wider text-[10px]`), 제목(한글 대비 `leading-snug`, 완료 시 `line-through text-muted-foreground`), 상품(Gift+오렌지), 위치(MapPin+muted, 한글인 경우 `text-[11px]`), 북마크 삼각형 인디케이터, 상태별 테두리/배경 분기
+8. [x] **LootCard.svelte** — 리스트 아이템 카드 (3상태)
+   - [x] `src/lib/components/LootCard.svelte`: `{ item: LootItem; onToggleComplete; onSelect }` props, `const isTimeLimited = $derived(item.time !== 'Always')`, 좌측 토글 버튼(`aria-label={item.isCompleted ? '미완료로 변경' : '완료 처리'} aria-pressed={item.isCompleted}`, CheckCircle2/Circle, `active:scale-90 transition-transform`), 콘텐츠 버튼(`onclick={() => onSelect(item.id)}`), 시간 뱃지(시간제한=`bg-orange/15 text-orange` / Always=`bg-white/5 text-muted-foreground`), 카테고리(라틴 유지 `uppercase tracking-wider text-[10px]`), 제목(한글 대비 `leading-snug`, 완료 시 `line-through text-muted-foreground`), 상품(Gift+오렌지), 위치(MapPin+muted, 한글인 경우 `text-[11px]`), 북마크 삼각형 인디케이터, 상태별 테두리/배경 분기
 
 ### Phase 3: 조합 컴포넌트 이식
 
-9. [ ] **LootFeed.svelte** — 검색 + 필터 + 정렬된 리스트
-   - [ ] `src/lib/components/LootFeed.svelte`: `{ items; onToggleComplete; onSelectItem }` props, `let search = $state('')` + `let activeFilters = $state<LootCategory[]>([])`, `const filtered = $derived(items.filter(...))`, `const sorted = $derived([...filtered].sort(...))`, `const doneCount = $derived(items.filter(i => i.isCompleted).length)`, 헤더 라벨 "파밍 목록" + 카운터 "`{doneCount}/{items.length} 완료`"(오렌지), 검색 input(placeholder="부스·경품 검색…" aria-label="검색", `focus:ring-1 focus:ring-orange/50`), FilterChips 조합, `{#each sorted as item (item.id)}<LootCard/>{/each}`, 빈 상태 "검색 결과가 없습니다"
+9. [x] **LootFeed.svelte** — 검색 + 필터 + 정렬된 리스트
+   - [x] `src/lib/components/LootFeed.svelte`: `{ items; onToggleComplete; onSelectItem }` props, `let search = $state('')` + `let activeFilters = $state<LootCategory[]>([])`, `const filtered = $derived(items.filter(...))`, `const sorted = $derived([...filtered].sort(...))`, `const doneCount = $derived(items.filter(i => i.isCompleted).length)`, 헤더 라벨 "파밍 목록" + 카운터 "`{doneCount}/{items.length} 완료`"(오렌지), 검색 input(placeholder="부스·경품 검색…" aria-label="검색", `focus:ring-1 focus:ring-orange/50`), FilterChips 조합, `{#each sorted as item (item.id)}<LootCard/>{/each}`, 빈 상태 "검색 결과가 없습니다"
 
-10. [ ] **ExhibitionMap.svelte** — 이미지 맵 + 핀 오버레이
-    - [ ] `src/lib/components/ExhibitionMap.svelte`: `{ items; onPinClick }` props, 헤더 "전시장 지도"(영문 라벨은 제거, 한글로), `aspect-[16/10] bg-navy-surface rounded-xl border border-border overflow-hidden relative`, 8×12 그리드 오버레이(`{#each Array(8) as _, i}<div style="top:{(i+1)*11.1}%"/>{/each}`), Hall A/B/C 라벨(라틴 유지 `uppercase tracking-widest text-[10px]`), 핀 버튼(`style:left="{item.mapX}%" style:top="{item.mapY}%"` + `aria-label="{item.boothName} 상세 보기"`, 상태별 배경 `bg-mint/20 border-mint/40` / `bg-orange/20 border-orange/60 glow-orange` / `bg-navy-elevated border-border`, 아이콘 분기 CheckCircle2/Bookmark/MapPin, `transition-all duration-200 active:scale-90`), group-active 툴팁(`opacity-0 group-active:opacity-100 transition-opacity pointer-events-none`)
+10. [x] **ExhibitionMap.svelte** — 이미지 맵 + 핀 오버레이
+    - [x] `src/lib/components/ExhibitionMap.svelte`: `{ items; onPinClick }` props, 헤더 "전시장 지도"(영문 라벨은 제거, 한글로), `aspect-[16/10] bg-navy-surface rounded-xl border border-border overflow-hidden relative`, 8×12 그리드 오버레이(`{#each Array(8) as _, i}<div style="top:{(i+1)*11.1}%"/>{/each}`), Hall A/B/C 라벨(라틴 유지 `uppercase tracking-widest text-[10px]`), 핀 버튼(`style:left="{item.mapX}%" style:top="{item.mapY}%"` + `aria-label="{item.boothName} 상세 보기"`, 상태별 배경 `bg-mint/20 border-mint/40` / `bg-orange/20 border-orange/60 glow-orange` / `bg-navy-elevated border-border`, 아이콘 분기 CheckCircle2/Bookmark/MapPin, `transition-all duration-200 active:scale-90`), group-active 툴팁(`opacity-0 group-active:opacity-100 transition-opacity pointer-events-none`)
 
-11. [ ] **BoothDetailSheet.svelte** — 바텀 시트 모달 (a11y/인터랙션 보강은 Phase 4.5에서 보강)
-    - [ ] `src/lib/components/BoothDetailSheet.svelte`: `{ item: LootItem | null; onClose; onToggleBookmark; onToggleComplete; onMemoChange }` props, `{#if item}` 가드, 루트 `fixed inset-0 z-50 flex items-end justify-center`, 백드롭(`bg-navy-deep/80 backdrop-blur-sm`, 클릭 시 onClose), 시트 컨테이너(`max-w-lg bg-navy-surface border-t border-border rounded-t-2xl p-5 pb-[max(2rem,env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto`, Svelte `transition:fly={{ y: 400, duration: 300 }}` 적용), 핸들 막대, 닫기 버튼(`aria-label="상세 닫기"`), 헤더(시간 뱃지/카테고리/제목 h2/위치), Prize 박스(`bg-orange/10 border-orange/20`, 라벨 "경품"), Mission 박스(`bg-navy-elevated`, 라벨 "미션"), Memo textarea(`aria-label="부스 메모" placeholder="현장 팁·메모…" value={item.memo} oninput={(e) => onMemoChange(item.id, e.currentTarget.value)} focus:ring-1 focus:ring-orange/50`), 액션 버튼 2개("찜하기/찜 완료", "완료 처리/완료 ✓", 각 `active:scale-95 transition-all`)
+11. [x] **BoothDetailSheet.svelte** — 바텀 시트 모달 (a11y/인터랙션 보강은 Phase 4.5에서 보강)
+    - [x] `src/lib/components/BoothDetailSheet.svelte`: `{ item: LootItem | null; onClose; onToggleBookmark; onToggleComplete; onMemoChange }` props, `{#if item}` 가드, 루트 `fixed inset-0 z-50 flex items-end justify-center`, 백드롭(`bg-navy-deep/80 backdrop-blur-sm`, 클릭 시 onClose), 시트 컨테이너(`max-w-lg bg-navy-surface border-t border-border rounded-t-2xl p-5 pb-[max(2rem,env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto`, Svelte `transition:fly={{ y: 400, duration: 300 }}` 적용), 핸들 막대, 닫기 버튼(`aria-label="상세 닫기"`), 헤더(시간 뱃지/카테고리/제목 h2/위치), Prize 박스(`bg-orange/10 border-orange/20`, 라벨 "경품"), Mission 박스(`bg-navy-elevated`, 라벨 "미션"), Memo textarea(`aria-label="부스 메모" placeholder="현장 팁·메모…" value={item.memo} oninput={(e) => onMemoChange(item.id, e.currentTarget.value)} focus:ring-1 focus:ring-orange/50`), 액션 버튼 2개("찜하기/찜 완료", "완료 처리/완료 ✓", 각 `active:scale-95 transition-all`)
 
 ### Phase 4: 라우트 & 페이지 구성
 
-12. [ ] **앱 메인 라우트 생성** — /app 경로 신규
-    - [ ] `src/routes/app/+page.svelte`: 6개 컴포넌트 + `initialLootItems` import, `let items = $state<LootItem[]>(initialLootItems)` + `let selectedId = $state<string|null>(null)`, `const selectedItem = $derived(items.find(i => i.id === selectedId) ?? null)`, `toggleComplete/toggleBookmark/updateMemo` 함수(map 불변 갱신), 루트 컨테이너(`min-h-dvh bg-navy-deep pb-8 max-w-lg mx-auto safe-top safe-bottom`), `<svelte:head><title>박람회 파밍 | expo-harvest</title></svelte:head>`, AlertBanner("NVIDIA 룰렛 이벤트 12분 전 → Hall A-12") → 헤더(`<h1>🗡️ 박람회 파밍 트래커</h1><p>박람회 사은품, 하나도 놓치지 마세요</p>`) → ExhibitionMap → 구분선 → LootFeed → BoothDetailSheet 순서
-    - [ ] `src/routes/app/+page.svelte`: (Phase 0 점검 결과에 따라) 전역 그라데이션 배경이 어울리지 않으면 `src/routes/app/+layout.svelte` 생성해 `<div class="bg-navy-deep min-h-dvh">{@render children()}</div>`로 격리 — Phase 0에서 결정된 경우에만 수행, 아니면 생략
+12. [x] **앱 메인 라우트 생성** — /app 경로 신규
+    - [x] `src/routes/app/+page.svelte`: 6개 컴포넌트 + `initialLootItems` import, `let items = $state<LootItem[]>(initialLootItems)` + `let selectedId = $state<string|null>(null)`, `const selectedItem = $derived(items.find(i => i.id === selectedId) ?? null)`, `toggleComplete/toggleBookmark/updateMemo` 함수(map 불변 갱신), 루트 컨테이너(`min-h-dvh bg-navy-deep pb-8 max-w-lg mx-auto safe-top safe-bottom`), `<svelte:head><title>박람회 파밍 | expo-harvest</title></svelte:head>`, AlertBanner("NVIDIA 룰렛 이벤트 12분 전 → Hall A-12") → 헤더(`<h1>🗡️ 박람회 파밍 트래커</h1><p>박람회 사은품, 하나도 놓치지 마세요</p>`) → ExhibitionMap → 구분선 → LootFeed → BoothDetailSheet 순서
+    - [x] `src/routes/app/+page.svelte`: (Phase 0 점검 결과에 따라) 전역 그라데이션 배경이 어울리지 않으면 `src/routes/app/+layout.svelte` 생성해 `<div class="bg-navy-deep min-h-dvh">{@render children()}</div>`로 격리 — Phase 0에서 결정된 경우에만 수행, 아니면 생략
 
-13. [ ] **랜딩 페이지에 /app 진입 CTA 추가** — 파밍 화면 이동 버튼
-    - [ ] `src/routes/+page.svelte`: "다음 단계 후보" 카드 내부 또는 "Current Build Scope" 섹션 하단에 `<a href="/app" class="inline-flex items-center gap-2 rounded-full bg-[#ff5e00] px-5 py-3 text-sm font-semibold text-black active:scale-95 transition-transform">파밍 화면 열기 →</a>` 1개 추가
+13. [x] **랜딩 페이지에 /app 진입 CTA 추가** — 파밍 화면 이동 버튼
+    - [x] `src/routes/+page.svelte`: "다음 단계 후보" 카드 내부 또는 "Current Build Scope" 섹션 하단에 `<a href="/app" class="inline-flex items-center gap-2 rounded-full bg-[#ff5e00] px-5 py-3 text-sm font-semibold text-black active:scale-95 transition-transform">파밍 화면 열기 →</a>` 1개 추가
 
 ### Phase 4.5: 접근성 & 모달 UX 보강
 
-14. [ ] **BoothDetailSheet a11y 속성** — role/aria-* + 포커스 이동
-    - [ ] `src/lib/components/BoothDetailSheet.svelte`: 시트 컨테이너에 `role="dialog" aria-modal="true" aria-labelledby="sheet-title-{item.id}"`, 제목 `<h2 id="sheet-title-{item.id}">` 부여
-    - [ ] `src/lib/components/BoothDetailSheet.svelte`: 닫기 버튼에 `bind:this={closeBtn}` + `$effect(() => { if (item) closeBtn?.focus(); })`로 시트 진입 시 포커스 이동
-    - [ ] `src/lib/components/BoothDetailSheet.svelte`: 백드롭은 `<button type="button" aria-label="배경 클릭으로 닫기" class="absolute inset-0 ...">` 또는 div + role/tabindex 중 svelte-check 경고 없는 쪽 채택(구현 시 결정 + 주석)
+14. [x] **BoothDetailSheet a11y 속성** — role/aria-* + 포커스 이동
+    - [x] `src/lib/components/BoothDetailSheet.svelte`: 시트 컨테이너에 `role="dialog" aria-modal="true" aria-labelledby="sheet-title-{item.id}"`, 제목 `<h2 id="sheet-title-{item.id}">` 부여
+    - [x] `src/lib/components/BoothDetailSheet.svelte`: 닫기 버튼에 `bind:this={closeBtn}` + `$effect(() => { if (item) closeBtn?.focus(); })`로 시트 진입 시 포커스 이동
+    - [x] `src/lib/components/BoothDetailSheet.svelte`: 백드롭은 `<button type="button" aria-label="배경 클릭으로 닫기" class="absolute inset-0 ...">` 또는 div + role/tabindex 중 svelte-check 경고 없는 쪽 채택(구현 시 결정 + 주석)
 
-15. [ ] **모달 동작 보강** — Escape + body scroll lock
-    - [ ] `src/lib/components/BoothDetailSheet.svelte`: `<svelte:window onkeydown={(e) => { if (item && e.key === 'Escape') onClose(); }} />`로 Escape 닫기
-    - [ ] `src/lib/components/BoothDetailSheet.svelte`: `$effect(() => { if (!item) return; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; })`로 시트 열릴 때 body 스크롤 잠금 (SSR guard: `if (typeof document === 'undefined') return;`)
+15. [x] **모달 동작 보강** — Escape + body scroll lock
+    - [x] `src/lib/components/BoothDetailSheet.svelte`: `<svelte:window onkeydown={(e) => { if (item && e.key === 'Escape') onClose(); }} />`로 Escape 닫기
+    - [x] `src/lib/components/BoothDetailSheet.svelte`: `$effect(() => { if (!item) return; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; })`로 시트 열릴 때 body 스크롤 잠금 (SSR guard: `if (typeof document === 'undefined') return;`)
 
-16. [ ] **핀·카드·배너 aria 속성 최종 점검** — 각 컴포넌트 보강 후 확인
-    - [ ] `ExhibitionMap.svelte`: 핀 버튼의 `aria-label="{boothName} — {상태}"` 동적 구성(상태: "완료"/"찜"/"기본")
-    - [ ] `LootCard.svelte`: 체크 토글 `aria-label`/`aria-pressed`, 콘텐츠 버튼 `aria-label="{boothName} 상세 보기"`
-    - [ ] `AlertBanner.svelte`/`FilterChips.svelte`: `role="status"` / `aria-pressed` 최종 확인
+16. [x] **핀·카드·배너 aria 속성 최종 점검** — 각 컴포넌트 보강 후 확인
+    - [x] `ExhibitionMap.svelte`: 핀 버튼의 `aria-label="{boothName} — {상태}"` 동적 구성(상태: "완료"/"찜"/"기본")
+    - [x] `LootCard.svelte`: 체크 토글 `aria-label`/`aria-pressed`, 콘텐츠 버튼 `aria-label="{boothName} 상세 보기"`
+    - [x] `AlertBanner.svelte`/`FilterChips.svelte`: `role="status"` / `aria-pressed` 최종 확인
 
 ### Phase 5: 검증
 
-17. [ ] **타입 체크 통과** — svelte-check 에러 0 + a11y 경고 확인
-    - [ ] `npm run check`: 에러 0개 확인
-    - [ ] a11y 경고: 0 또는 의도적 억제 경고만 (해당 경고에 주석으로 근거 기재)
+17. [x] **타입 체크 통과** — svelte-check 에러 0 + a11y 경고 확인
+    - [x] `npm run check`: 에러 0개 확인
+    - [x] a11y 경고: 0 또는 의도적 억제 경고만 (해당 경고에 주석으로 근거 기재)
 
-18. [ ] **프로덕션 빌드 성공** — vite build
-    - [ ] `npm run build`: 빌드 성공. Cloudflare adapter 관련 경고는 허용
+18. [x] **프로덕션 빌드 성공** — vite build
+    - [x] `npm run build`: 빌드 성공. Cloudflare adapter 관련 경고는 허용
 
 19. [ ] **브라우저 육안 검증** — /app 인터랙션 8종
     - [ ] `npm run dev` 후 `http://localhost:5173/app`: AlertBanner 티커 좌→우 스크롤 / ExhibitionMap 핀 8개 표시 / 핀 클릭 시 BoothDetailSheet 열림 / LootFeed 검색 입력 실시간 필터링 / FilterChips 다중선택 / LootCard 체크 토글 시 opacity 60% 전환 / BoothDetailSheet에서 찜하기·완료 처리 동작 / Memo textarea 입력 반영 — 8개 모두 동작
@@ -306,4 +306,4 @@ npm run dev
 
 ---
 
-*상태: 초안 | 진행률: 0/54 (0%)*
+*상태: 구현중 | 진행률: 48/54 (89%)*

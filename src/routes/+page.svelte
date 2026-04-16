@@ -149,21 +149,28 @@
 			<div>
 				<h2 class="font-['Space_Grotesk'] text-2xl font-semibold text-white">이번 구현에서 끝내는 것</h2>
 				<ul class="mt-4 space-y-3 text-sm leading-7 text-white/70">
-					<li>새 앱 디렉토리와 독립 git repo 생성</li>
-					<li>PRD/README/TODO/DONE 문서 초기화</li>
-					<li>템플릿 잔여물 제거와 앱 식별자 치환</li>
-					<li>전시회 파밍 앱 방향이 드러나는 랜딩 페이지 정리</li>
+					<li>`/app` 실제 파밍 화면 라우트 추가</li>
+					<li>부스 데이터 모델, 지도 핀, 리스트/검색/필터 연결</li>
+					<li>관심/완료/메모 상태를 localStorage에 저장</li>
+					<li>상세 바텀시트와 현장용 모바일 레이아웃 정리</li>
 				</ul>
 			</div>
 
 			<div class="rounded-3xl border border-[#ff5e00]/15 bg-[#ff5e00]/[0.06] p-5">
 				<p class="text-sm font-semibold text-[#ffae80]">다음 단계 후보</p>
 				<ul class="mt-4 space-y-3 text-sm text-white/72">
-					<li>부스/이벤트 Supabase 스키마 설계</li>
-					<li>지도 이미지 맵 + 바텀 시트 구조</li>
-					<li>완료/관심/메모 localStorage 스토어</li>
-					<li>Realtime 배너와 오프라인 캐시 전략</li>
+					<li>Supabase 실데이터와 Realtime 배너 연결</li>
+					<li>전시장 이미지 맵 + 핀치줌 교체</li>
+					<li>PWA 캐시와 오프라인 진입 정리</li>
+					<li>auth-worker 등록 및 운영 origin 반영</li>
 				</ul>
+
+				<a
+					href="/app"
+					class="mt-5 inline-flex items-center justify-center rounded-2xl bg-[#ff5e00] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#ff8b4d]"
+				>
+					파밍 화면 열기
+				</a>
 			</div>
 		</div>
 	</section>

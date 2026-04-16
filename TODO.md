@@ -1,12 +1,10 @@
 # TODO
 
+## In Progress
+
+- [ ] **React exhibition-loot-boss → Svelte UI 이식** — [plan](./docs/plan/2026-04-16_port-react-ui-to-svelte.md) (48/54, 89%)
+
 ## Pending
 
-- [ ] **React exhibition-loot-boss → Svelte UI 이식** — [plan](./docs/plan/2026-04-16_port-react-ui-to-svelte.md) (0/54, 0%)
-- [ ] 박람회 이벤트 데이터 모델 설계
-- [ ] 층별/관별 이미지 맵 탐색 UI 구현
-- [ ] 시간순 이벤트 리스트 및 필터 UI 구현
-- [ ] 부스 메모 localStorage 저장 구조 구현
-- [ ] 관심/완료 상태 토글 및 시각 분리 처리
 - [ ] 실시간 상단 알림 배너 데이터 연결
 - [ ] 오프라인 캐시 전략(service worker/PWA) 반영
