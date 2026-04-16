@@ -23,6 +23,7 @@
 - 앱 기본 브랜딩과 랜딩 페이지
 - `/app` 실제 파밍 화면 라우트와 모바일 우선 UI
 - Supabase Realtime broadcast 기반 상단 알림 배너 연결
+- 서비스워커 + manifest 기반 PWA 앱 셸 캐시
 - 프로젝트별 `.env.example`, `wrangler.toml`, `package.json` 정리
 
 ## 의도적으로 제외한 템플릿 잔여물
@@ -83,3 +84,9 @@ npm run dev
 ```
 
 `expiresAt`이 없으면 3분 뒤 fallback 일정 배너로 자동 복귀합니다.
+
+## PWA / Offline
+
+- `src/service-worker.ts`가 앱 셸(`/`, `/app`, build/static asset)을 캐시합니다.
+- 첫 방문 후에는 네트워크가 불안정해도 `/app` 진입과 기존 로컬 메모 확인이 가능합니다.
+- `static/manifest.webmanifest`가 설치 메타데이터를 제공합니다.

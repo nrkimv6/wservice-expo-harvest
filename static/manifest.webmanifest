@@ -1,0 +1,17 @@
+{
+	"name": "expo-harvest",
+	"short_name": "expo-harvest",
+	"description": "박람회 부스 이벤트를 시간순으로 탐색하고 지도, 메모, 상태 관리를 지원하는 모바일 우선 웹앱",
+	"start_url": "/app",
+	"scope": "/",
+	"display": "standalone",
+	"background_color": "#050505",
+	"theme_color": "#050505",
+	"icons": [
+		{
+			"src": "/favicon.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}
