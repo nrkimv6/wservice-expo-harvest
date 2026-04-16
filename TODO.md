@@ -2,6 +2,7 @@
 
 ## Pending
 
+- [ ] **React exhibition-loot-boss → Svelte UI 이식** — [plan](./docs/plan/2026-04-16_port-react-ui-to-svelte.md) (0/32, 0%)
 - [ ] 박람회 이벤트 데이터 모델 설계
 - [ ] 층별/관별 이미지 맵 탐색 UI 구현
 - [ ] 시간순 이벤트 리스트 및 필터 UI 구현
