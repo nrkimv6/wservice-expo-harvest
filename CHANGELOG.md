@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2026-04-17
+
+### Fixed
+
+- `package-lock.json`을 재생성해 `picomatch` 의존성 해상도를 바로잡고 Cloudflare Workers 빌드의 `npm ci` 실패를 해결
+
 ## [0.1.2] - 2026-04-17
 
 ### Fixed
