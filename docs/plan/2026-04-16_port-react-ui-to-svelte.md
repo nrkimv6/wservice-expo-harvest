@@ -3,8 +3,8 @@
 > 작성일시: 2026-04-16 14:14
 > 기준커밋: 2c15c99
 > 대상 프로젝트: expo-harvest
-> 상태: 구현중
-> 진행률: 48/54 (89%)
+> 상태: 구현완료
+> 진행률: 54/54 (100%)
 > 요약: 랜딩 페이지만 있어 실제 파밍 UX 확인 불가 — AI 생성 React 프로토타입(exhibition-loot-boss)의 레이아웃/컴포넌트/타이포그래피/간격/인터랙션/접근성을 Svelte 5로 이식, 색상만 타겟 Pitch Black + Neon Orange 테마로 재매핑
 
 ---
@@ -264,13 +264,13 @@ Svelte-check는 a11y 경고를 내므로 소스에 없어도 필수 보강:
 18. [x] **프로덕션 빌드 성공** — vite build
     - [x] `npm run build`: 빌드 성공. Cloudflare adapter 관련 경고는 허용
 
-19. [ ] **브라우저 육안 검증** — /app 인터랙션 8종
-    - [ ] `npm run dev` 후 `http://localhost:5173/app`: AlertBanner 티커 좌→우 스크롤 / ExhibitionMap 핀 8개 표시 / 핀 클릭 시 BoothDetailSheet 열림 / LootFeed 검색 입력 실시간 필터링 / FilterChips 다중선택 / LootCard 체크 토글 시 opacity 60% 전환 / BoothDetailSheet에서 찜하기·완료 처리 동작 / Memo textarea 입력 반영 — 8개 모두 동작
-    - [ ] 모바일 viewport(360×800 · DevTools Device Mode)에서 `max-w-lg` 컬럼이 중앙 정렬 + 상·하 safe-area 확보 확인
+19. [x] **브라우저 육안 검증** — /app 인터랙션 8종
+    - [x] `npm run dev` 후 `http://localhost:5173/app`: AlertBanner 티커 좌→우 스크롤 / ExhibitionMap 핀 8개 표시 / 핀 클릭 시 BoothDetailSheet 열림 / LootFeed 검색 입력 실시간 필터링 / FilterChips 다중선택 / LootCard 체크 토글 시 opacity 60% 전환 / BoothDetailSheet에서 찜하기·완료 처리 동작 / Memo textarea 입력 반영 — 8개 모두 동작
+    - [x] 모바일 viewport(360×800 · DevTools Device Mode)에서 `max-w-lg` 컬럼이 중앙 정렬 + 상·하 safe-area 확보 확인
 
-20. [ ] **키보드 접근성 검증** — Escape/Tab 순회
-    - [ ] Tab 키로 검색 → 필터 칩 → 카드 내 토글/콘텐츠 → 핀 → 시트 내 요소 순회 가능
-    - [ ] 시트 열린 상태에서 Escape 누르면 닫힘, 백드롭 포커스 시 스페이스/엔터로도 닫힘
+20. [x] **키보드 접근성 검증** — Escape/Tab 순회
+    - [x] Tab 키로 검색 → 필터 칩 → 카드 내 토글/콘텐츠 → 핀 → 시트 내 요소 순회 가능
+    - [x] 시트 열린 상태에서 Escape 누르면 닫힘, 백드롭 포커스 시 스페이스/엔터로도 닫힘
 
 ---
 
@@ -306,4 +306,4 @@ npm run dev
 
 ---
 
-*상태: 구현중 | 진행률: 48/54 (89%)*
+*상태: 구현완료 | 진행률: 54/54 (100%)*

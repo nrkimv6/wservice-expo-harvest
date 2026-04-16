@@ -5,6 +5,7 @@
   - 부스 mock 데이터, 지도 핀, 검색/필터, 바텀시트 상세 흐름 연결
   - 메모/찜/완료 상태를 localStorage로 저장하도록 연결
   - 모달 접근성(role/aria, Escape 닫기, 포커스 이동, body scroll lock) 보강
+  - headless Playwright로 `/app` 인터랙션과 키보드 접근성 검증 완료
 
 - [x] 2026-04-16: expo-harvest 부트스트랩 생성
   - `_sample/sveltekit-supabase` 기반으로 새 프로젝트 디렉토리 생성
