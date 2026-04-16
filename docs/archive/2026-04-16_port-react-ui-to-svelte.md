@@ -1,5 +1,10 @@
 # React exhibition-loot-boss → Svelte expo-harvest UI 이식
 
+> 완료일: 2026-04-16
+> 아카이브됨
+> 진행률: 54/54 (100%)
+> 요약: 랜딩 페이지만 있어 실제 파밍 UX 확인 불가 — AI 생성 React 프로토타입(exhibition-loot-boss)의 레이아웃/컴포넌트/타이포그래피/간격/인터랙션/접근성을 Svelte 5로 이식, 색상만 타겟 Pitch Black + Neon Orange 테마로 재매핑
+
 > 작성일시: 2026-04-16 14:14
 > 기준커밋: 2c15c99
 > 대상 프로젝트: expo-harvest
