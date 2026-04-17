@@ -25,6 +25,7 @@
 - 사용자 요구에는 "2층 우측 세로로 1열 3부스"라고 쓰였지만 실제 열거 항목은 `계단 / 인생네컷 포토존 / 포렌코스 / 파페치 TW 홍보부스` 4개다. 이번 plan은 이를 "계단 + 3개 부스/이벤트가 한 vertical lane을 공유"하는 요구로 해석한다.
 - 사용자 요구에는 "1층 하단 가로열 4부스"라고 쓰였지만 실제 열거 항목은 4개 이벤트 박스와 `출구`다. 이번 plan은 이를 "4개 booth-sized event zone + 하단 출구 arrow"로 해석한다.
 - `ExhibitionMap.svelte`는 overview와 single-section 렌더 경로에 booth/eventZone SVG 블록이 중복되어 있다. 타이포와 helper copy 보정은 두 경로를 함께 수정 대상으로 잡지 않으면 같은 버그가 재발한다.
+- 현재 `COUPANG_MEGA_BEAUTY_OVERLAYS`에는 `hall-2f`용 `stairs` entry가 없다. 사용자 요구의 우측 lane 첫 블록은 기존 좌표 이동이 아니라 신규 overlay 추가 작업으로 다뤄야 한다.
 - `git diff --name-only 61d3d82..main` 기준 현재 코드 드리프트는 없고 문서 파일만 바뀌었다. 따라서 구현 기준은 지금 읽은 `lootItems.ts`, `ExhibitionMap.svelte`, `+page.svelte`, `MANUAL_TASKS.md`, `package.json` 상태로 고정해도 된다.
 - `tests/` 디렉터리가 없어 자동 검증은 `npm run check`, `npm run build`가 전부다. 배치/타이포 품질은 결국 브라우저 육안 확인을 `MANUAL_TASKS.md`에 남겨야 한다.
 
@@ -93,7 +94,7 @@
    - [ ] `src/lib/data/lootItems.ts`: 좌측 3칸이 같은 `renderY`와 무간격 `centerX` spacing을 공유한다는 계약을 주석 또는 assertion 대상으로 추가한다.
 
 10. - [ ] **2F 우측 벽 vertical lane을 계단 포함 4블록으로 고정한다** — stairs와 포토/부스/홍보존이 한 column을 공유하게 만든다
-   - [ ] `src/lib/data/lootItems.ts`: `hall-2f` 우측 `stairs` overlay가 있으면 그 `x/y/height`를 column 최상단 기준으로 맞추고, 없으면 새 `stairs` entry 추가 위치를 명시한다.
+   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_OVERLAYS`에 `hall-2f` 우측 lane 최상단용 새 `stairs` entry를 추가하고 `x/y/width/height`를 column anchor 기준으로 맞춘다.
    - [ ] `src/lib/data/lootItems.ts`: `인생네컷 포토존` overlay center 좌표를 같은 우측 lane 두 번째 블록 anchor에 맞춘다.
    - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-forencos']`의 `renderX/renderY`를 같은 우측 lane 세 번째 블록 anchor에 맞춘다.
    - [ ] `src/lib/data/lootItems.ts`: `파페치 / TW 홍보 부스` overlay center 좌표를 같은 우측 lane 최하단 anchor에 맞추고 column 공통 `x`를 contract에 추가한다.
@@ -114,14 +115,14 @@
 
 13. - [ ] **booth 타이포 기본값을 더 크게 잡는다** — 박스 내부 공백보다 글자 점유율을 우선한다
    - [ ] `src/lib/components/ExhibitionMap.svelte`: `getLabelFontSize(item)`의 기본 fallback 값을 현재 `11.5`보다 크게 조정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: booth `<text>`의 `y` 기준점 계산을 multi-line 기준으로 다시 조정해 상단 여백을 줄인다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: booth `<tspan>`의 `dy` line spacing을 현재보다 조밀하게 줄여 박스 내부를 더 채우게 한다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: overview와 single-section booth `<text>` 두 블록의 `y` 기준점 계산을 multi-line 기준으로 다시 조정해 상단 여백을 줄인다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: overview와 single-section booth `<tspan>` 두 블록의 `dy` line spacing을 현재보다 조밀하게 줄여 박스 내부를 더 채우게 한다.
    - [ ] `src/lib/data/lootItems.ts`: 폰트 상향 후에도 예외가 필요한 브랜드만 `mapLabelFontSize`로 다시 조정한다.
 
 14. - [ ] **event zone 타이포와 라벨 분할도 같이 맞춘다** — booth와 event box의 조밀도가 따로 놀지 않게 한다
    - [ ] `src/lib/components/ExhibitionMap.svelte`: `getOverlayLabelLines(label)`가 `쿠팡 뉴존 체험존`, `뉴존 선물 수령존`, `파페치 / TW 홍보 부스`를 박스 안에 맞게 나누는지 기준을 다시 정한다.
    - [ ] `src/lib/components/ExhibitionMap.svelte`: `getEventZoneFontSize(overlay)`의 booth-sized default를 상향 조정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `getEventZoneTextOffset(overlay, lineCount)`를 새 폰트 기준으로 다시 맞춰 상하 여백을 줄인다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: overview와 single-section event zone `<text>` 블록이 함께 쓰는 `getEventZoneTextOffset(overlay, lineCount)`를 새 폰트 기준으로 다시 맞춰 상하 여백을 줄인다.
    - [ ] `src/lib/data/lootItems.ts`: 필요한 event zone만 `fontSize` 예외값을 다시 지정한다.
 
 ### Phase 5: 회귀 방지 계약과 검증 순서를 문서로 남긴다 (10 tasks)
@@ -135,7 +136,7 @@
 16. - [ ] **정적 검증과 육안 검증 순서를 구현용 문서에 남긴다** — 레이아웃 수정 후 확인 루틴을 고정한다
    - [ ] `MANUAL_TASKS.md`: 1F 좌측/중앙/우측 브랜드축이 서로 무간격으로 붙는지 확인하는 항목을 추가한다.
    - [ ] `MANUAL_TASKS.md`: 1F 중앙 `쿠팡 어워즈 체험존`, 하단 4개 event box, `출구`, 외부 수령존 `입구/출구` 위치를 확인하는 항목을 추가한다.
-   - [ ] `MANUAL_TASKS.md`: 2F 상단 8부스, 좌측 3칸, 우측 4블록 vertical lane, 장문 안내 제거, 부스 글자 점유율 증가를 확인하는 항목을 추가한다.
+   - [ ] `MANUAL_TASKS.md`: 2F 상단 8부스, 좌측 3칸, 새 `hall-2f` 계단 포함 우측 4블록 vertical lane, 장문 안내 제거, 부스 글자 점유율 증가를 확인하는 항목을 추가한다.
    - [ ] `docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md`: 구현 검증 순서를 `npm run check` → `npm run build` → 브라우저 육안 검증으로 명시한다.
 
 ---
