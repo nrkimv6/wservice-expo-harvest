@@ -21,7 +21,7 @@
 
 <div class="no-scrollbar flex gap-2 overflow-x-auto pb-1">
 	{#each CATEGORIES as category}
-		{@const Icon = chipIcons[category]}
+		{@const Icon = chipIcons[category as Exclude<LootCategory, ''>]}
 		<button
 			type="button"
 			class={[
