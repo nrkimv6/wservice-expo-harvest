@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.2] - 2026-04-17
+
+### Fixed
+
+- 부스 상세 시트의 섹션 순서를 해시태그, SNS 링크, 개인메모, Prize, Mission, 이미지 흐름으로 재배치
+
 ## [0.3.1] - 2026-04-17
 
 ### Fixed
