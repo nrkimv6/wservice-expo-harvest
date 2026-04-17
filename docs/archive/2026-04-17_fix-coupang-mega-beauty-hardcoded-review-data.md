@@ -1,12 +1,15 @@
 # fix: align coupang mega beauty hardcoded review data
 
+> 완료일: 2026-04-17
+> 아카이브됨
+> 진행률: 50/50 (100%)
+
 > 작성일시: 2026-04-17 17:05
 > 기준커밋: 5853e1d
 > 대상 프로젝트: expo-harvest
-> branch: impl/fix-coupang-mega-beauty-hardcoded-review-data
-> worktree: .worktrees/impl-fix-coupang-mega-beauty-hardcoded-review-data
-> worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-17_fix-coupang-mega-beauty-hardcoded-review-data.md
-> 상태: 머지대기
+> 상태: 구현완료
+> 반영일시: 2026-04-17 18:01
+> 머지커밋: 673a8c0
 > 진행률: 50/50 (100%)
 > 요약: 실제 후기 원문과 `쿠팡메가뷰티쇼 2026` 하드코딩 데이터를 대조한 결과, 일부 부스의 해시태그 오탈자와 미션 설명 불일치, 잘못된 선착순 강조, preset 누락/미연결이 확인됐다. 이 계획의 목표는 후기 기준으로 명백한 오류(해시태그 오탈자, 존재하지 않는 선착순 강조, 프리셋 미연결, 오탈자 accountId)를 먼저 바로잡고, 후기 원문에 미션/경품이 명시된 19개 부스 전부를 동일 턴에 반영하는 것이다. 1차 검토에서 계획이 놓친 항목(더페이스샵 `#페이스샵` 오탈자, AHC `#SKINGAME_T_SHOT` 누락, 메디힐/아벤느 preset 부재, 토니모리 `accountId: tonymory` 오탈자, 더페이스샵 kakao URL 언더스코어 의심)과 2차 검토 요구사항(피드/스토리/피드 또는 스토리 업로드 구분, 추첨 후기 이벤트 분리 표기)을 함께 반영한다.
 
@@ -132,4 +135,4 @@
 
 ---
 
-_상태: 머지대기 | 진행률: 50/50 (100%)_
+_상태: 구현완료 | 진행률: 50/50 (100%)_
