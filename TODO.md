@@ -3,11 +3,8 @@
 ## In Progress
 
 ## Pending
-<<<<<<< Updated upstream
 - [ ] **refine: coupang map segmentation and booth normalization** — [plan](docs/plan/2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md) (0/41, 0%)
-=======
 - [ ] **refine: coupang overview map zoom** — [plan](docs/plan/2026-04-17_refine-coupang-overview-map-zoom.md) (0/24, 0%)
->>>>>>> Stashed changes
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
 
