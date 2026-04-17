@@ -3,6 +3,7 @@
 ## In Progress
 
 ## Pending
+- [ ] **fix: map booth detail sheet regression** — [plan](docs/plan/2026-04-17_fix-map-booth-detail-sheet-regression.md) (6/8, 75%)
 - [ ] **refine: coupang map booth packing and copy cleanup** — [plan](docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md) (0/93, 0%)
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
