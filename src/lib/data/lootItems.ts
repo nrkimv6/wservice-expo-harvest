@@ -158,7 +158,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#에스트라', '#AESTURA', '#아토베리어'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에스트라'],
 			socialLinks: [
 				createSocialLink(
 					'aestura-instagram',
@@ -187,7 +187,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#피지오겔', '#PHYSIOGEL', '#민감보습'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#피지오겔'],
 			socialLinks: [
 				createSocialLink(
 					'physiogel-instagram',
@@ -216,7 +216,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: true,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#AHC', '#프로더마에스테', '#메가뷰티쇼'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에이에이치씨', '#AHC'],
 			socialLinks: [
 				createSocialLink(
 					'ahc-instagram',
@@ -303,7 +303,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ["#AGE20'S", '#에이지투웨니스', '#팩트맛집'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에이지투웨니스'],
 			socialLinks: [
 				createSocialLink(
 					'age20s-instagram',
@@ -332,7 +332,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: true,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#메디힐', '#MEDIHEAL', '#마스크팩추천'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#메디힐'],
 			socialLinks: [
 				createSocialLink(
 					'mediheal-instagram',
@@ -419,7 +419,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#에뛰드', '#ETUDE', '#플레이메이크업'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에뛰드'],
 			socialLinks: [
 				createSocialLink(
 					'etude-instagram',
@@ -535,7 +535,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#이지듀', '#easydew', '#DWEGF'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#이지듀'],
 			socialLinks: [
 				createSocialLink(
 					'easydew-instagram',
@@ -593,7 +593,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: true,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#아벤느', '#Avene', '#온천수미스트'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#아벤느'],
 			socialLinks: [
 				createSocialLink(
 					'avene-instagram',
@@ -640,6 +640,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		}
 		],
 		{
+			'cmbs-2026-age20s': ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에이지투웨니스'],
+			'cmbs-2026-mediheal': ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#메디힐'],
+			'cmbs-2026-etude': ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에뛰드'],
+			'cmbs-2026-aestura': ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에스트라'],
+			'cmbs-2026-physiogel': ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#피지오겔'],
+			'cmbs-2026-ahc': ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에이에이치씨', '#AHC'],
+			'cmbs-2026-avene': ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#아벤느'],
+			'cmbs-2026-easydew': ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#이지듀'],
 			'cmbs-2026-ariul': ['#쿠팡뷰티', '#메가뷰티쇼', '#아리얼', '@ariul_official'],
 			'cmbs-2026-naturerepublic': [
 				'#네이처리퍼블릭',
