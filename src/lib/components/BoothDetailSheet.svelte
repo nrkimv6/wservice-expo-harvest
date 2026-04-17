@@ -6,6 +6,7 @@
 		Bookmark,
 		Check,
 		CheckCircle2,
+		ChevronDown,
 		Copy,
 		ExternalLink,
 		Gift,
@@ -28,6 +29,7 @@
 	let closeButton = $state<HTMLButtonElement | null>(null);
 	let copyState = $state<'idle' | 'done' | 'error'>('idle');
 	let includeInstagramAccounts = $state(false);
+	let isMemoExpanded = $state(false);
 
 	function formatHashtagText(tags: string[]): string {
 		return tags
@@ -86,6 +88,7 @@
 	);
 	const hasPrize = $derived((item?.prize.trim().length ?? 0) > 0);
 	const hasMission = $derived((item?.mission.trim().length ?? 0) > 0);
+	const hasMemoContent = $derived((item?.memo.trim().length ?? 0) > 0);
 	const detailTitle = $derived(
 		item ? (item.englishTitle ? `${item.title} (${item.englishTitle})` : item.title) : ''
 	);
@@ -99,6 +102,7 @@
 		item?.id;
 		copyState = 'idle';
 		includeInstagramAccounts = (item?.hashtagAccountTags?.length ?? 0) > 0;
+		isMemoExpanded = (item?.memo.trim().length ?? 0) > 0;
 	});
 
 	$effect(() => {
@@ -301,19 +305,42 @@
 				</div>
 
 				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
-					<div class="flex items-center gap-2 text-foreground">
-						<MessageSquare size={16} />
-						<p class="text-sm font-semibold">개인메모(서버에 저장안됨)</p>
-					</div>
-					<textarea
-						class="mt-3 min-h-28 w-full resize-none rounded-2xl border border-border bg-black/20 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
-						aria-label="부스 메모"
-						placeholder="현장 확인 내용이나 수령 메모를 남기세요"
-						value={item.memo}
-						oninput={(event) => {
-							onMemoChange(item.id, (event.currentTarget as HTMLTextAreaElement).value);
+					<button
+						type="button"
+						class="flex w-full items-center justify-between gap-3 text-left text-foreground"
+						aria-controls={`memo-panel-${item.id}`}
+						aria-expanded={isMemoExpanded}
+						onclick={() => {
+							isMemoExpanded = !isMemoExpanded;
 						}}
-					></textarea>
+					>
+						<div class="flex items-center gap-2">
+							<MessageSquare size={16} />
+							<div>
+								<p class="text-sm font-semibold">개인메모(서버에 저장안됨)</p>
+								<p class="mt-1 text-xs text-muted-foreground">
+									{hasMemoContent ? '저장된 메모 있음' : '탭해서 메모 작성 열기'}
+								</p>
+							</div>
+						</div>
+						<ChevronDown
+							size={18}
+							class={`text-muted-foreground transition-transform duration-200 ${isMemoExpanded ? 'rotate-180' : ''}`}
+						/>
+					</button>
+
+					{#if isMemoExpanded}
+						<textarea
+							id={`memo-panel-${item.id}`}
+							class="mt-3 min-h-28 w-full resize-none rounded-2xl border border-border bg-black/20 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+							aria-label="부스 메모"
+							placeholder="현장 확인 내용이나 수령 메모를 남기세요"
+							value={item.memo}
+							oninput={(event) => {
+								onMemoChange(item.id, (event.currentTarget as HTMLTextAreaElement).value);
+							}}
+						></textarea>
+					{/if}
 				</div>
 
 				<div class="mt-5 grid gap-3 sm:grid-cols-2">
