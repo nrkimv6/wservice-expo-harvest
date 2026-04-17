@@ -1,5 +1,13 @@
 # DONE
 
+- [x] 2026-04-18: build wrapper dev-server blind spot 방어
+  - `scripts/run-dev.mjs`가 `.svelte-kit/dev-runtime.json` marker를 기록하고 `scripts/run-build.mjs`가 marker + repo-specific HTTP probe로 blank `CommandLine` 경로를 preflight에서 감지
+  - `node --test scripts/run-build.test.mjs`, `npm run check`, `npm run build` 통과 후 plan archive 및 impl worktree 정리 완료
+
+- [x] 2026-04-18: merge-test owner plan dirty guard 추가
+  - `.agents/skills/merge-test/SKILL.md`에 current owner plan dirty preflight와 `MERGE_PRECHECK_FAILED[owner_plan_dirty]` hard-stop 규칙을 추가
+  - unrelated root dirty만 stash 대상으로 남기고 merged main에서 `npm run check`, `npm run build` 재검증 후 plan archive 및 impl worktree 정리 완료
+
 - [x] 2026-04-17: 쿠팡 맵 section 분리 후 레이아웃 회귀 복구
   - `13f12bd` 기준 형상으로 2F 상단 8부스 가로열, 좌측 체험존 세로열, 우측 `인생네컷/포렌코즈/파페치` column 분리를 복원
   - 1F/2F/뷰티박스 수령존의 booth-sized eventZone 크기를 공통 helper로 정규화하고, `hall-1f` 계단 2개와 `decorRect` 누락을 데이터에서 복구

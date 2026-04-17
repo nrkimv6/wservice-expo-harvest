@@ -1,13 +1,15 @@
 # fix: merge-test owner plan dirty guard
 
+> 완료일: 2026-04-18
+> 아카이브됨
+> 진행률: 16/16 (100%)
 > 작성일시: 2026-04-17 16:52
 > 기준커밋: 68c9022
 > 대상 프로젝트: expo-harvest
-> 상태: 구현중
+> 상태: 구현완료
+> 반영일시: 2026-04-18 00:06
+> 머지커밋: f826ef9
 > 진행률: 16/16 (100%)
-> branch: impl/fix-merge-test-owner-plan-dirty-guard
-> worktree: .worktrees/impl-fix-merge-test-owner-plan-dirty-guard
-> worktree-owner: docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md
 > 출처: /review에서 자동 생성
 > 요약: `merge-test`가 root `main`의 dirty 파일을 일반 stash 대상으로 취급하면서, 현재 worktree owner와 같은 계획서가 root에도 수정돼 있을 때 `stash apply` 충돌을 일으킬 수 있었다. 같은 owner 계획서 dirty는 stash/apply로 복원할 대상이 아니라 즉시 중단해야 하므로, merge-test에 사전 차단 규칙과 운영 메시지를 추가한다.
 

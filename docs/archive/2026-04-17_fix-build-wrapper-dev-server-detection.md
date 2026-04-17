@@ -1,13 +1,15 @@
 # fix: build wrapper dev-server detection blind spot
 
+> 완료일: 2026-04-18
+> 아카이브됨
+> 진행률: 12/12 (100%)
 > 작성일시: 2026-04-17 10:12
 > 기준커밋: 6835b16
 > 대상 프로젝트: expo-harvest
-> 상태: 구현중
+> 상태: 구현완료
+> 반영일시: 2026-04-18 00:06
+> 머지커밋: ad78fc4
 > 진행률: 12/12 (100%)
-> branch: impl/fix-build-wrapper-dev-server-detection
-> worktree: .worktrees/impl-fix-build-wrapper-dev-server-detection
-> worktree-owner: docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md
 > 요약: `npm run build`가 이번 세션에서도 `.svelte-kit/cloudflare` 잠금으로 실패했지만, `scripts/run-build.mjs`의 사전 감지는 이를 먼저 잡지 못했다. 현재 wrapper는 Win32_Process CommandLine 기반 탐지만 사용하므로, 명령행이 비어 있거나 부모/자식 프로세스 형태로 남는 dev 서버를 놓치는 경로를 보강해야 한다.
 > 출처: /review에서 자동 생성
 
