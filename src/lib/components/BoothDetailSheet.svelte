@@ -38,6 +38,14 @@
 		}
 	}
 
+	function formatHashtagCopyText(tags: string[]): string {
+		return tags
+			.join(' ')
+			.replace(/\s+/g, ' ')
+			.replace(/(\S)#/g, '$1 #')
+			.trim();
+	}
+
 	const instagramAccountTags = $derived(
 		item
 			? Array.from(
@@ -51,8 +59,14 @@
 				)
 			: []
 	);
+	const hashtagTags = $derived(
+		item ? [...item.hashtags, ...(includeInstagramAccounts ? instagramAccountTags : [])] : []
+	);
 	const hashtagBlock = $derived(
-		item ? [...item.hashtags, ...(includeInstagramAccounts ? instagramAccountTags : [])].join('\n') : ''
+		hashtagTags.length > 0 ? hashtagTags.join('\n') : ''
+	);
+	const hashtagCopyText = $derived(
+		hashtagTags.length > 0 ? formatHashtagCopyText(hashtagTags) : ''
 	);
 	const hasHashtags = $derived((item?.hashtags.length ?? 0) > 0);
 	const hasInstagramAccountTags = $derived(instagramAccountTags.length > 0);
@@ -103,10 +117,10 @@
 	});
 
 	async function copyHashtags() {
-		if (!item || !browser || !hashtagBlock) return;
+		if (!item || !browser || !hashtagCopyText) return;
 
 		try {
-			await navigator.clipboard.writeText(hashtagBlock);
+			await navigator.clipboard.writeText(hashtagCopyText);
 			copyState = 'done';
 		} catch {
 			copyState = 'error';
