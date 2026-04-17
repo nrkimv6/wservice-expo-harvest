@@ -20,7 +20,7 @@
 			<p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
 				{exhibition.mapTitle}
 			</p>
-			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">지도에서 부스 보기</h2>
+			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">부스 보기</h2>
 			<p class="mt-2 text-xs leading-5 text-muted-foreground">{exhibition.mapNote}</p>
 		</div>
 

@@ -91,7 +91,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		[
 		{
 			id: 'cmbs-2026-drg',
-			title: 'Dr.G',
+			title: '닥터지 (Dr.G)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -122,7 +122,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-innisfree',
-			title: 'innisfree',
+			title: '이니스프리 (innisfree)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -153,7 +153,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-aestura',
-			title: 'AESTURA',
+			title: '에스트라 (AESTURA)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -184,7 +184,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-physiogel',
-			title: 'PHYSIOGEL',
+			title: '피지오겔 (PHYSIOGEL)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -215,7 +215,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-ahc',
-			title: 'AHC',
+			title: '에이에이치씨 (AHC)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -246,7 +246,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-thefaceshop',
-			title: 'THE FACE SHOP',
+			title: '더페이스샵 (THE FACE SHOP)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -277,7 +277,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-banilaco',
-			title: 'BANILA CO',
+			title: '바닐라코 (BANILA CO)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -308,7 +308,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-age20s',
-			title: "AGE20'S",
+			title: "에이지투웨니스 (AGE20'S)",
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -339,7 +339,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-mediheal',
-			title: 'MEDIHEAL',
+			title: '메디힐 (MEDIHEAL)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -370,7 +370,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-tonymoly',
-			title: 'TONYMOLY',
+			title: '토니모리 (TONYMOLY)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -401,7 +401,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-romand',
-			title: 'rom&nd',
+			title: '롬앤 (rom&nd)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -439,7 +439,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-etude',
-			title: 'ETUDE',
+			title: '에뛰드 (ETUDE)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -470,7 +470,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-espoir',
-			title: 'espoir',
+			title: '에스쁘아 (espoir)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -501,7 +501,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-ariul',
-			title: 'Ariul',
+			title: '아리얼 (Ariul)',
 			firstComeEvent: '선착순 이벤트 있음',
 			prize: '',
 			location: '',
@@ -532,7 +532,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-naturerepublic',
-			title: 'NATURE REPUBLIC',
+			title: '네이처리퍼블릭 (NATURE REPUBLIC)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -563,7 +563,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-easydew',
-			title: 'easydew',
+			title: '이지듀 (easydew)',
 			firstComeEvent: '선착순 이벤트 있음',
 			prize: '',
 			location: '',
@@ -594,7 +594,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-dewytree',
-			title: 'DEWYTREE',
+			title: '듀이트리 (DEWYTREE)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -625,7 +625,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-avene',
-			title: 'Avène',
+			title: '아벤느 (Avène)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -656,7 +656,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-forencos',
-			title: 'FORENCOS',
+			title: '포렌코즈 (FORENCOS)',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
