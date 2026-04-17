@@ -11,6 +11,7 @@
 	let { item, onToggleComplete, onSelect }: Props = $props();
 
 	const isTimeLimited = $derived(item.time !== 'Always');
+	const hasFirstComeEvent = $derived(item.firstComeEvent.trim().length > 0);
 	const hasPrize = $derived(item.prize.trim().length > 0);
 </script>
 
@@ -61,6 +62,11 @@
 				>
 					{item.time}
 				</span>
+				{#if hasFirstComeEvent}
+					<span class="rounded-full border border-rose-300/35 bg-rose-400/15 px-2.5 py-1 text-[10px] font-bold tracking-[0.18em] text-rose-100">
+						선착순
+					</span>
+				{/if}
 				<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
 					{item.category}
 				</span>
@@ -80,6 +86,10 @@
 					<Gift size={16} />
 					<span>{item.prize}</span>
 				</div>
+			{/if}
+
+			{#if hasFirstComeEvent}
+				<p class="mt-3 text-sm font-medium text-rose-100">{item.firstComeEvent}</p>
 			{/if}
 
 			{#if item.location}

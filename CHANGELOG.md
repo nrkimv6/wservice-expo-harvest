@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2026-04-17
+
+### Fixed
+
+- 지도, 리스트, 상세 시트에서 선착순 이벤트 부스를 별도로 강조하고 검색·정렬에도 반영
+- 상세 시트에 `선착순 이벤트 있음` 강조 문구와 안내 문장을 추가
+
 ## [0.2.1] - 2026-04-17
 
 ### Fixed

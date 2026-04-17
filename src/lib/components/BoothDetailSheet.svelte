@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { fly } from 'svelte/transition';
 	import {
+		BadgeAlert,
 		Bookmark,
 		Check,
 		CheckCircle2,
@@ -55,6 +56,12 @@
 	);
 	const hasHashtags = $derived((item?.hashtags.length ?? 0) > 0);
 	const hasInstagramAccountTags = $derived(instagramAccountTags.length > 0);
+	const hasFirstComeEvent = $derived((item?.firstComeEvent.trim().length ?? 0) > 0);
+	const firstComeMessage = $derived(
+		item?.firstComeEvent === '선착순 이벤트 있음'
+			? '수량 소진 전에 먼저 들러 확인하세요.'
+			: (item?.firstComeEvent ?? '')
+	);
 	const hasPrize = $derived((item?.prize.trim().length ?? 0) > 0);
 	const hasMission = $derived((item?.mission.trim().length ?? 0) > 0);
 
@@ -165,6 +172,16 @@
 					</button>
 				</div>
 
+				{#if hasFirstComeEvent}
+					<div class="mt-5 rounded-[24px] border border-rose-300/35 bg-[linear-gradient(135deg,rgba(251,113,133,0.18),rgba(244,63,94,0.1))] p-4 shadow-[0_18px_44px_rgba(244,63,94,0.16)]">
+						<div class="flex items-center gap-2 text-rose-50">
+							<BadgeAlert size={16} />
+							<p class="text-sm font-semibold tracking-[0.08em]">선착순 이벤트 있음</p>
+						</div>
+						<p class="mt-2 text-sm leading-6 text-rose-50/92">{firstComeMessage}</p>
+					</div>
+				{/if}
+
 				{#if hasPrize}
 					<div class="mt-5 rounded-[24px] border border-gold/20 bg-gold/10 p-4">
 						<div class="flex items-center gap-2 text-gold">
@@ -176,7 +193,7 @@
 				{/if}
 
 				{#if hasMission}
-					<div class={hasPrize ? 'mt-4 rounded-[24px] border border-border bg-navy-elevated p-4' : 'mt-5 rounded-[24px] border border-border bg-navy-elevated p-4'}>
+					<div class={hasPrize || hasFirstComeEvent ? 'mt-4 rounded-[24px] border border-border bg-navy-elevated p-4' : 'mt-5 rounded-[24px] border border-border bg-navy-elevated p-4'}>
 						<p class="text-sm font-semibold text-foreground">Mission</p>
 						<p class="mt-2 text-sm leading-6 text-muted-foreground">{item.mission}</p>
 					</div>

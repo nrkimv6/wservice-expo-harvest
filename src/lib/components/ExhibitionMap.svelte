@@ -77,14 +77,23 @@
 					'group absolute -translate-x-1/2 -translate-y-1/2 rounded-full border p-2 transition',
 					item.isCompleted
 						? 'border-mint/35 bg-mint/20 text-mint glow-mint'
+						: item.firstComeEvent.trim().length > 0
+							? 'border-rose-300/70 bg-rose-400/20 text-rose-50 shadow-[0_0_0_6px_rgba(251,113,133,0.16),0_10px_24px_rgba(244,63,94,0.22)]'
 						: item.isBookmarked
 							? 'border-gold/60 bg-gold/20 text-gold glow-gold'
 							: 'border-border bg-navy-elevated text-foreground'
 				]}
-				aria-label={`${item.title} 상세 보기 - ${item.isCompleted ? '완료' : item.isBookmarked ? '찜' : '기본'}`}
+				aria-label={`${item.title} 상세 보기 - ${item.isCompleted ? '완료' : item.firstComeEvent.trim().length > 0 ? '선착순 이벤트' : item.isBookmarked ? '찜' : '기본'}`}
 				style={`left:${item.mapX}%; top:${item.mapY}%`}
 				onclick={() => onPinClick(item.id)}
 			>
+				{#if item.firstComeEvent.trim().length > 0 && !item.isCompleted}
+					<span class="absolute -right-1 -top-1 flex h-3 w-3">
+						<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-300 opacity-70"></span>
+						<span class="relative inline-flex h-3 w-3 rounded-full border border-rose-100/80 bg-rose-300"></span>
+					</span>
+				{/if}
+
 				{#if item.isCompleted}
 					<CheckCircle2 size={16} />
 				{:else if item.isBookmarked}
@@ -95,6 +104,9 @@
 
 				<div class="pointer-events-none absolute left-1/2 top-[calc(100%+10px)] hidden -translate-x-1/2 rounded-xl border border-border bg-black/90 px-3 py-2 text-left shadow-lg group-hover:block">
 					<p class="whitespace-nowrap text-xs font-semibold text-foreground">{item.title}</p>
+					{#if item.firstComeEvent}
+						<p class="mt-1 whitespace-nowrap text-[10px] font-semibold text-rose-200">{item.firstComeEvent}</p>
+					{/if}
 					{#if item.location}
 						<p class="mt-1 whitespace-nowrap text-[10px] text-muted-foreground">{item.location}</p>
 					{/if}

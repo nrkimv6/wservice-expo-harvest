@@ -20,6 +20,7 @@ export interface BoothSocialLink {
 export interface LootItem {
 	id: string;
 	title: string;
+	firstComeEvent: string;
 	prize: string;
 	location: string;
 	time: string;
@@ -91,6 +92,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-drg',
 			title: 'Dr.G',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -121,6 +123,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-innisfree',
 			title: 'innisfree',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -151,6 +154,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-aestura',
 			title: 'AESTURA',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -181,6 +185,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-physiogel',
 			title: 'PHYSIOGEL',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -211,6 +216,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-ahc',
 			title: 'AHC',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -241,6 +247,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-thefaceshop',
 			title: 'THE FACE SHOP',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -271,6 +278,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-banilaco',
 			title: 'BANILA CO',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -301,6 +309,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-age20s',
 			title: "AGE20'S",
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -331,6 +340,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-mediheal',
 			title: 'MEDIHEAL',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -361,6 +371,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-tonymoly',
 			title: 'TONYMOLY',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -391,6 +402,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-romand',
 			title: 'rom&nd',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -428,6 +440,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-etude',
 			title: 'ETUDE',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -458,6 +471,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-espoir',
 			title: 'espoir',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -488,11 +502,12 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-ariul',
 			title: 'Ariul',
+			firstComeEvent: '선착순 이벤트 있음',
 			prize: '',
 			location: '',
 			time: 'Always',
 			category: '',
-			mission: '',
+			mission: '캡쳐 이벤트',
 			mapX: 49,
 			mapY: 73,
 			isBookmarked: false,
@@ -518,6 +533,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-naturerepublic',
 			title: 'NATURE REPUBLIC',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -548,6 +564,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-easydew',
 			title: 'easydew',
+			firstComeEvent: '선착순 이벤트 있음',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -578,6 +595,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-dewytree',
 			title: 'DEWYTREE',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -608,6 +626,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-avene',
 			title: 'Avène',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',
@@ -638,6 +657,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		{
 			id: 'cmbs-2026-forencos',
 			title: 'FORENCOS',
+			firstComeEvent: '',
 			prize: '',
 			location: '',
 			time: 'Always',

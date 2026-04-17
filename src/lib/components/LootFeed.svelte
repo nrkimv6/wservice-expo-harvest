@@ -49,6 +49,7 @@
 				normalized.length === 0 ||
 				[
 					item.title,
+					item.firstComeEvent,
 					item.prize,
 					item.location,
 					item.category,
@@ -71,6 +72,12 @@
 		return [...filteredItems].sort((left, right) => {
 			if (left.isCompleted !== right.isCompleted) {
 				return Number(left.isCompleted) - Number(right.isCompleted);
+			}
+
+			const leftHasFirstCome = left.firstComeEvent.trim().length > 0;
+			const rightHasFirstCome = right.firstComeEvent.trim().length > 0;
+			if (leftHasFirstCome !== rightHasFirstCome) {
+				return Number(rightHasFirstCome) - Number(leftHasFirstCome);
 			}
 
 			const leftIsTimed = left.time !== 'Always';
