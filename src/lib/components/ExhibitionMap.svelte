@@ -96,11 +96,7 @@
 	const OVERVIEW_OUTER_PADDING = 24;
 	const OVERVIEW_SECTION_GAP = 28;
 	const OVERVIEW_SECTION_TITLE_HEIGHT = 28;
-	const DEFAULT_MAP_SECTION_SCALES: Record<MapSectionId, number> = {
-		'hall-1f': 2.2,
-		'hall-2f': 2.2,
-		'beauty-box-pickup': 1.35
-	};
+	const DEFAULT_MAP_SECTION_SCALE = 1;
 	const EVENT_ZONE_FILL = '#dceede';
 	const EVENT_ZONE_STROKE = '#84b68a';
 	const EVENT_ZONE_TEXT = '#406347';
@@ -290,7 +286,7 @@
 	}
 
 	function getDefaultMapSectionScale(section: MapSection) {
-		return DEFAULT_MAP_SECTION_SCALES[section.id] ?? 1.9;
+		return DEFAULT_MAP_SECTION_SCALE;
 	}
 
 	function getDefaultViewportCenter(metrics: ViewBoxMetrics) {
