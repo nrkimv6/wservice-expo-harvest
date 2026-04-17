@@ -4,9 +4,11 @@
 > 작성일시: 2026-04-17 19:05
 > 기준커밋: 16ee892
 > 대상 프로젝트: expo-harvest
-> 상태: 초안
+> 상태: 검토완료
 > 진행률: 0/14 (0%)
 > 요약: `implement` 흐름에서는 워크트리 구현 직후 plan 상태를 `머지대기`로 올릴 수 있는데, `merge-test`는 여전히 `구현중` 상태만 허용하도록 적혀 있어 실제 완료 직후 `merge-test`가 차단될 수 있다. 이후 `done`은 활성 `branch/worktree`가 남아 있으면 중단되므로, 세 스킬 사이에서 완료 흐름이 막히는 deadlock 성격의 절차 불일치가 발생한다.
+> 재검토일시: 2026-04-18
+> 재검토 결론: 적용한다. 2026-04-18 기준 `merge-test`에는 `owner_plan_dirty` preflight가 추가됐지만, 상태 게이트는 여전히 `구현중`만 허용하고 있어 본 계획의 핵심 불일치는 그대로 남아 있다.
 
 ---
 
@@ -21,6 +23,7 @@
 - `.agents/skills/implement/SKILL.md`는 상태 표에 `머지대기`를 포함하고 있고, 실제 완료 단계 설명도 `verify/test 통과 후 머지 대기`로 정의한다.
 - `.agents/skills/merge-test/SKILL.md`의 전제 조건은 현재 `plan 상태가 구현중`이라고 고정돼 있어, 같은 프로젝트 내부 스킬 간 상태 계약이 서로 다르다.
 - `.agents/skills/done/SKILL.md`는 `branch/worktree`가 남아 있으면 `/merge-test`를 먼저 실행하라고 중단시키므로, `merge-test`가 좁은 상태 조건을 유지하면 사용자가 우회 경로 없이 막힌다.
+- 2026-04-18 현재 `.agents/skills/merge-test/SKILL.md`는 `MERGE_PRECHECK_FAILED[owner_plan_dirty]` guard를 추가했지만, 전제 조건과 실패 메시지는 아직 `구현중` 고정 상태다.
 - 이번 수정은 코드가 아니라 스킬 문서/워크플로우 규칙 정합성 문제이므로, 대상은 `.agents/skills/*.md` 범위로 한정하고 앱 코드나 사용자 기능 계획과 섞지 않는다.
 
 ---
@@ -71,4 +74,4 @@
 
 ---
 
-*상태: 초안 | 진행률: 0/14 (0%)*
+*상태: 검토완료 | 진행률: 0/14 (0%)*

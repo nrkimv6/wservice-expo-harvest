@@ -3,53 +3,61 @@
 > 작성일시: 2026-04-17 14:47
 > 기준커밋: 3ed884e
 > 대상 프로젝트: expo-harvest
-> 상태: 보류
-> 진행률: 0/9 (0%)
-> 요약: `ExhibitionMap`의 상단 `Hover Booth` 패널은 지도 탐색 중 시선을 핀에서 떼게 만들고, 모바일에서는 hover 자체가 약해서 효용이 낮다. 지도에서는 핀 가까운 즉시 피드백을 유지하고, 상세 정보는 기존 바텀 시트에 맡기는 방향으로 상호작용 계약을 다시 정리한다.
+> 상태: 검토완료
+> 진행률: 0/8 (0%)
+> 요약: 현재 `ExhibitionMap`은 핀 근처 툴팁 대신 상단 `Focus Booth` 요약 패널을 사용한다. 재검토 결과, 예전처럼 핀 하단 툴팁을 되살리는 방향은 폐기하고, 상단 패널은 유지하되 모바일 helper copy, 첫 탭 상세 시트 오픈 계약, hover/focus 문구를 실제 동작과 맞추는 좁은 후속으로 수정한다.
+> 재검토일시: 2026-04-18
+> 재검토 결론: 원문의 "핀 근처 툴팁 복구" 방향은 폐기한다. 대신 현재 상단 요약 패널을 유지하는 전제로 상호작용 계약과 copy를 정리하는 수정본으로 적용한다.
 
-> 관련 계획: [`docs/plan/2026-04-17_refine-coupang-floor-map-readability-mobile.md`](D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-17_refine-coupang-floor-map-readability-mobile.md) Phase 4에 병합. 이 문서는 단독 구현 큐로 진행하지 않는다.
+> 관련 계획:
+> - [`docs/archive/2026-04-17_refine-coupang-floor-map-readability-mobile.md`](D:/work/project/service/wtools/expo-harvest/docs/archive/2026-04-17_refine-coupang-floor-map-readability-mobile.md) Phase 4에서 이 문서의 초기 범위를 흡수했다.
+> - [`docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md`](D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md)는 본 문서의 상호작용 계약을 자동 회귀 테스트로 고정하는 후속이다.
 
 ---
 
 ## 개요
 
-현재 미커밋 변경은 [`src/lib/components/ExhibitionMap.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte)에서 기존 핀 하단 툴팁을 제거하고 상단 `Hover Booth` 패널을 추가하는 방향이다. 하지만 이 구조는 지도 탐색의 핵심인 "핀 근처에서 즉시 문맥 확인"을 약하게 만들고, 모바일 탭 UI에서는 고정 패널이 공간만 차지할 가능성이 크다. 이번 계획의 목표는 데스크톱에서는 핀 인접 툴팁을 유지하고, 모바일에서는 기존 탭-상세시트 흐름을 그대로 살리는 쪽으로 지도를 정리하는 것이다.
+현재 코드는 [`src/lib/components/ExhibitionMap.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte) 상단에 `Focus Booth`/`Selected Booth` 패널을 두고, `hoveredItemId`와 `focusItem`으로 문맥 정보를 보여준다. 문제는 구조 자체보다도 **문구와 실제 동작의 계약이 어긋난 점**이다. 모바일 coarse pointer에서는 패널에 "한 번 더 탭하면 상세 시트가 열립니다"라고 적혀 있지만, 실제 핀 탭은 [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest/src/routes/+page.svelte)에서 첫 탭에 곧바로 상세 시트를 연다.
+
+이번 재검토에서는 "핀 가까운 부유 툴팁을 다시 붙인다"는 원문 방향을 접는다. 대신 지도 로컬 문맥은 현재 상단 패널이 담당하고, 모바일/데스크톱/키보드 사용자가 보게 되는 안내 문구와 실제 선택 흐름을 일치시키는 쪽으로 범위를 줄인다.
 
 ## 기술적 고려사항
 
-- 현재 선택 상태와 상세 정보 노출은 [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest/src/routes/+page.svelte) 및 [`src/lib/components/BoothDetailSheet.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/BoothDetailSheet.svelte)에 이미 존재하므로, 지도 컴포넌트가 별도 고정 요약 패널까지 책임질 필요는 작다.
-- hover는 포인터 기반 디바이스에서만 강한 상호작용이므로, 모바일에서 필수 정보 전달을 hover에 의존하면 안 된다.
-- 키보드 접근성은 유지해야 하므로, hover만 복원하는 것이 아니라 focus 시점에도 같은 문맥 정보가 노출되도록 맞춰야 한다.
+- [`src/lib/components/ExhibitionMap.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte)는 overview/section 렌더, drag, zoom, booth 선택을 함께 다루므로 핀별 부유 툴팁을 다시 넣으면 SVG 복잡도와 겹침 처리가 다시 커진다.
+- [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest/src/routes/+page.svelte)와 [`src/lib/components/BoothDetailSheet.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/BoothDetailSheet.svelte)가 이미 상세 정보 노출을 담당하므로, 지도는 "짧은 문맥 요약"까지만 맡기는 편이 책임 분리에 맞다.
+- AGENTS.md의 지도 UI 규칙상 helper copy는 상태 전달용 짧은 한두 문장으로 유지해야 하므로, 모바일 패널 문구는 실제 첫 탭 동작을 오해 없이 설명하는 짧은 문장으로 정리해야 한다.
+- hover는 포인터 기반 디바이스에서만 의미가 크지만, 키보드 focus는 계속 지원해야 하므로 `hoveredItemId`/`focusItem`의 접근성 동작은 유지하되 copy와 label을 현실 계약에 맞춰야 한다.
 
 ---
 
 ## TODO
 
-### Phase 1: 지도 핀 상호작용 계약을 다시 고정한다
+### Phase 1: 현재 지도 계약을 문구와 함께 다시 고정한다
 
-1. - [ ] **지도에서 보여줄 정보의 역할을 `hover`와 `select`로 분리한다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 상단 `Hover Booth` 패널과 `hoveredItemId` 상태가 실제로 해결하려던 문제를 정리하고, 지도 자체 책임을 "근접 문맥 안내"로 한정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 핀 `hover/focus`는 짧은 문맥 정보, 핀 `click/tap`은 기존 상세 시트 오픈이라는 계약으로 되돌릴 구현 기준을 적는다.
+1. - [ ] **상단 요약 패널을 현재 지도 계약의 기준 UI로 고정한다**
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: 핀별 부유 툴팁 복구를 범위에서 제외하고, 상단 `Focus Booth`/`Selected Booth` 패널이 지도 내 짧은 문맥 요약을 담당한다는 기준을 문서와 코드 근처에 남긴다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 데스크톱 `hover/focus`는 패널 요약 갱신, 모바일 `tap`은 첫 탭 즉시 상세 시트 오픈이라는 현재 계약을 명시한다.
 
-### Phase 2: 핀 근처 즉시 피드백을 복구한다
+2. - [ ] **mobile helper copy를 실제 탭 동작과 맞춘다**
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: coarse pointer에서 보이는 "한 번 더 탭하면 상세 시트가 열립니다" 문구를 현재 동작과 맞는 짧은 안내 문장으로 교체한다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: `Hover Booth`/`Focus Booth`/`Selected Booth` 라벨이 포인터 타입과 선택 상태를 과장 없이 설명하는지 정리한다.
 
-2. - [ ] **핀 가까운 툴팁을 다시 붙여 시선 이동을 줄인다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 각 핀 하단의 툴팁 블록을 복구하되, 브랜드명·선착순 이벤트·위치만 짧게 보이는 구조로 유지한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 현재 남아 있는 `Hover Booth` 패널과 파생 상태, 불필요한 클래스/이벤트를 제거하거나 축소해 컴포넌트 복잡도를 낮춘다.
+### Phase 2: hover/focus 접근성과 선택 흐름을 정리한다
 
-3. - [ ] **키보드 포커스에도 동일한 문맥 피드백을 맞춘다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 마우스 hover뿐 아니라 `focus-visible` 또는 포커스 상태에서도 같은 툴팁이 보이도록 접근성 동작을 맞춘다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `aria-label`과 툴팁 내용이 서로 충돌하지 않는지 점검하고, 중복 문구가 심하면 한쪽을 간결화한다.
+3. - [ ] **키보드 포커스와 `aria-label`을 현재 패널 UX에 맞춘다**
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: 마우스 hover와 키보드 focus가 모두 같은 요약 패널 경로를 타는지 다시 확인하고, 불필요한 상태 전이를 줄인다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: booth `aria-label`과 상단 패널 copy가 중복되거나 충돌하지 않는지 확인하고, 필요하면 한쪽을 더 짧게 줄인다.
 
-### Phase 3: 모바일 회귀와 정적 검증을 확인한다
+4. - [ ] **mobile 탭-상세시트 흐름 오해를 없앤다**
+   - [ ] `src/routes/+page.svelte`, `src/lib/components/ExhibitionMap.svelte`: 모바일에서 첫 탭에 바로 상세 시트가 열리는 현재 흐름을 유지하고, panel copy가 두 단계 선택처럼 보이지 않게 정리한다.
+   - [ ] `src/lib/components/BoothDetailSheet.svelte`, `src/lib/components/ExhibitionMap.svelte`: 지도에서 생략한 상세 정보가 상세 시트에서 충분히 이어지는지 확인하고, 정보 공백이 있으면 패널보다 시트 쪽 보강을 우선 검토한다.
 
-4. - [ ] **모바일에서는 탭-상세시트 흐름이 흔들리지 않게 유지한다**
-   - [ ] `src/routes/+page.svelte`, `src/lib/components/ExhibitionMap.svelte`: 모바일에서 핀 탭 시 기존처럼 `selectItem()`을 통해 상세 시트가 열리고, hover 전용 패널 흔적이 남지 않도록 확인한다.
-   - [ ] `src/lib/components/BoothDetailSheet.svelte`, `src/lib/components/ExhibitionMap.svelte`: 지도에서 생략한 상세 정보가 바텀 시트에서 충분히 이어지는지 확인하고, 정보 공백이 있으면 지도보다 시트 쪽 보강을 우선 검토한다.
+### Phase 3: 회귀 검증 경로를 현재 후속 계획과 맞춘다
 
-5. - [ ] **정적 검증으로 이벤트/타입 회귀를 막는다**
-   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`: `npm run check`를 실행해 Svelte 경고, 타입 오류, 이벤트 핸들러 회귀가 없는지 확인한다.
+5. - [ ] **정적 검증과 브라우저 회귀 테스트 연결 기준을 남긴다**
+   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`: `npm run check`를 실행해 타입/이벤트 회귀가 없는지 확인한다.
+   - [ ] `docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md`: 본 문서에서 고정한 첫 탭 상세 시트 오픈 계약과 hover/focus 요약 패널 계약을 자동 회귀 테스트 요구사항으로 연결한다.
 
 ---
 
-*상태: 보류 | 진행률: 0/9 (0%)*
+*상태: 검토완료 | 진행률: 0/8 (0%)*

@@ -9,6 +9,16 @@
 > worktree: .
 > worktree-owner: docs/plan/2026-04-17_restore-root-home-shell-and-clean-dummy-data.md
 > 요약: 루트 홈 앱 셸이 랜딩 페이지로 덮어써지면서 하단 네비, 홈 기본 탭, 우측 상단 햄버거 메뉴 구성이 사라졌다. 루트 앱 셸을 복구하고, 햄버거 동작/헤더 크기/더미 문구와 더미 데이터를 함께 정리한다.
+> 재검토일시: 2026-04-18
+> 재검토 결론: 이 계획 자체의 재적용은 폐기한다. 루트 홈 셸 복구, `/app` 리다이렉트, 더미 문구/데이터 정리는 이미 반영됐고, 현재 HEAD에 남은 햄버거 무반응과 서비스워커 캐시 회귀는 [`docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md`](D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md)에서 좁은 범위로 처리한다.
+
+---
+
+## 재검토 메모
+
+- [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest/src/routes/+page.svelte)의 홈/지도/리스트/저장됨 셸, [`src/routes/app/+page.svelte`](D:/work/project/service/wtools/expo-harvest/src/routes/app/+page.svelte)의 루트 리다이렉트, [`src/lib/components/AlertBanner.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/AlertBanner.svelte)의 실사용 문구는 현재 코드에 남아 있다.
+- 다만 햄버거 열림 조건은 이후 회귀로 다시 깨졌고, 이 문서의 2번 완료 체크를 다시 뒤집기보다 후속 회귀 계획에서 따로 추적하는 편이 기록 보존에 맞다.
+- 따라서 이 문서는 "완료된 원 복구 작업"으로 유지하고, 재적용 큐에서는 제외한다.
 
 ---
 
