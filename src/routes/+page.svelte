@@ -6,7 +6,6 @@
 		Bookmark,
 		MapPinned,
 		Menu,
-		NotebookPen,
 		Route,
 		Search,
 		X
@@ -24,35 +23,14 @@
 	import { subscribeToAlertFeed, type AlertChannelStatus } from '$lib/realtime/alertFeed';
 	import {
 		hydrateLootItems,
-		hydrateOnboardingDismissed,
 		hydrateSelectedExhibitionId,
 		persistLootItems,
-		persistOnboardingDismissed,
 		persistSelectedExhibitionId
 	} from '$lib/stores/farmState';
 
 	type AppTab = 'home' | 'map' | 'list' | 'saved';
 
-	const onboardingCards = [
-		{
-			icon: MapPinned,
-			title: 'Map First',
-			body: '선택한 박람회 지도 위에서 바로 부스를 집고 현재 위치 기준으로 동선을 줄입니다.'
-		},
-		{
-			icon: Search,
-			title: 'Search + Filter',
-			body: '브랜드명, 경품명, SNS 미션 기준으로 밀도를 낮춘 뒤 필요한 부스만 다시 압축합니다.'
-		},
-		{
-			icon: Route,
-			title: 'Local State',
-			body: '박람회별로 찜, 완료, 메모를 따로 저장해 다음 방문이나 재입장 때도 상태가 유지됩니다.'
-		}
-	];
-
-	const tabs: { id: AppTab; label: string; icon: typeof AlarmClockCheck }[] = [
-		{ id: 'home', label: '홈', icon: AlarmClockCheck },
+	const tabs: { id: Exclude<AppTab, 'home'>; label: string; icon: typeof AlarmClockCheck }[] = [
 		{ id: 'map', label: '지도', icon: MapPinned },
 		{ id: 'list', label: '리스트', icon: Search },
 		{ id: 'saved', label: '저장됨', icon: Bookmark }
@@ -74,8 +52,7 @@
 	let itemsByExhibition = $state<Record<string, LootItem[]>>(createInitialItemMap());
 	let selectedExhibitionId = $state(DEFAULT_EXHIBITION_ID);
 	let selectedId = $state<string | null>(null);
-	let activeTab = $state<AppTab>('home');
-	let showOnboarding = $state(false);
+	let activeTab = $state<AppTab>('map');
 	let isExhibitionMenuOpen = $state(false);
 	let liveAlertMessage = $state<string | null>(null);
 	let alertChannelStatus = $state<AlertChannelStatus>('connecting');
@@ -117,7 +94,6 @@
 			EXHIBITIONS.map((exhibition) => [exhibition.id, hydrateLootItems(exhibition.id, exhibition.items)])
 		) as Record<string, LootItem[]>;
 		selectedExhibitionId = hydrateSelectedExhibitionId(exhibitionIds, DEFAULT_EXHIBITION_ID);
-		showOnboarding = !hydrateOnboardingDismissed();
 
 		const unsubscribe = subscribeToAlertFeed({
 			onAlert(message, expiresAt) {
@@ -151,17 +127,6 @@
 			persistLootItems(exhibition.id, itemsByExhibition[exhibition.id] ?? exhibition.items);
 		}
 		persistSelectedExhibitionId(selectedExhibitionId);
-	});
-
-	$effect(() => {
-		if (!browser || !showOnboarding) return;
-
-		const previousOverflow = document.body.style.overflow;
-		document.body.style.overflow = 'hidden';
-
-		return () => {
-			document.body.style.overflow = previousOverflow;
-		};
 	});
 
 	$effect(() => {
@@ -216,19 +181,6 @@
 
 	function setActiveTab(tab: AppTab) {
 		activeTab = tab;
-	}
-
-	function dismissOnboarding(nextTab?: AppTab) {
-		showOnboarding = false;
-		persistOnboardingDismissed(true);
-
-		if (nextTab) {
-			activeTab = nextTab;
-		}
-	}
-
-	function reopenOnboarding() {
-		showOnboarding = true;
 	}
 
 	function toggleExhibitionMenu() {
@@ -303,14 +255,6 @@
 						</p>
 					</div>
 
-					<button
-						type="button"
-						class="inline-flex items-center gap-2 rounded-full border border-border bg-navy-elevated px-3 py-2 text-xs font-semibold text-foreground"
-						onclick={reopenOnboarding}
-					>
-						<NotebookPen size={14} />
-						<span>가이드 다시 보기</span>
-					</button>
 				</div>
 			</div>
 		</section>
@@ -443,7 +387,7 @@
 
 	<nav class="bottom-nav-shell safe-left safe-right fixed bottom-0 left-0 right-0 z-40">
 		<div class="mx-auto w-full max-w-lg px-4 sm:px-5">
-			<div class="grid grid-cols-4 gap-2 rounded-[28px] border border-border bg-navy-surface/95 p-2 shadow-[0_-12px_40px_rgba(0,0,0,0.35)] backdrop-blur">
+			<div class="grid grid-cols-3 gap-2 rounded-[28px] border border-border bg-navy-surface/95 p-2 shadow-[0_-12px_40px_rgba(0,0,0,0.35)] backdrop-blur">
 				{#each tabs as tab}
 					<button
 						type="button"
@@ -550,67 +494,3 @@
 	onToggleComplete={toggleComplete}
 	onMemoChange={updateMemo}
 />
-
-{#if showOnboarding}
-	<div class="fixed inset-0 z-[60]">
-		<button
-			type="button"
-			class="modal-backdrop absolute inset-0"
-			aria-label="가이드 닫기"
-			onclick={() => dismissOnboarding()}
-		></button>
-
-		<div class="absolute inset-x-0 bottom-0 mx-auto w-full max-w-lg">
-			<div class="safe-bottom rounded-t-[32px] border border-border bg-navy-surface px-5 pb-8 pt-5 shadow-[0_-24px_60px_rgba(0,0,0,0.5)]">
-				<div class="mx-auto h-1.5 w-14 rounded-full bg-white/15"></div>
-
-				<div class="mt-4 flex items-start justify-between gap-3">
-					<div>
-						<p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-gold">First Run Guide</p>
-						<h2 class="mt-2 font-heading text-2xl font-semibold text-foreground">처음엔 홈에서 시작하세요</h2>
-						<p class="mt-3 text-sm leading-6 text-muted-foreground">
-							중요한 정보만 먼저 보고, 지도와 리스트는 하단 네비에서 상황에 맞게 꺼내 쓰는 구조입니다.
-						</p>
-					</div>
-
-					<div class="rounded-full border border-gold/20 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold">
-						1회 노출
-					</div>
-				</div>
-
-				<div class="mt-5 grid gap-3">
-					{#each onboardingCards as card}
-						<div class="rounded-[24px] border border-border bg-navy-elevated p-4">
-							<div class="flex items-start gap-3">
-								<div class="rounded-2xl border border-gold/20 bg-gold/10 p-2 text-gold">
-									<card.icon size={18} />
-								</div>
-								<div>
-									<p class="text-sm font-semibold text-foreground">{card.title}</p>
-									<p class="mt-2 text-sm leading-6 text-muted-foreground">{card.body}</p>
-								</div>
-							</div>
-						</div>
-					{/each}
-				</div>
-
-				<div class="mt-5 grid gap-3 sm:grid-cols-2">
-					<button
-						type="button"
-						class="rounded-2xl bg-gold px-4 py-3 text-sm font-semibold text-black"
-						onclick={() => dismissOnboarding('map')}
-					>
-						지도부터 보기
-					</button>
-					<button
-						type="button"
-						class="rounded-2xl border border-border bg-navy-elevated px-4 py-3 text-sm font-semibold text-foreground"
-						onclick={() => dismissOnboarding()}
-					>
-						닫고 홈으로
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
-{/if}

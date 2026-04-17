@@ -8,4 +8,6 @@
 
 ## Done
 
+- [x] **restore: root home shell and clean dummy data** — [plan](docs/plan/2026-04-17_restore-root-home-shell-and-clean-dummy-data.md) (6/6, 100%)
+
 - [x] **fix: dev 서버 실행 중 build 잠금 충돌 방지** — [plan](docs/plan/2026-04-16_fix-build-lock-while-dev-server-running.md) (31/31, 100%)
