@@ -5,6 +5,7 @@
 ## In Progress
 
 ## Pending
+- [ ] **refine: booth view stair removal and 2f lane spacing** — [plan](docs/plan/2026-04-18_refine-booth-view-stair-removal-and-2f-lane-spacing.md) (0/8, 0%)
 - [ ] **fix: map booth viewport normalization** — [plan](docs/plan/2026-04-18_fix-map-booth-viewport-normalization.md) (0/7, 0%)
 - [ ] **fix: hamburger menu and cache regression** — [plan](docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md) (2/8, 25%)
 - [ ] **test: map booth interaction regression coverage** — [plan](docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md) (0/8, 0%)
