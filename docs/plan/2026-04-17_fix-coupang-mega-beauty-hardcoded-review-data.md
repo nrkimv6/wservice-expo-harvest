@@ -4,8 +4,8 @@
 > 기준커밋: 5853e1d
 > 대상 프로젝트: expo-harvest
 > 상태: 초안
-> 진행률: 0/30 (0%)
-> 요약: 실제 후기 원문과 `쿠팡메가뷰티쇼 2026` 하드코딩 데이터를 대조한 결과, 일부 부스의 해시태그 오탈자와 미션 설명 불일치, 잘못된 선착순 강조가 확인됐다. 이 계획의 목표는 후기 기준으로 명백한 오류를 먼저 바로잡고, 아직 비어 있는 부스 데이터를 "미반영"과 "수정 필요"로 구분해 후속 반영 범위를 명확히 만드는 것이다.
+> 진행률: 0/36 (0%)
+> 요약: 실제 후기 원문과 `쿠팡메가뷰티쇼 2026` 하드코딩 데이터를 대조한 결과, 일부 부스의 해시태그 오탈자와 미션 설명 불일치, 잘못된 선착순 강조, preset 누락/미연결이 확인됐다. 이 계획의 목표는 후기 기준으로 명백한 오류(해시태그 오탈자, 존재하지 않는 선착순 강조, 프리셋 미연결, 오탈자 accountId)를 먼저 바로잡고, 후기 원문에 미션/경품이 명시된 19개 부스 전부를 동일 턴에 반영하는 것이다. 1차 검토에서 계획이 놓친 항목(더페이스샵 `#페이스샵` 오탈자, AHC `#SKINGAME_T_SHOT` 누락, 메디힐/아벤느 preset 부재, 토니모리 `accountId: tonymory` 오탈자, 더페이스샵 kakao URL 언더스코어 의심)을 Phase 2에 추가 반영한다.
 
 ---
 
@@ -47,18 +47,27 @@
    - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-etude`의 `prize`를 `최소 틴트 본품, 쿠션 본품` 요지가 드러나도록 수정하고, 필요 시 연결된 `detailImage` 캡션도 새 설명과 충돌하지 않게 정리한다.
 
 5. [ ] **오탈자와 잘못된 계정 태그를 후기 기준으로 수정한다** — 복사/공유 시 잘못된 값이 퍼지는 문제 방지
-   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-tonymoly`의 `hashtagAccountTags`와 `socialLinks` 핸들을 `@tonymoly` 기준으로 정정한다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-tonymoly`의 `hashtagAccountTags` `@tonymory` → `@tonymoly`로 정정한다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-tonymoly`의 `socialLinks` `accountId: 'tonymory'`(478줄) → `'tonymoly'`로 정정한다.
    - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-espoir`의 해시태그 `#에스뿌아`를 후기 원문 기준 `#에스쁘아`로 정정한다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-thefaceshop` preset `#페이스샵` → 후기 기준 `#더페이스샵`으로 정정한다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-thefaceshop` kakao URL `https://pf.kakao.com/_xisxdGR`을 후기 기준 `https://pf.kakao.com/xisxdGR`(언더스코어 제거)로 재확인 후 정정한다.
 
 6. [ ] **아리얼의 강조 방식을 후기 기준으로 재조정한다** — 선착순 강조 대신 실제 핵심 정보 노출
    - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-ariul`의 `firstComeEvent`를 제거하거나 후기 근거가 있는 표현으로 낮추고, 현재의 과도한 선착순 강조를 없앤다.
    - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-ariul`의 `mission`/`prize`를 `인스타/카플친 + 사다리타기 + 캡처 이벤트 + 부직포 백 안내`가 드러나도록 보강한다.
 
+6-1. [ ] **누락된 해시태그 preset을 후기 기준으로 신설/보강한다** — preset 미정의로 UI에 비어 노출되던 부스 해소
+   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS`에 `cmbs-2026-mediheal`(`#메디힐 #메디힐마스크팩 #쿠팡뷰티 #메가뷰티쇼`) 추가 후 아이템에 연결한다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-avene`(`#쿠팡뷰티 #메가뷰티쇼 #아벤느 #시칼파트`), `cmbs-2026-physiogel`(`#쿠팡뷰티 #메가뷰티쇼 #피지오겔`), `cmbs-2026-aestura`(`#에스트라 #쿠팡뷰티 #메가뷰티쇼`) preset 신설 후 연결한다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-ahc` preset에 후기(176줄) 기준 `#SKINGAME_T_SHOT`을 추가한다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-banilaco` preset `#쿠팡메가뷰티쇼`를 후기(214줄) 기준 `#메가뷰티쇼`로 정정한다.
+
 ### Phase 3: 미반영 부스 데이터 보강 원칙과 사용자 노출을 정리한다
 
-7. [ ] **이번 턴에 함께 채울 부스와 후속으로 남길 부스를 결정한다** — 빈 데이터가 의도인지 누락인지 구분
-   - [ ] `src/lib/data/lootItems.ts`: 후기 원문에 미션/경품이 명확히 적힌 부스 중 아직 빈 값인 항목을 추려 동일한 문장 스타일로 채울 우선순위 후보를 만든다.
-   - [ ] `docs/plan/2026-04-17_fix-coupang-mega-beauty-hardcoded-review-data.md`: 이번 계획의 범위를 "즉시 수정"과 "후속 반영"으로 구분해, 구현 단계에서 범위가 불어나지 않도록 정리한다.
+7. [ ] **후기 원문에 미션/경품이 명시된 19개 부스 전부를 동일 턴에 반영한다** — 후기 원문 기반이라 분할 근거가 약함, 일괄 처리로 정합성 유지
+   - [ ] `src/lib/data/lootItems.ts`: 닥터지, 이니스프리, 에스트라, 피지오겔, AHC, 더페이스샵, 바닐라코, 에이지투웨니스, 메디힐, 토니모리, 롬앤, 네이처리퍼블릭, 에스쁘아, 아벤느, 이지듀, 듀이트리, 포렌코즈의 `mission`/`prize`/`category`를 후기 원문 문구만 옮겨 채운다(추정 금지).
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-easydew`의 `firstComeEvent: '선착순 이벤트 있음'`은 후기(412줄) "일 500명 선착순" 근거 있어 **유지**하고, 가능하면 "일 500명 선착순(3시 이후 소진 주의)"으로 구체화한다.
 
 8. [ ] **기준 문서와 변경 기록을 후기 기준으로 갱신한다** — 다음 검토 시 출처 혼선을 줄이기
    - [ ] `docs/report/2026-04-17_coupang-mega-beauty-brand-reference.md`: 해시태그/계정 기준에 더해, 이번에 실제로 수정한 부스의 미션/경품/강조 기준을 짧게 보강하거나 별도 후속 문서 필요 여부를 명시한다.

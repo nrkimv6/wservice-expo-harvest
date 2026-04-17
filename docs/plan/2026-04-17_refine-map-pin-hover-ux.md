@@ -3,9 +3,11 @@
 > 작성일시: 2026-04-17 14:47
 > 기준커밋: 3ed884e
 > 대상 프로젝트: expo-harvest
-> 상태: 초안
+> 상태: 보류
 > 진행률: 0/9 (0%)
 > 요약: `ExhibitionMap`의 상단 `Hover Booth` 패널은 지도 탐색 중 시선을 핀에서 떼게 만들고, 모바일에서는 hover 자체가 약해서 효용이 낮다. 지도에서는 핀 가까운 즉시 피드백을 유지하고, 상세 정보는 기존 바텀 시트에 맡기는 방향으로 상호작용 계약을 다시 정리한다.
+
+> 관련 계획: [`docs/plan/2026-04-17_refine-coupang-floor-map-readability-mobile.md`](D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-17_refine-coupang-floor-map-readability-mobile.md) Phase 4에 병합. 이 문서는 단독 구현 큐로 진행하지 않는다.
 
 ---
 
@@ -50,4 +52,4 @@
 
 ---
 
-*상태: 초안 | 진행률: 0/9 (0%)*
+*상태: 보류 | 진행률: 0/9 (0%)*
