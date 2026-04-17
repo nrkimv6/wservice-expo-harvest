@@ -44,7 +44,7 @@
 					new Set(
 						item.socialLinks
 							.filter((link) => link.platform === 'instagram')
-							.map((link) => link.accountId ?? getInstagramAccountId(link.url))
+							.map((link) => link.accountId?.trim() || getInstagramAccountId(link.url))
 							.filter((accountId): accountId is string => Boolean(accountId))
 							.map((accountId) => `@${accountId}`)
 					)

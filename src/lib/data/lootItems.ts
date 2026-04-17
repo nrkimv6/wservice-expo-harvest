@@ -141,7 +141,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/innisfreeofficial/',
 					'instagram',
-					''
+					'innisfreeofficial'
 				),
 				createSocialLink(
 					'innisfree-kakao',
@@ -172,7 +172,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/aestura.official/',
 					'instagram',
-					''
+					'aestura.official'
 				),
 				createSocialLink(
 					'aestura-kakao',
@@ -203,7 +203,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/physiogel_korea/',
 					'instagram',
-					''
+					'physiogel_korea'
 				),
 				createSocialLink(
 					'physiogel-kakao',
@@ -234,7 +234,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/ahc.official/',
 					'instagram',
-					''
+					'ahc.official'
 				),
 				createSocialLink(
 					'ahc-kakao',
@@ -296,7 +296,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/banilaco_official/',
 					'instagram',
-					''
+					'banilaco_official'
 				),
 				createSocialLink(
 					'banilaco-kakao',
@@ -327,7 +327,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/age20s_official/',
 					'instagram',
-					''
+					'age20s_official'
 				),
 				createSocialLink(
 					'age20s-kakao',
@@ -358,7 +358,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/mediheal_official/',
 					'instagram',
-					''
+					'mediheal_official'
 				),
 				createSocialLink(
 					'mediheal-kakao',
@@ -458,7 +458,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/etudeofficial/',
 					'instagram',
-					''
+					'etudeofficial'
 				),
 				createSocialLink(
 					'etude-kakao',
@@ -489,7 +489,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/espoir_makeup/',
 					'instagram',
-					''
+					'espoir_makeup'
 				),
 				createSocialLink(
 					'espoir-kakao',
@@ -582,7 +582,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/easydew_official/',
 					'instagram',
-					''
+					'easydew_official'
 				),
 				createSocialLink(
 					'easydew-kakao',
@@ -613,7 +613,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/dewytree_official/',
 					'instagram',
-					''
+					'dewytree_official'
 				),
 				createSocialLink(
 					'dewytree-kakao',
@@ -644,7 +644,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/avene/',
 					'instagram',
-					''
+					'avene'
 				),
 				createSocialLink(
 					'avene-kakao',
