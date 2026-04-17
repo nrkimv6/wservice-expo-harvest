@@ -263,7 +263,7 @@
 				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
 					<div class="flex items-center gap-2 text-foreground">
 						<MessageSquare size={16} />
-						<p class="text-sm font-semibold">Local Memo : 개인메모(서버에 저장안됨)</p>
+						<p class="text-sm font-semibold">개인메모(서버에 저장안됨)</p>
 					</div>
 					<textarea
 						class="mt-3 min-h-28 w-full resize-none rounded-2xl border border-border bg-black/20 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
@@ -304,7 +304,7 @@
 						onclick={() => onToggleComplete(item.id)}
 					>
 						<CheckCircle2 size={16} />
-						<span>{item.isCompleted ? '완료 해제' : 'Mark Farmed'}</span>
+						<span>{item.isCompleted ? '완료 해제' : '완료 처리'}</span>
 					</button>
 				</div>
 			</div>
