@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { Bookmark, CheckCircle2, MapPin } from 'lucide-svelte';
-	import type { LootItem } from '$lib/data/lootItems';
+	import type { Exhibition, LootItem } from '$lib/data/lootItems';
 
 	type Props = {
+		exhibition: Exhibition;
 		items: LootItem[];
 		onPinClick: (id: string) => void;
 	};
 
-	let { items, onPinClick }: Props = $props();
+	let { exhibition, items, onPinClick }: Props = $props();
 
 	const rows = Array.from({ length: 8 });
 	const columns = Array.from({ length: 12 });
@@ -17,9 +18,10 @@
 	<div class="mb-4 flex items-center justify-between gap-3">
 		<div>
 			<p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
-				Expo Map
+				{exhibition.mapTitle}
 			</p>
 			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">부스 안내도</h2>
+			<p class="mt-2 text-xs leading-5 text-muted-foreground">{exhibition.mapNote}</p>
 		</div>
 
 		<div class="rounded-full border border-border bg-navy-elevated px-3 py-1 text-xs text-muted-foreground">
@@ -27,7 +29,19 @@
 		</div>
 	</div>
 
-	<div class="relative aspect-[16/10] overflow-hidden rounded-[28px] border border-border bg-navy-surface">
+	<div
+		class="relative overflow-hidden rounded-[28px] border border-border bg-navy-surface"
+		style={`aspect-ratio:${exhibition.mapAspectRatio ?? '16 / 10'}`}
+	>
+		{#if exhibition.mapBackgroundImage}
+			<img
+				src={exhibition.mapBackgroundImage}
+				alt={`${exhibition.name} 부스배치도`}
+				class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-90"
+			/>
+			<div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/5 via-black/10 to-black/35"></div>
+		{/if}
+
 		<div class="pointer-events-none absolute inset-0">
 			{#each rows as _, index}
 				<div
@@ -44,14 +58,16 @@
 			{/each}
 		</div>
 
-		<div class="pointer-events-none absolute inset-x-4 top-3 flex justify-between text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-			<span>Hall A</span>
-			<span>Hall B</span>
-			<span>Hall C</span>
-		</div>
+		{#if exhibition.hallLabels?.length}
+			<div class="pointer-events-none absolute inset-x-4 top-3 flex justify-between text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+				{#each exhibition.hallLabels as label}
+					<span>{label}</span>
+				{/each}
+			</div>
+		{/if}
 
-		<div class="pointer-events-none absolute bottom-3 left-4 rounded-full border border-white/8 bg-black/35 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-			Pinch/drag interaction will replace this mock map in the next phase
+		<div class="pointer-events-none absolute bottom-3 left-4 rounded-full border border-white/8 bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+			{exhibition.subtitle}
 		</div>
 
 		{#each items as item (item.id)}

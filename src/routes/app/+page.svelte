@@ -5,17 +5,40 @@
 	import BoothDetailSheet from '$lib/components/BoothDetailSheet.svelte';
 	import ExhibitionMap from '$lib/components/ExhibitionMap.svelte';
 	import LootFeed from '$lib/components/LootFeed.svelte';
-	import { initialLootItems, type LootItem } from '$lib/data/lootItems';
+	import {
+		DEFAULT_EXHIBITION_ID,
+		EXHIBITIONS,
+		type Exhibition,
+		type LootItem
+	} from '$lib/data/lootItems';
 	import { subscribeToAlertFeed, type AlertChannelStatus } from '$lib/realtime/alertFeed';
-	import { hydrateLootItems, persistLootItems } from '$lib/stores/farmState';
+	import {
+		hydrateLootItems,
+		hydrateSelectedExhibitionId,
+		persistLootItems,
+		persistSelectedExhibitionId
+	} from '$lib/stores/farmState';
 
-	let items = $state<LootItem[]>(initialLootItems);
+	function createInitialItemMap() {
+		return Object.fromEntries(EXHIBITIONS.map((exhibition) => [exhibition.id, exhibition.items])) as Record<
+			string,
+			LootItem[]
+		>;
+	}
+
+	let itemsByExhibition = $state<Record<string, LootItem[]>>(createInitialItemMap());
+	let selectedExhibitionId = $state(DEFAULT_EXHIBITION_ID);
 	let selectedId = $state<string | null>(null);
 	let liveAlertMessage = $state<string | null>(null);
 	let alertChannelStatus = $state<AlertChannelStatus>('connecting');
 
 	let clearLiveAlertTimer: ReturnType<typeof setTimeout> | null = null;
 
+	const exhibitionIds = EXHIBITIONS.map((exhibition) => exhibition.id);
+	const selectedExhibition = $derived(
+		EXHIBITIONS.find((exhibition) => exhibition.id === selectedExhibitionId) ?? EXHIBITIONS[0]
+	);
+	const items = $derived(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items);
 	const selectedItem = $derived(items.find((item) => item.id === selectedId) ?? null);
 
 	function parseTimeValue(time: string) {
@@ -32,17 +55,22 @@
 
 	const fallbackAlertMessage = $derived.by(() => {
 		if (!nextHotItem) {
-			return '지금 바로 파밍 가능한 상시 이벤트를 탐색하세요';
+			return `${selectedExhibition.name}에서 바로 파밍 가능한 상시 부스를 확인하세요`;
 		}
 
-		return `${nextHotItem.time} ${nextHotItem.title} 이벤트 임박 → ${nextHotItem.location}`;
+		return `${selectedExhibition.name} · ${nextHotItem.time} ${nextHotItem.title} 임박 → ${nextHotItem.location}`;
 	});
 
 	const alertMessage = $derived(liveAlertMessage || fallbackAlertMessage);
 	const alertMode = $derived(liveAlertMessage ? 'live' : 'fallback');
+	const doneCount = $derived(items.filter((item) => item.isCompleted).length);
+	const bookmarkedCount = $derived(items.filter((item) => item.isBookmarked).length);
 
 	onMount(() => {
-		items = hydrateLootItems(initialLootItems);
+		itemsByExhibition = Object.fromEntries(
+			EXHIBITIONS.map((exhibition) => [exhibition.id, hydrateLootItems(exhibition.id, exhibition.items)])
+		) as Record<string, LootItem[]>;
+		selectedExhibitionId = hydrateSelectedExhibitionId(exhibitionIds, DEFAULT_EXHIBITION_ID);
 
 		const unsubscribe = subscribeToAlertFeed({
 			onAlert(message, expiresAt) {
@@ -72,8 +100,18 @@
 	});
 
 	$effect(() => {
-		persistLootItems(items);
+		for (const exhibition of EXHIBITIONS) {
+			persistLootItems(exhibition.id, itemsByExhibition[exhibition.id] ?? exhibition.items);
+		}
+		persistSelectedExhibitionId(selectedExhibitionId);
 	});
+
+	function updateSelectedItems(updater: (currentItems: LootItem[]) => LootItem[]) {
+		itemsByExhibition = {
+			...itemsByExhibition,
+			[selectedExhibitionId]: updater(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items)
+		};
+	}
 
 	function selectItem(id: string) {
 		selectedId = id;
@@ -83,29 +121,33 @@
 		selectedId = null;
 	}
 
+	function selectExhibition(exhibition: Exhibition) {
+		selectedExhibitionId = exhibition.id;
+		selectedId = null;
+	}
+
 	function toggleComplete(id: string) {
-		items = items.map((item) =>
-			item.id === id ? { ...item, isCompleted: !item.isCompleted } : item
+		updateSelectedItems((currentItems) =>
+			currentItems.map((item) => (item.id === id ? { ...item, isCompleted: !item.isCompleted } : item))
 		);
 	}
 
 	function toggleBookmark(id: string) {
-		items = items.map((item) =>
-			item.id === id ? { ...item, isBookmarked: !item.isBookmarked } : item
+		updateSelectedItems((currentItems) =>
+			currentItems.map((item) => (item.id === id ? { ...item, isBookmarked: !item.isBookmarked } : item))
 		);
 	}
 
 	function updateMemo(id: string, memo: string) {
-		items = items.map((item) => (item.id === id ? { ...item, memo } : item));
+		updateSelectedItems((currentItems) =>
+			currentItems.map((item) => (item.id === id ? { ...item, memo } : item))
+		);
 	}
 </script>
 
 <svelte:head>
-	<title>박람회 파밍 | expo-harvest</title>
-	<meta
-		name="description"
-		content="시간제한 이벤트, 지도 핀, 메모와 완료 상태를 한 화면에서 탐색하는 expo-harvest 파밍 화면"
-	/>
+	<title>{selectedExhibition.name} | expo-harvest</title>
+	<meta name="description" content={selectedExhibition.description} />
 </svelte:head>
 
 <div class="safe-top safe-bottom min-h-dvh bg-navy-deep pb-8">
@@ -118,8 +160,9 @@
 					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
 						Expo Harvest
 					</p>
-					<h1 class="mt-2 font-heading text-3xl font-bold text-foreground">🗡️ 박람회 파밍 트래커</h1>
-					<p class="mt-3 text-sm leading-6 text-muted-foreground">박람회 사은품, 하나도 놓치지 마세요</p>
+					<h1 class="mt-2 font-heading text-3xl font-bold text-foreground">박람회 파밍 트래커</h1>
+					<p class="mt-2 text-sm font-semibold text-gold">{selectedExhibition.name}</p>
+					<p class="mt-3 text-sm leading-6 text-muted-foreground">{selectedExhibition.description}</p>
 				</div>
 
 				<div class="rounded-2xl border border-gold/20 bg-gold/10 px-3 py-2 text-right">
@@ -143,22 +186,99 @@
 				<div class="rounded-2xl border border-border bg-navy-elevated p-3">
 					<MapPinned size={18} class="text-gold" />
 					<p class="mt-3 text-sm font-semibold text-foreground">Map First</p>
-					<p class="mt-1 text-xs leading-5 text-muted-foreground">핀으로 부스 위치를 먼저 고정</p>
+					<p class="mt-1 text-xs leading-5 text-muted-foreground">
+						선택한 박람회 지도 위에서 바로 부스를 집습니다
+					</p>
 				</div>
 				<div class="rounded-2xl border border-border bg-navy-elevated p-3">
 					<Search size={18} class="text-gold" />
 					<p class="mt-3 text-sm font-semibold text-foreground">Search + Filter</p>
-					<p class="mt-1 text-xs leading-5 text-muted-foreground">미션 허들 기준으로 바로 압축</p>
+					<p class="mt-1 text-xs leading-5 text-muted-foreground">
+						브랜드명, 해시태그, SNS 링크 기준으로 빠르게 압축합니다
+					</p>
 				</div>
 				<div class="rounded-2xl border border-border bg-navy-elevated p-3">
 					<Route size={18} class="text-gold" />
-					<p class="mt-3 text-sm font-semibold text-foreground">Local State</p>
-					<p class="mt-1 text-xs leading-5 text-muted-foreground">메모와 완료 상태를 이 기기에 저장</p>
+					<p class="mt-3 text-sm font-semibold text-foreground">Separate State</p>
+					<p class="mt-1 text-xs leading-5 text-muted-foreground">
+						박람회마다 찜, 완료, 메모 상태를 따로 저장합니다
+					</p>
 				</div>
 			</div>
 		</section>
 
-		<ExhibitionMap items={items} onPinClick={selectItem} />
+		<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
+			<div class="flex items-center justify-between gap-3">
+				<div>
+					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+						Exhibition Menu
+					</p>
+					<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">박람회 선택</h2>
+				</div>
+
+				<div class="rounded-full border border-border bg-navy-surface px-3 py-1 text-xs text-muted-foreground">
+					{EXHIBITIONS.length} versions
+				</div>
+			</div>
+
+			<div class="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-1">
+				{#each EXHIBITIONS as exhibition (exhibition.id)}
+					<button
+						type="button"
+						class={[
+							'min-w-[220px] rounded-[24px] border px-4 py-4 text-left transition',
+							exhibition.id === selectedExhibitionId
+								? 'border-gold/40 bg-gold/10 shadow-[0_18px_40px_rgba(255,199,94,0.12)]'
+								: 'border-border bg-navy-surface hover:border-gold/25'
+						]}
+						aria-pressed={exhibition.id === selectedExhibitionId}
+						onclick={() => selectExhibition(exhibition)}
+					>
+						<div class="flex items-start justify-between gap-3">
+							<div>
+								<p class="text-sm font-semibold text-foreground">{exhibition.name}</p>
+								<p class="mt-1 text-xs text-muted-foreground">{exhibition.subtitle}</p>
+							</div>
+
+							<span
+								class={[
+									'rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]',
+									exhibition.id === selectedExhibitionId
+										? 'bg-gold text-black'
+										: 'bg-black/25 text-muted-foreground'
+								]}
+							>
+								{exhibition.id === selectedExhibitionId ? 'Selected' : 'Open'}
+							</span>
+						</div>
+
+						<p class="mt-3 text-xs leading-5 text-muted-foreground">{exhibition.venue}</p>
+					</button>
+				{/each}
+			</div>
+		</section>
+
+		<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
+			<div class="grid gap-3 sm:grid-cols-3">
+				<div class="rounded-2xl border border-border bg-navy-surface p-4">
+					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Current Expo</p>
+					<p class="mt-2 text-base font-semibold text-foreground">{selectedExhibition.name}</p>
+					<p class="mt-1 text-xs text-muted-foreground">{selectedExhibition.venue}</p>
+				</div>
+				<div class="rounded-2xl border border-border bg-navy-surface p-4">
+					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Bookmarked</p>
+					<p class="mt-2 text-2xl font-heading font-semibold text-gold">{bookmarkedCount}</p>
+					<p class="mt-1 text-xs text-muted-foreground">관심 부스 수</p>
+				</div>
+				<div class="rounded-2xl border border-border bg-navy-surface p-4">
+					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Farmed</p>
+					<p class="mt-2 text-2xl font-heading font-semibold text-mint">{doneCount}</p>
+					<p class="mt-1 text-xs text-muted-foreground">완료 처리한 부스 수</p>
+				</div>
+			</div>
+		</section>
+
+		<ExhibitionMap exhibition={selectedExhibition} items={items} onPinClick={selectItem} />
 
 		<div class="h-px bg-white/6"></div>
 

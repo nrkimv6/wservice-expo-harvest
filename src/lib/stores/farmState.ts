@@ -1,19 +1,30 @@
 import { browser } from '$app/environment';
 import type { LootItem } from '$lib/data/lootItems';
 
-const STORAGE_KEY = 'expo-harvest:loot-state';
+const STORAGE_KEY = 'expo-harvest:loot-state:v2';
+const SELECTED_EXHIBITION_KEY = 'expo-harvest:selected-exhibition';
 
 type PersistedLootItem = Pick<LootItem, 'isBookmarked' | 'isCompleted' | 'memo'>;
 type PersistedLootState = Record<string, PersistedLootItem>;
+type PersistedExhibitionState = Record<string, PersistedLootState>;
 
-export function hydrateLootItems(initialItems: LootItem[]): LootItem[] {
-	if (!browser) return initialItems;
+function readPersistedState(): PersistedExhibitionState {
+	if (!browser) return {};
 
 	try {
 		const raw = window.localStorage.getItem(STORAGE_KEY);
-		if (!raw) return initialItems;
+		if (!raw) return {};
+		return JSON.parse(raw) as PersistedExhibitionState;
+	} catch {
+		return {};
+	}
+}
 
-		const saved = JSON.parse(raw) as PersistedLootState;
+export function hydrateLootItems(exhibitionId: string, initialItems: LootItem[]): LootItem[] {
+	if (!browser) return initialItems;
+
+	try {
+		const saved = readPersistedState()[exhibitionId] ?? {};
 
 		return initialItems.map((item) => {
 			const persisted = saved[item.id];
@@ -31,7 +42,7 @@ export function hydrateLootItems(initialItems: LootItem[]): LootItem[] {
 	}
 }
 
-export function persistLootItems(items: LootItem[]) {
+export function persistLootItems(exhibitionId: string, items: LootItem[]) {
 	if (!browser) return;
 
 	try {
@@ -44,7 +55,30 @@ export function persistLootItems(items: LootItem[]) {
 			return accumulator;
 		}, {});
 
-		window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+		const allState = readPersistedState();
+		allState[exhibitionId] = payload;
+		window.localStorage.setItem(STORAGE_KEY, JSON.stringify(allState));
+	} catch {
+		// localStorage quota or private mode failure is non-blocking for the UI
+	}
+}
+
+export function hydrateSelectedExhibitionId(validIds: string[], fallbackId: string) {
+	if (!browser) return fallbackId;
+
+	try {
+		const savedId = window.localStorage.getItem(SELECTED_EXHIBITION_KEY);
+		return savedId && validIds.includes(savedId) ? savedId : fallbackId;
+	} catch {
+		return fallbackId;
+	}
+}
+
+export function persistSelectedExhibitionId(exhibitionId: string) {
+	if (!browser) return;
+
+	try {
+		window.localStorage.setItem(SELECTED_EXHIBITION_KEY, exhibitionId);
 	} catch {
 		// localStorage quota or private mode failure is non-blocking for the UI
 	}
