@@ -3,7 +3,7 @@
 ## In Progress
 
 ## Pending
-- [ ] **refine: coupang map booth packing and copy cleanup** — [plan](docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md) (0/28, 0%)
+- [ ] **refine: coupang map booth packing and copy cleanup** — [plan](docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md) (0/80, 0%)
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
 
