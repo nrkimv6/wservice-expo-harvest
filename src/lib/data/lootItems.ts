@@ -20,6 +20,7 @@ export interface BoothSocialLink {
 export interface LootItem {
 	id: string;
 	title: string;
+	englishTitle?: string;
 	firstComeEvent: string;
 	prize: string;
 	location: string;
@@ -91,7 +92,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		[
 		{
 			id: 'cmbs-2026-drg',
-			title: '닥터지 (Dr.G)',
+			title: '닥터지',
+			englishTitle: 'Dr.G',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -122,7 +124,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-innisfree',
-			title: '이니스프리 (innisfree)',
+			title: '이니스프리',
+			englishTitle: 'innisfree',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -153,7 +156,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-aestura',
-			title: '에스트라 (AESTURA)',
+			title: '에스트라',
+			englishTitle: 'AESTURA',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -184,7 +188,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-physiogel',
-			title: '피지오겔 (PHYSIOGEL)',
+			title: '피지오겔',
+			englishTitle: 'PHYSIOGEL',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -215,7 +220,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-ahc',
-			title: '에이에이치씨 (AHC)',
+			title: '에이에이치씨',
+			englishTitle: 'AHC',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -246,7 +252,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-thefaceshop',
-			title: '더페이스샵 (THE FACE SHOP)',
+			title: '더페이스샵',
+			englishTitle: 'THE FACE SHOP',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -277,7 +284,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-banilaco',
-			title: '바닐라코 (BANILA CO)',
+			title: '바닐라코',
+			englishTitle: 'BANILA CO',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -308,7 +316,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-age20s',
-			title: "에이지투웨니스 (AGE20'S)",
+			title: '에이지투웨니스',
+			englishTitle: "AGE20'S",
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -339,7 +348,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-mediheal',
-			title: '메디힐 (MEDIHEAL)',
+			title: '메디힐',
+			englishTitle: 'MEDIHEAL',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -370,7 +380,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-tonymoly',
-			title: '토니모리 (TONYMOLY)',
+			title: '토니모리',
+			englishTitle: 'TONYMOLY',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -401,7 +412,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-romand',
-			title: '롬앤 (rom&nd)',
+			title: '롬앤',
+			englishTitle: 'rom&nd',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -439,7 +451,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-etude',
-			title: '에뛰드 (ETUDE)',
+			title: '에뛰드',
+			englishTitle: 'ETUDE',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -470,7 +483,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-espoir',
-			title: '에스쁘아 (espoir)',
+			title: '에스쁘아',
+			englishTitle: 'espoir',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -501,7 +515,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-ariul',
-			title: '아리얼 (Ariul)',
+			title: '아리얼',
+			englishTitle: 'Ariul',
 			firstComeEvent: '선착순 이벤트 있음',
 			prize: '',
 			location: '',
@@ -532,7 +547,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-naturerepublic',
-			title: '네이처리퍼블릭 (NATURE REPUBLIC)',
+			title: '네이처리퍼블릭',
+			englishTitle: 'NATURE REPUBLIC',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -563,7 +579,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-easydew',
-			title: '이지듀 (easydew)',
+			title: '이지듀',
+			englishTitle: 'easydew',
 			firstComeEvent: '선착순 이벤트 있음',
 			prize: '',
 			location: '',
@@ -594,7 +611,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-dewytree',
-			title: '듀이트리 (DEWYTREE)',
+			title: '듀이트리',
+			englishTitle: 'DEWYTREE',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -625,7 +643,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-avene',
-			title: '아벤느 (Avène)',
+			title: '아벤느',
+			englishTitle: 'Avène',
 			firstComeEvent: '',
 			prize: '',
 			location: '',
@@ -656,7 +675,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		},
 		{
 			id: 'cmbs-2026-forencos',
-			title: '포렌코즈 (FORENCOS)',
+			title: '포렌코즈',
+			englishTitle: 'FORENCOS',
 			firstComeEvent: '',
 			prize: '',
 			location: '',

@@ -64,6 +64,9 @@
 	);
 	const hasPrize = $derived((item?.prize.trim().length ?? 0) > 0);
 	const hasMission = $derived((item?.mission.trim().length ?? 0) > 0);
+	const detailTitle = $derived(
+		item ? (item.englishTitle ? `${item.title} (${item.englishTitle})` : item.title) : ''
+	);
 
 	$effect(() => {
 		if (!item || !browser) return;
@@ -150,7 +153,7 @@
 						</div>
 
 						<h2 id={`sheet-title-${item.id}`} class="mt-3 font-heading text-2xl font-semibold text-foreground">
-							{item.title}
+							{detailTitle}
 						</h2>
 
 						{#if item.location}
