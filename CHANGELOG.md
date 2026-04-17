@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.1] - 2026-04-17
+
+### Fixed
+
+- 에뛰드 부스에서 카카오 링크를 숨길 수 있도록 부스별 SNS 노출 제어를 추가하고, 카드 수치와 검색도 같은 기준을 따르도록 정리
+- 에뛰드 부스의 선착순 표시를 제거해 상세와 리스트에서 더 이상 강조되지 않도록 수정
+
 ## [0.3.0] - 2026-04-17
 
 ### Added

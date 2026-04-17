@@ -41,6 +41,7 @@ export interface LootItem {
 	hashtags: string[];
 	hashtagAccountTags?: string[];
 	detailImage?: BoothDetailImage;
+	hiddenSocialPlatforms?: SocialPlatform[];
 	socialLinks: BoothSocialLink[];
 }
 
@@ -150,6 +151,14 @@ function getCoupangMegaBeautyHashtagBlock(itemId: string): HashtagBlockPreset {
 			? { hashtagAccountTags: [...preset.hashtagAccountTags] }
 			: {})
 	};
+}
+
+export function getVisibleSocialLinks(item: LootItem): BoothSocialLink[] {
+	if (!item.hiddenSocialPlatforms || item.hiddenSocialPlatforms.length === 0) {
+		return item.socialLinks;
+	}
+
+	return item.socialLinks.filter((link) => !item.hiddenSocialPlatforms?.includes(link.platform));
 }
 
 function stripBoothMeta(items: LootItem[]): LootItem[] {
@@ -536,7 +545,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			id: 'cmbs-2026-etude',
 			title: '에뛰드',
 			englishTitle: 'ETUDE',
-			firstComeEvent: '일 1회 참여 가능 · 증정품 수량 한정 · 소진 시 이벤트 조기 종료 가능',
+			firstComeEvent: '',
 			prize: '미션 1, 2를 모두 완료하면 100% 본품 구성의 랜덤 기프트 뽑기 1회 참여',
 			location: '',
 			time: 'Always',
@@ -554,6 +563,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 				alt: '에뛰드 워터 드롭 필터 쿠션 또는 클라우드 필터 쿠션 랜덤 기프트 뽑기 이벤트 안내판',
 				caption: '현장 안내판 기준 이벤트 이미지'
 			},
+			hiddenSocialPlatforms: ['kakao'],
 			socialLinks: [
 				createSocialLink(
 					'etude-instagram',

@@ -2,7 +2,7 @@
 	import { Search } from 'lucide-svelte';
 	import FilterChips from '$lib/components/FilterChips.svelte';
 	import LootCard from '$lib/components/LootCard.svelte';
-	import type { LootCategory, LootItem } from '$lib/data/lootItems';
+	import { getVisibleSocialLinks, type LootCategory, type LootItem } from '$lib/data/lootItems';
 
 	type Props = {
 		items: LootItem[];
@@ -48,6 +48,7 @@
 		const normalized = search.trim().toLowerCase();
 
 		return items.filter((item) => {
+			const visibleSocialLinks = getVisibleSocialLinks(item);
 			const matchesSearch =
 				normalized.length === 0 ||
 				[
@@ -58,7 +59,7 @@
 					item.category,
 					item.mission,
 					item.hashtags.join(' '),
-					item.socialLinks.map((link) => link.label).join(' ')
+					visibleSocialLinks.map((link) => link.label).join(' ')
 				]
 					.join(' ')
 					.toLowerCase()

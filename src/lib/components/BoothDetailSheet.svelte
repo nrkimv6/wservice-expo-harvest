@@ -15,7 +15,7 @@
 		Share2,
 		X
 	} from 'lucide-svelte';
-	import type { LootItem } from '$lib/data/lootItems';
+	import { getVisibleSocialLinks, type LootItem } from '$lib/data/lootItems';
 
 	type Props = {
 		item: LootItem | null;
@@ -49,11 +49,12 @@
 	}
 
 	const fixedInstagramAccountTags = $derived(item?.hashtagAccountTags ?? []);
+	const visibleSocialLinks = $derived(item ? getVisibleSocialLinks(item) : []);
 	const availableInstagramAccountTags = $derived(
 		item
 			? Array.from(
 					new Set(
-						item.socialLinks
+						visibleSocialLinks
 							.filter((link) => link.platform === 'instagram')
 							.map((link) => link.accountId ?? getInstagramAccountId(link.url))
 							.filter((accountId): accountId is string => Boolean(accountId))
@@ -307,7 +308,7 @@
 					</div>
 
 					<div class="mt-3 grid gap-2">
-						{#each item.socialLinks as link (link.id)}
+						{#each visibleSocialLinks as link (link.id)}
 							<a
 								href={link.url}
 								target="_blank"

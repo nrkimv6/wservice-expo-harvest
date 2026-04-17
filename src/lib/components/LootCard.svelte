@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CheckCircle2, Circle, Gift, MapPin } from 'lucide-svelte';
-	import type { LootItem } from '$lib/data/lootItems';
+	import { getVisibleSocialLinks, type LootItem } from '$lib/data/lootItems';
 
 	type Props = {
 		item: LootItem;
@@ -13,6 +13,7 @@
 	const isTimeLimited = $derived(item.time !== 'Always');
 	const hasFirstComeEvent = $derived(item.firstComeEvent.trim().length > 0);
 	const hasPrize = $derived(item.prize.trim().length > 0);
+	const visibleSocialLinks = $derived(getVisibleSocialLinks(item));
 </script>
 
 <article
@@ -106,7 +107,7 @@
 					</span>
 				{/if}
 				<span class="rounded-full border border-border bg-black/20 px-2.5 py-1 text-muted-foreground">
-					{item.socialLinks.length} SNS links
+					{visibleSocialLinks.length} SNS links
 				</span>
 			</div>
 		</button>
