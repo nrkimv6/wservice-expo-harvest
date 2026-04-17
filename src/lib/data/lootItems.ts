@@ -137,7 +137,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'innisfree-instagram',
 					'Instagram',
 					'https://www.instagram.com/innisfreeofficial/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'innisfree-kakao',
@@ -160,13 +161,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에스트라'],
+			hashtags: [],
 			socialLinks: [
 				createSocialLink(
 					'aestura-instagram',
 					'Instagram',
 					'https://www.instagram.com/aestura.official/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'aestura-kakao',
@@ -189,13 +191,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#피지오겔'],
+			hashtags: [],
 			socialLinks: [
 				createSocialLink(
 					'physiogel-instagram',
 					'Instagram',
 					'https://www.instagram.com/physiogel_korea/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'physiogel-kakao',
@@ -218,13 +221,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에이에이치씨'],
+			hashtags: [],
 			socialLinks: [
 				createSocialLink(
 					'ahc-instagram',
 					'Instagram',
 					'https://www.instagram.com/ahc.official/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'ahc-kakao',
@@ -283,7 +287,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'banilaco-instagram',
 					'Instagram',
 					'https://www.instagram.com/banilaco_official/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'banilaco-kakao',
@@ -306,13 +311,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에이지투웨니스'],
+			hashtags: [],
 			socialLinks: [
 				createSocialLink(
 					'age20s-instagram',
 					'Instagram',
 					'https://www.instagram.com/age20s_official/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'age20s-kakao',
@@ -335,13 +341,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#메디힐'],
+			hashtags: [],
 			socialLinks: [
 				createSocialLink(
 					'mediheal-instagram',
 					'Instagram',
 					'https://www.instagram.com/mediheal_official/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'mediheal-kakao',
@@ -431,13 +438,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에뛰드'],
+			hashtags: [],
 			socialLinks: [
 				createSocialLink(
 					'etude-instagram',
 					'Instagram',
 					'https://www.instagram.com/etudeofficial/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'etude-kakao',
@@ -460,13 +468,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에스쁘아'],
+			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에스뿌아'],
 			socialLinks: [
 				createSocialLink(
 					'espoir-instagram',
 					'Instagram',
 					'https://www.instagram.com/espoir_makeup/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'espoir-kakao',
@@ -549,13 +558,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#이지듀'],
+			hashtags: [],
 			socialLinks: [
 				createSocialLink(
 					'easydew-instagram',
 					'Instagram',
 					'https://www.instagram.com/easydew_official/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'easydew-kakao',
@@ -584,7 +594,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'dewytree-instagram',
 					'Instagram',
 					'https://www.instagram.com/dewytree_official/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'dewytree-kakao',
@@ -607,13 +618,14 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#아벤느'],
+			hashtags: [],
 			socialLinks: [
 				createSocialLink(
 					'avene-instagram',
 					'Instagram',
 					'https://www.instagram.com/avene/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'avene-kakao',
@@ -642,7 +654,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'forencos-instagram',
 					'Instagram',
 					'https://www.instagram.com/forencos_official/',
-					'instagram'
+					'instagram',
+					''
 				),
 				createSocialLink(
 					'forencos-kakao',
