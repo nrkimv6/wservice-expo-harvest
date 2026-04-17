@@ -78,6 +78,10 @@ export interface LootItem {
 	id: string;
 	title: string;
 	englishTitle?: string;
+	// Map-only label copy. Detail views should keep using title/englishTitle.
+	mapLabel?: string;
+	mapLabelLines?: string[];
+	mapLabelFontSize?: number;
 	firstComeEvent: string;
 	prize: string;
 	location: string;
@@ -91,6 +95,11 @@ export interface LootItem {
 	boxWidth: number;
 	boxHeight: number;
 	fontSize?: number;
+	// Render coordinates are allowed to diverge from the source SVG for readability.
+	renderX?: number;
+	renderY?: number;
+	renderWidth?: number;
+	renderHeight?: number;
 	isBookmarked: boolean;
 	isCompleted: boolean;
 	memo: string;
@@ -149,11 +158,32 @@ type BoothLayout = {
 	boxWidth: number;
 	boxHeight: number;
 	fontSize?: number;
+	// Source SVG viewBox coordinates are preserved separately from readability-first render boxes.
+	renderX?: number;
+	renderY?: number;
+	renderWidth?: number;
+	renderHeight?: number;
+	mapLabel?: string;
+	mapLabelLines?: string[];
+	mapLabelFontSize?: number;
 };
 
 type BaseLootItem = Omit<
 	LootItem,
-	'floorId' | 'mapX' | 'mapY' | 'boxWidth' | 'boxHeight' | 'fontSize' | 'location'
+	| 'floorId'
+	| 'mapX'
+	| 'mapY'
+	| 'boxWidth'
+	| 'boxHeight'
+	| 'fontSize'
+	| 'location'
+	| 'renderX'
+	| 'renderY'
+	| 'renderWidth'
+	| 'renderHeight'
+	| 'mapLabel'
+	| 'mapLabelLines'
+	| 'mapLabelFontSize'
 > & {
 	location?: string;
 };
@@ -214,25 +244,272 @@ const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
 };
 
 const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
-	'cmbs-2026-romand': { floorId: '1F', mapX: 30, mapY: 30, boxWidth: 80, boxHeight: 40, fontSize: 10 },
-	'cmbs-2026-dewytree': { floorId: '1F', mapX: 30, mapY: 75, boxWidth: 80, boxHeight: 35, fontSize: 10 },
-	'cmbs-2026-naturerepublic': { floorId: '1F', mapX: 30, mapY: 115, boxWidth: 80, boxHeight: 40, fontSize: 8 },
-	'cmbs-2026-aestura': { floorId: '1F', mapX: 150, mapY: 50, boxWidth: 60, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-banilaco': { floorId: '1F', mapX: 215, mapY: 50, boxWidth: 70, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-drg': { floorId: '1F', mapX: 290, mapY: 50, boxWidth: 50, boxHeight: 35, fontSize: 10 },
-	'cmbs-2026-ahc': { floorId: '1F', mapX: 345, mapY: 50, boxWidth: 50, boxHeight: 35, fontSize: 10 },
-	'cmbs-2026-thefaceshop': { floorId: '1F', mapX: 500, mapY: 30, boxWidth: 90, boxHeight: 45, fontSize: 9 },
-	'cmbs-2026-espoir': { floorId: '1F', mapX: 500, mapY: 80, boxWidth: 90, boxHeight: 45, fontSize: 10 },
-	'cmbs-2026-tonymoly': { floorId: '1F', mapX: 500, mapY: 130, boxWidth: 90, boxHeight: 45, fontSize: 10 },
-	'cmbs-2026-avene': { floorId: '2F', mapX: 30, mapY: 30, boxWidth: 60, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-etude': { floorId: '2F', mapX: 95, mapY: 30, boxWidth: 60, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-easydew': { floorId: '2F', mapX: 160, mapY: 30, boxWidth: 65, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-mediheal': { floorId: '2F', mapX: 230, mapY: 30, boxWidth: 70, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-innisfree': { floorId: '2F', mapX: 305, mapY: 30, boxWidth: 65, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-physiogel': { floorId: '2F', mapX: 375, mapY: 30, boxWidth: 70, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-age20s': { floorId: '2F', mapX: 450, mapY: 30, boxWidth: 65, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-ariul': { floorId: '2F', mapX: 520, mapY: 30, boxWidth: 60, boxHeight: 35, fontSize: 9 },
-	'cmbs-2026-forencos': { floorId: '2F', mapX: 520, mapY: 130, boxWidth: 130, boxHeight: 80, fontSize: 10 }
+	'cmbs-2026-romand': {
+		floorId: '1F',
+		mapX: 30,
+		mapY: 30,
+		boxWidth: 80,
+		boxHeight: 40,
+		fontSize: 10,
+		renderX: 30,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '롬앤',
+		mapLabelFontSize: 12
+	},
+	'cmbs-2026-dewytree': {
+		floorId: '1F',
+		mapX: 30,
+		mapY: 75,
+		boxWidth: 80,
+		boxHeight: 35,
+		fontSize: 10,
+		renderX: 30,
+		renderY: 93,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '듀이트리',
+		mapLabelFontSize: 11
+	},
+	'cmbs-2026-naturerepublic': {
+		floorId: '1F',
+		mapX: 30,
+		mapY: 115,
+		boxWidth: 80,
+		boxHeight: 40,
+		fontSize: 8,
+		renderX: 30,
+		renderY: 156,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabelLines: ['NATURE', 'REPUBLIC'],
+		mapLabelFontSize: 10
+	},
+	'cmbs-2026-aestura': {
+		floorId: '1F',
+		mapX: 150,
+		mapY: 50,
+		boxWidth: 60,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 154,
+		renderY: 50,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '에스트라',
+		mapLabelFontSize: 11
+	},
+	'cmbs-2026-banilaco': {
+		floorId: '1F',
+		mapX: 215,
+		mapY: 50,
+		boxWidth: 70,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 236,
+		renderY: 50,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '바닐라코',
+		mapLabelFontSize: 11
+	},
+	'cmbs-2026-drg': {
+		floorId: '1F',
+		mapX: 290,
+		mapY: 50,
+		boxWidth: 50,
+		boxHeight: 35,
+		fontSize: 10,
+		renderX: 318,
+		renderY: 50,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '닥터지',
+		mapLabelFontSize: 12
+	},
+	'cmbs-2026-ahc': {
+		floorId: '1F',
+		mapX: 345,
+		mapY: 50,
+		boxWidth: 50,
+		boxHeight: 35,
+		fontSize: 10,
+		renderX: 400,
+		renderY: 50,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: 'AHC',
+		mapLabelFontSize: 13
+	},
+	'cmbs-2026-thefaceshop': {
+		floorId: '1F',
+		mapX: 500,
+		mapY: 30,
+		boxWidth: 90,
+		boxHeight: 45,
+		fontSize: 9,
+		renderX: 510,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabelLines: ['THE FACE', 'SHOP'],
+		mapLabelFontSize: 10
+	},
+	'cmbs-2026-espoir': {
+		floorId: '1F',
+		mapX: 500,
+		mapY: 80,
+		boxWidth: 90,
+		boxHeight: 45,
+		fontSize: 10,
+		renderX: 510,
+		renderY: 93,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '에스쁘아',
+		mapLabelFontSize: 11
+	},
+	'cmbs-2026-tonymoly': {
+		floorId: '1F',
+		mapX: 500,
+		mapY: 130,
+		boxWidth: 90,
+		boxHeight: 45,
+		fontSize: 10,
+		renderX: 510,
+		renderY: 156,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '토니모리',
+		mapLabelFontSize: 11
+	},
+	'cmbs-2026-avene': {
+		floorId: '2F',
+		mapX: 30,
+		mapY: 30,
+		boxWidth: 60,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 30,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '아벤느',
+		mapLabelFontSize: 12
+	},
+	'cmbs-2026-etude': {
+		floorId: '2F',
+		mapX: 95,
+		mapY: 30,
+		boxWidth: 60,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 112,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '에뛰드',
+		mapLabelFontSize: 12
+	},
+	'cmbs-2026-easydew': {
+		floorId: '2F',
+		mapX: 160,
+		mapY: 30,
+		boxWidth: 65,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 194,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '이지듀',
+		mapLabelFontSize: 12
+	},
+	'cmbs-2026-mediheal': {
+		floorId: '2F',
+		mapX: 230,
+		mapY: 30,
+		boxWidth: 70,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 276,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '메디힐',
+		mapLabelFontSize: 12
+	},
+	'cmbs-2026-innisfree': {
+		floorId: '2F',
+		mapX: 305,
+		mapY: 30,
+		boxWidth: 65,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 358,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '이니스프리',
+		mapLabelFontSize: 10
+	},
+	'cmbs-2026-physiogel': {
+		floorId: '2F',
+		mapX: 375,
+		mapY: 30,
+		boxWidth: 70,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 440,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '피지오겔',
+		mapLabelFontSize: 11
+	},
+	'cmbs-2026-age20s': {
+		floorId: '2F',
+		mapX: 450,
+		mapY: 30,
+		boxWidth: 65,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 522,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabelLines: ["AGE20'S"],
+		mapLabelFontSize: 11
+	},
+	'cmbs-2026-ariul': {
+		floorId: '2F',
+		mapX: 520,
+		mapY: 30,
+		boxWidth: 60,
+		boxHeight: 35,
+		fontSize: 9,
+		renderX: 604,
+		renderY: 30,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '아리얼',
+		mapLabelFontSize: 12
+	},
+	'cmbs-2026-forencos': {
+		floorId: '2F',
+		mapX: 520,
+		mapY: 130,
+		boxWidth: 130,
+		boxHeight: 80,
+		fontSize: 10,
+		renderX: 604,
+		renderY: 124,
+		renderWidth: 76,
+		renderHeight: 57,
+		mapLabel: '포렌코즈',
+		mapLabelFontSize: 11
+	}
 };
 
 const COUPANG_MEGA_BEAUTY_OVERLAYS: MapOverlay[] = [
@@ -288,6 +565,7 @@ function applyCoupangMegaBeautyBoothLayout(item: BaseLootItem): LootItem {
 		...item,
 		// Preserve explicit booth copy only when it is more specific than the floor badge.
 		location: item.location?.trim() ? item.location : layout.floorId,
+		// Render coordinates can diverge from the source SVG to keep booth labels readable on mobile.
 		...layout
 	};
 }
@@ -658,7 +936,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 	venue: '1F / 2F 레이아웃 기준',
 	description: '1층과 2층 부스를 빠르게 찾아 돌 수 있게 브랜드 박스와 핵심 동선을 층별로 정리한 파밍 트래커입니다.',
 	mapTitle: 'Mega Beauty Floor Map',
-	mapNote: '1F와 2F 레이아웃을 기준으로 브랜드 박스와 주요 체험존을 SVG로 다시 그렸습니다.',
+	mapNote: '원본 층 구조를 바탕으로 브랜드 탐색 가독성을 우선한 도식도입니다. 이벤트존과 동선 표기는 안내용으로 단순화했습니다.',
 	floors: coupangMegaBeautyShow2026Floors,
 	defaultFloorId: '1F',
 	items: coupangMegaBeautyShow2026Items.map(applyCoupangMegaBeautyBoothLayout)

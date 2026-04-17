@@ -61,6 +61,7 @@
 	let itemsByExhibition = $state<Record<string, LootItem[]>>(createInitialItemMap());
 	let selectedExhibitionId = $state(DEFAULT_EXHIBITION_ID);
 	let selectedId = $state<string | null>(null);
+	let detailItemId = $state<string | null>(null);
 	let mapFloorOverride = $state<string | null>(null);
 	let activeTab = $state<AppTab>('map');
 	let isExhibitionMenuOpen = $state(false);
@@ -75,7 +76,7 @@
 		EXHIBITIONS.find((exhibition) => exhibition.id === selectedExhibitionId) ?? EXHIBITIONS[0]
 	);
 	const items = $derived(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items);
-	const selectedItem = $derived(items.find((item) => item.id === selectedId) ?? null);
+	const detailItem = $derived(items.find((item) => item.id === detailItemId) ?? null);
 	const favoriteItems = $derived(items.filter((item) => item.isBookmarked && !item.isCompleted));
 	const completedItems = $derived(items.filter((item) => item.isCompleted));
 	const shouldShowPadoTips = $derived(selectedExhibition.id === coupangMegaBeautyShowId);
@@ -161,7 +162,7 @@
 		};
 	}
 
-	function selectItem(id: string, focusMap = false) {
+	function selectItem(id: string, focusMap = false, openDetail = false) {
 		const nextItem =
 			(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items).find((item) => item.id === id) ??
 			null;
@@ -175,16 +176,26 @@
 		}
 
 		selectedId = id;
+
+		if (openDetail) {
+			detailItemId = id;
+		}
 	}
 
 	function closeSheet() {
-		selectedId = null;
+		detailItemId = null;
+	}
+
+	function viewItemOnMap(id: string) {
+		selectItem(id, true, false);
+		closeSheet();
 	}
 
 	function selectExhibition(exhibition: Exhibition) {
 		selectedExhibitionId = exhibition.id;
 		mapFloorOverride = exhibition.defaultFloorId;
 		selectedId = null;
+		detailItemId = null;
 		isExhibitionMenuOpen = false;
 	}
 
@@ -369,8 +380,16 @@
 			<ExhibitionMap
 				exhibition={selectedExhibition}
 				items={items}
-				onPinClick={(id) => selectItem(id)}
+				onPinClick={(id) => {
+					if (selectedId === id) {
+						detailItemId = id;
+						return;
+					}
+
+					selectItem(id);
+				}}
 				activeFloorOverride={mapFloorOverride}
+				selectedItemId={selectedId}
 			/>
 			{#if shouldShowPadoTips}
 				<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
@@ -415,7 +434,7 @@
 			<LootFeed
 				items={items}
 				onToggleComplete={toggleComplete}
-				onSelectItem={(id) => selectItem(id, true)}
+				onSelectItem={(id) => selectItem(id, true, true)}
 				eyebrow="All Booths"
 				title="전체 이벤트 리스트"
 				summaryLabel="Farmed"
@@ -424,7 +443,7 @@
 			<LootFeed
 				items={favoriteItems}
 				onToggleComplete={toggleComplete}
-				onSelectItem={(id) => selectItem(id, true)}
+				onSelectItem={(id) => selectItem(id, true, true)}
 				eyebrow="Favorite Booths"
 				title="즐겨찾기"
 				summaryLabel="Favorites"
@@ -538,8 +557,9 @@
 {/if}
 
 <BoothDetailSheet
-	item={selectedItem}
+	item={detailItem}
 	onClose={closeSheet}
+	onViewOnMap={viewItemOnMap}
 	onToggleBookmark={toggleBookmark}
 	onToggleComplete={toggleComplete}
 	onMemoChange={updateMemo}
