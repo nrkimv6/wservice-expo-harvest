@@ -4,6 +4,8 @@
 	import {
 		AlarmClockCheck,
 		Bookmark,
+		ChevronDown,
+		ChevronUp,
 		MapPinned,
 		Menu,
 		Search,
@@ -34,6 +36,8 @@
 		{ id: 'list', label: '리스트', icon: Search },
 		{ id: 'saved', label: '즐겨찾기', icon: Bookmark }
 	];
+	const coupangMegaBeautyShowId = 'coupang-mega-beauty-show-2026';
+	const padoTips = ['들어가자마자 쿠팡 2.4g 와이파이 연결하기', '에스쁘아 선착순'];
 
 	function createInitialItemMap() {
 		return Object.fromEntries(EXHIBITIONS.map((exhibition) => [exhibition.id, exhibition.items])) as Record<
@@ -53,6 +57,7 @@
 	let selectedId = $state<string | null>(null);
 	let activeTab = $state<AppTab>('map');
 	let isExhibitionMenuOpen = $state(false);
+	let isPadoTipsCollapsed = $state(false);
 	let liveAlertMessage = $state<string | null>(null);
 	let alertChannelStatus = $state<AlertChannelStatus>('connecting');
 
@@ -66,6 +71,7 @@
 	const selectedItem = $derived(items.find((item) => item.id === selectedId) ?? null);
 	const favoriteItems = $derived(items.filter((item) => item.isBookmarked && !item.isCompleted));
 	const completedItems = $derived(items.filter((item) => item.isCompleted));
+	const shouldShowPadoTips = $derived(selectedExhibition.id === coupangMegaBeautyShowId);
 
 	const nextHotItem = $derived.by(() => {
 		return [...items]
@@ -187,6 +193,10 @@
 
 	function closeExhibitionMenu() {
 		isExhibitionMenuOpen = false;
+	}
+
+	function togglePadoTips() {
+		isPadoTipsCollapsed = !isPadoTipsCollapsed;
 	}
 </script>
 
@@ -333,6 +343,45 @@
 			</section>
 		{:else if activeTab === 'map'}
 			<ExhibitionMap exhibition={selectedExhibition} items={items} onPinClick={selectItem} />
+			{#if shouldShowPadoTips}
+				<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
+					<div class="flex items-start justify-between gap-4">
+						<div>
+							<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">
+								Pado Tip
+							</p>
+							<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">파도님 꿀팁</h2>
+						</div>
+						<button
+							type="button"
+							class="inline-flex items-center gap-2 rounded-full border border-gold/20 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold transition hover:border-gold/35 hover:bg-gold/15"
+							aria-expanded={!isPadoTipsCollapsed}
+							aria-controls="pado-tips-list"
+							onclick={togglePadoTips}
+						>
+							<span>{isPadoTipsCollapsed ? '펼치기' : '접기'}</span>
+							{#if isPadoTipsCollapsed}
+								<ChevronDown size={14} />
+							{:else}
+								<ChevronUp size={14} />
+							{/if}
+						</button>
+					</div>
+
+					<div id="pado-tips-list" class:hidden={isPadoTipsCollapsed}>
+						<ul class="mt-4 space-y-3">
+							{#each padoTips as tip, index (tip)}
+								<li class="flex gap-3 rounded-[24px] border border-border bg-navy-surface px-4 py-4">
+									<div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold text-xs font-semibold text-black">
+										{index + 1}
+									</div>
+									<p class="pt-0.5 text-sm leading-6 text-foreground">{tip}</p>
+								</li>
+							{/each}
+						</ul>
+					</div>
+				</section>
+			{/if}
 		{:else if activeTab === 'list'}
 			<LootFeed
 				items={items}
