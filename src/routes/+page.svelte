@@ -19,7 +19,8 @@
 		DEFAULT_EXHIBITION_ID,
 		EXHIBITIONS,
 		type Exhibition,
-		type LootItem
+		type LootItem,
+		type MapSectionId
 	} from '$lib/data/lootItems';
 	import { subscribeToAlertFeed, type AlertChannelStatus } from '$lib/realtime/alertFeed';
 	import {
@@ -62,7 +63,7 @@
 	let selectedExhibitionId = $state(DEFAULT_EXHIBITION_ID);
 	let selectedId = $state<string | null>(null);
 	let detailItemId = $state<string | null>(null);
-	let mapFloorOverride = $state<string | null>(null);
+	let mapSectionOverride = $state<MapSectionId | null>(null);
 	let activeTab = $state<AppTab>('map');
 	let isExhibitionMenuOpen = $state(false);
 	let isPadoTipsCollapsed = $state(false);
@@ -141,7 +142,7 @@
 	});
 
 	$effect(() => {
-		mapFloorOverride = selectedExhibition.defaultFloorId;
+		mapSectionOverride = selectedExhibition.defaultMapSectionId;
 	});
 
 	$effect(() => {
@@ -168,7 +169,7 @@
 			null;
 
 		if (nextItem) {
-			mapFloorOverride = nextItem.floorId;
+			mapSectionOverride = nextItem.mapSectionId;
 		}
 
 		if (focusMap) {
@@ -193,7 +194,7 @@
 
 	function selectExhibition(exhibition: Exhibition) {
 		selectedExhibitionId = exhibition.id;
-		mapFloorOverride = exhibition.defaultFloorId;
+		mapSectionOverride = exhibition.defaultMapSectionId;
 		selectedId = null;
 		detailItemId = null;
 		isExhibitionMenuOpen = false;
@@ -388,7 +389,7 @@
 
 					selectItem(id);
 				}}
-				activeFloorOverride={mapFloorOverride}
+				activeMapSectionOverride={mapSectionOverride}
 				selectedItemId={selectedId}
 			/>
 			{#if shouldShowPadoTips}

@@ -4,18 +4,20 @@
 	import type {
 		ArrowOverlay,
 		Exhibition,
-		FloorMap,
+		MapSection,
+		MapSectionId,
 		LootItem,
 		StairsOverlay
 	} from '$lib/data/lootItems';
+	import { getPhysicalFloorLabel } from '$lib/data/lootItems';
 
-	type ActiveFloor = Exhibition['defaultFloorId'] | 'all';
+	type ActiveMapSection = Exhibition['defaultMapSectionId'] | 'all';
 
 	type Props = {
 		exhibition: Exhibition;
 		items: LootItem[];
 		onPinClick: (id: string) => void;
-		activeFloorOverride?: string | null;
+		activeMapSectionOverride?: MapSectionId | null;
 		selectedItemId?: string | null;
 	};
 
@@ -49,7 +51,7 @@
 		midpointY: number;
 	};
 
-	type FloorViewportState = {
+	type MapSectionViewportState = {
 		scale: number;
 		centerX: number;
 		centerY: number;
@@ -68,18 +70,18 @@
 		exhibition,
 		items,
 		onPinClick,
-		activeFloorOverride = null,
+		activeMapSectionOverride = null,
 		selectedItemId = null
 	}: Props = $props();
 
-	let selectedFloor = $state<ActiveFloor | null>(null);
+	let selectedMapSection = $state<ActiveMapSection | null>(null);
 	let hoveredItemId = $state<string | null>(null);
 	let isCoarsePointer = $state(false);
 	let zoomScale = $state(1);
 	let viewCenterX = $state(0);
 	let viewCenterY = $state(0);
 	let lastFocusedSelectionKey = $state('');
-	let floorViewportStates = $state<Record<string, FloorViewportState>>({});
+	let mapSectionViewportStates = $state<Record<string, MapSectionViewportState>>({});
 
 	let zoomViewport = $state<HTMLDivElement | null>(null);
 	let activePointers = new Map<number, PointerSnapshot>();
@@ -87,16 +89,26 @@
 	let pinchGesture: PinchGesture | null = null;
 	let gestureIntent = $state<GestureIntent | null>(null);
 
-	const activeFloor = $derived(selectedFloor ?? exhibition.defaultFloorId);
+	const activeMapSection = $derived(selectedMapSection ?? exhibition.defaultMapSectionId);
 	const selectedItem = $derived(items.find((item) => item.id === selectedItemId) ?? null);
 	const hoveredItem = $derived(items.find((item) => item.id === hoveredItemId) ?? null);
-	const visibleFloors = $derived(
-		activeFloor === 'all'
-			? exhibition.floors
-			: exhibition.floors.filter((floor) => floor.id === activeFloor)
+	const visibleMapSections = $derived(
+		activeMapSection === 'all'
+			? exhibition.mapSections
+			: exhibition.mapSections.filter((section) => section.id === activeMapSection)
 	);
-	const focusItem = $derived(
-		isCoarsePointer ? selectedItem ?? hoveredItem : hoveredItem ?? selectedItem
+	const focusItem = $derived.by(() => {
+		const candidate = isCoarsePointer ? selectedItem ?? hoveredItem : hoveredItem ?? selectedItem;
+		if (!candidate) return null;
+		if (activeMapSection !== 'all' && candidate.mapSectionId !== activeMapSection) {
+			return null;
+		}
+		return candidate;
+	});
+	const activeMapSectionItems = $derived(
+		activeMapSection === 'all'
+			? items
+			: items.filter((item) => item.mapSectionId === activeMapSection)
 	);
 
 	onMount(() => {
@@ -117,35 +129,41 @@
 
 	$effect(() => {
 		exhibition.id;
-		selectedFloor = null;
+		selectedMapSection = null;
 		hoveredItemId = null;
 		lastFocusedSelectionKey = '';
-		floorViewportStates = {};
-		resetViewport(exhibition.defaultFloorId);
+		mapSectionViewportStates = {};
+		resetViewport(exhibition.defaultMapSectionId);
 	});
 
 	$effect(() => {
-		if (activeFloorOverride) {
-			selectedFloor = activeFloorOverride as ActiveFloor;
+		if (activeMapSectionOverride) {
+			selectedMapSection = activeMapSectionOverride as ActiveMapSection;
 		}
 	});
 
 	$effect(() => {
-		activeFloor;
+		activeMapSection;
 		hoveredItemId = null;
-		resetViewport(activeFloor);
+		resetViewport(activeMapSection);
 		clearGestures();
 	});
 
 	$effect(() => {
 		const item = selectedItem;
-		const nextFloor = activeFloor;
+		const nextSection = activeMapSection;
 
-		if (!item || nextFloor === 'all' || item.floorId !== nextFloor) {
+		if (!item || nextSection === 'all') {
 			return;
 		}
 
-		const nextKey = `${item.id}:${nextFloor}`;
+		if (item.mapSectionId !== nextSection) {
+			lastFocusedSelectionKey = '';
+			resetViewport(nextSection);
+			return;
+		}
+
+		const nextKey = `${item.id}:${nextSection}`;
 		if (lastFocusedSelectionKey === nextKey) {
 			return;
 		}
@@ -163,64 +181,60 @@
 		return Math.min(Math.max(value, min), max);
 	}
 
-	function getFloorItems(floorId: string) {
-		return items.filter((item) => item.floorId === floorId);
+	function getSectionItems(mapSectionId: string) {
+		return items.filter((item) => item.mapSectionId === mapSectionId);
 	}
 
-	function getFloorMetrics(floor: FloorMap) {
-		return parseViewBox(floor.viewBox);
+	function getMapSectionMetrics(section: MapSection) {
+		return parseViewBox(section.viewBox);
 	}
 
-	function getActiveFloorData() {
-		if (activeFloor === 'all') return null;
-		return exhibition.floors.find((floor) => floor.id === activeFloor) ?? null;
+	function getActiveMapSectionData() {
+		if (activeMapSection === 'all') return null;
+		return exhibition.mapSections.find((section) => section.id === activeMapSection) ?? null;
 	}
 
-	function getFloorOutlineHeight(floor: FloorMap) {
-		return Math.max(getFloorMetrics(floor).height - 40, 0);
+	function getDefaultMapSectionScale(section: MapSection) {
+		const metrics = getMapSectionMetrics(section);
+		return metrics.height <= 220 ? 1.9 : 1.6;
 	}
 
-	function getDefaultFloorScale(floor: FloorMap) {
-		const metrics = getFloorMetrics(floor);
-		return metrics.height <= 340 ? 1.7 : 1.45;
-	}
-
-	function getDefaultViewportCenter(floor: FloorMap) {
-		const metrics = getFloorMetrics(floor);
+	function getDefaultViewportCenter(section: MapSection) {
+		const metrics = getMapSectionMetrics(section);
 		return {
 			x: metrics.x + metrics.width / 2,
 			y: metrics.y + metrics.height / 2
 		};
 	}
 
-	function getViewportMetrics(floor: FloorMap, scale = zoomScale) {
-		const metrics = getFloorMetrics(floor);
+	function getViewportMetrics(section: MapSection, scale = zoomScale) {
+		const metrics = getMapSectionMetrics(section);
 		return {
 			width: metrics.width / scale,
 			height: metrics.height / scale
 		};
 	}
 
-	function getViewportWidth(floor: FloorMap) {
-		return getViewportMetrics(floor).width;
+	function getViewportWidth(section: MapSection) {
+		return getViewportMetrics(section).width;
 	}
 
-	function getViewportHeight(floor: FloorMap) {
-		return getViewportMetrics(floor).height;
+	function getViewportHeight(section: MapSection) {
+		return getViewportMetrics(section).height;
 	}
 
-	function resetViewport(nextFloor: ActiveFloor) {
-		if (nextFloor === 'all') {
+	function resetViewport(nextSection: ActiveMapSection) {
+		if (nextSection === 'all') {
 			zoomScale = 1;
 			viewCenterX = 0;
 			viewCenterY = 0;
 			return;
 		}
 
-		const floor = exhibition.floors.find((candidate) => candidate.id === nextFloor);
-		if (!floor) return;
+		const section = exhibition.mapSections.find((candidate) => candidate.id === nextSection);
+		if (!section) return;
 
-		const savedViewport = untrack(() => floorViewportStates[floor.id]);
+		const savedViewport = untrack(() => mapSectionViewportStates[section.id]);
 		if (savedViewport) {
 			zoomScale = savedViewport.scale;
 			viewCenterX = savedViewport.centerX;
@@ -228,15 +242,15 @@
 			return;
 		}
 
-		const defaultCenter = getDefaultViewportCenter(floor);
-		const defaultScale = getDefaultFloorScale(floor);
-		const previousViewportStates = untrack(() => floorViewportStates);
+		const defaultCenter = getDefaultViewportCenter(section);
+		const defaultScale = getDefaultMapSectionScale(section);
+		const previousViewportStates = untrack(() => mapSectionViewportStates);
 		zoomScale = defaultScale;
 		viewCenterX = defaultCenter.x;
 		viewCenterY = defaultCenter.y;
-		floorViewportStates = {
+		mapSectionViewportStates = {
 			...previousViewportStates,
-			[floor.id]: {
+			[section.id]: {
 				scale: defaultScale,
 				centerX: defaultCenter.x,
 				centerY: defaultCenter.y
@@ -244,9 +258,9 @@
 		};
 	}
 
-	function clampViewportCenter(centerX: number, centerY: number, floor: FloorMap, scale = zoomScale) {
-		const metrics = getFloorMetrics(floor);
-		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(floor, scale);
+	function clampViewportCenter(centerX: number, centerY: number, section: MapSection, scale = zoomScale) {
+		const metrics = getMapSectionMetrics(section);
+		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(section, scale);
 		const halfWidth = viewportWidth / 2;
 		const halfHeight = viewportHeight / 2;
 
@@ -256,14 +270,14 @@
 		};
 	}
 
-	function setViewportCenter(nextX: number, nextY: number, floor: FloorMap, scale = zoomScale) {
-		const nextCenter = clampViewportCenter(nextX, nextY, floor, scale);
-		const previousViewportStates = untrack(() => floorViewportStates);
+	function setViewportCenter(nextX: number, nextY: number, section: MapSection, scale = zoomScale) {
+		const nextCenter = clampViewportCenter(nextX, nextY, section, scale);
+		const previousViewportStates = untrack(() => mapSectionViewportStates);
 		viewCenterX = nextCenter.x;
 		viewCenterY = nextCenter.y;
-		floorViewportStates = {
+		mapSectionViewportStates = {
 			...previousViewportStates,
-			[floor.id]: {
+			[section.id]: {
 				scale,
 				centerX: nextCenter.x,
 				centerY: nextCenter.y
@@ -271,14 +285,14 @@
 		};
 	}
 
-	function getRenderedViewBox(floor: FloorMap) {
-		if (activeFloor === 'all') {
-			return floor.viewBox;
+	function getRenderedViewBox(section: MapSection) {
+		if (activeMapSection === 'all') {
+			return section.viewBox;
 		}
 
-		const metrics = getFloorMetrics(floor);
-		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(floor);
-		const nextCenter = clampViewportCenter(viewCenterX, viewCenterY, floor);
+		const metrics = getMapSectionMetrics(section);
+		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(section);
+		const nextCenter = clampViewportCenter(viewCenterX, viewCenterY, section);
 
 		return `${nextCenter.x - viewportWidth / 2} ${nextCenter.y - viewportHeight / 2} ${viewportWidth} ${viewportHeight}`;
 	}
@@ -310,7 +324,18 @@
 	}
 
 	function getLabelFontSize(item: LootItem) {
-		return item.mapLabelFontSize ?? item.fontSize ?? 10;
+		return item.mapLabelFontSize ?? item.fontSize ?? 11.5;
+	}
+
+	function getOverlayLabelLines(label: string) {
+		const normalized = label.trim();
+		if (normalized.includes(' / ')) {
+			return normalized.split(' / ').slice(0, 2);
+		}
+		if (normalized.length > 12 && normalized.includes(' ')) {
+			return normalized.split(/\s+/).slice(0, 2);
+		}
+		return [normalized];
 	}
 
 	function getBoothVisual(item: LootItem) {
@@ -330,7 +355,7 @@
 	}
 
 	function getFloorBadge(item: LootItem) {
-		return item.location || item.floorId;
+		return item.location || getPhysicalFloorLabel(item.floorId);
 	}
 
 	function getArrowPath(overlay: ArrowOverlay) {
@@ -368,16 +393,14 @@
 	}
 
 	function focusViewportOnItem(item: LootItem, preserveZoom = false) {
-		const floor = exhibition.floors.find((candidate) => candidate.id === item.floorId);
-		if (!floor) return;
+		const section = exhibition.mapSections.find((candidate) => candidate.id === item.mapSectionId);
+		if (!section) return;
 
 		const { x, y, width, height } = getBoothRect(item);
-		const defaultScale = getDefaultFloorScale(floor);
-		const nextScale = preserveZoom
-			? Math.max(zoomScale, defaultScale)
-			: defaultScale;
+		const defaultScale = getDefaultMapSectionScale(section);
+		const nextScale = preserveZoom ? Math.max(zoomScale, defaultScale) : defaultScale;
 
-		applyZoomScale(nextScale, floor, x + width / 2, y + height / 2);
+		applyZoomScale(nextScale, section, x + width / 2, y + height / 2);
 	}
 
 	function getSinglePointer() {
@@ -417,41 +440,41 @@
 
 	function applyZoomScale(
 		nextScale: number,
-		floor: FloorMap,
+		section: MapSection,
 		centerX = viewCenterX,
 		centerY = viewCenterY
 	) {
 		const clampedScale = clamp(nextScale, MIN_SINGLE_FLOOR_SCALE, MAX_SINGLE_FLOOR_SCALE);
 		zoomScale = clampedScale;
-		setViewportCenter(centerX, centerY, floor, clampedScale);
+		setViewportCenter(centerX, centerY, section, clampedScale);
 	}
 
 	function handleZoomStep(delta: number) {
-		const floor = getActiveFloorData();
-		if (!floor) return;
+		const section = getActiveMapSectionData();
+		if (!section) return;
 
 		const nextScale = clamp(zoomScale + delta, MIN_SINGLE_FLOOR_SCALE, MAX_SINGLE_FLOOR_SCALE);
 		if (nextScale === zoomScale) return;
 
-		applyZoomScale(nextScale, floor);
+		applyZoomScale(nextScale, section);
 	}
 
 	function handleZoomReset() {
-		const floor = getActiveFloorData();
-		if (!floor) return;
+		const section = getActiveMapSectionData();
+		if (!section) return;
 
-		const defaultCenter = getDefaultViewportCenter(floor);
-		applyZoomScale(getDefaultFloorScale(floor), floor, defaultCenter.x, defaultCenter.y);
+		const defaultCenter = getDefaultViewportCenter(section);
+		applyZoomScale(getDefaultMapSectionScale(section), section, defaultCenter.x, defaultCenter.y);
 	}
 
-	function handleFloorSelect(nextFloor: ActiveFloor) {
-		selectedFloor = nextFloor;
+	function handleMapSectionSelect(nextSection: ActiveMapSection) {
+		selectedMapSection = nextSection;
 		hoveredItemId = null;
 	}
 
 	function handleViewportWheel(event: WheelEvent) {
-		const floor = getActiveFloorData();
-		if (!floor || !zoomViewport) return;
+		const section = getActiveMapSectionData();
+		if (!section || !zoomViewport) return;
 
 		event.preventDefault();
 
@@ -460,12 +483,12 @@
 
 		if (nextScale === zoomScale) return;
 
-		applyZoomScale(nextScale, floor);
+		applyZoomScale(nextScale, section);
 	}
 
 	function handleViewportPointerDown(event: PointerEvent) {
-		const floor = getActiveFloorData();
-		if (!floor || !zoomViewport) return;
+		const section = getActiveMapSectionData();
+		if (!section || !zoomViewport) return;
 
 		if (activePointers.size === 0) {
 			gestureIntent = null;
@@ -505,8 +528,8 @@
 	}
 
 	function handleViewportPointerMove(event: PointerEvent) {
-		const floor = getActiveFloorData();
-		if (!floor || !zoomViewport || !activePointers.has(event.pointerId)) return;
+		const section = getActiveMapSectionData();
+		if (!section || !zoomViewport || !activePointers.has(event.pointerId)) return;
 
 		const previousPoint = activePointers.get(event.pointerId);
 		activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -524,13 +547,13 @@
 				MIN_SINGLE_FLOOR_SCALE,
 				MAX_SINGLE_FLOOR_SCALE
 			);
-			const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(floor, nextScale);
+			const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(section, nextScale);
 			const deltaX = midpoint.x - pinchGesture.midpointX;
 			const deltaY = midpoint.y - pinchGesture.midpointY;
 
 			applyZoomScale(
 				nextScale,
-				floor,
+				section,
 				pinchGesture.centerX - (deltaX / rect.width) * viewportWidth,
 				pinchGesture.centerY - (deltaY / rect.height) * viewportHeight
 			);
@@ -551,13 +574,13 @@
 
 		const deltaX = event.clientX - dragGesture.startX;
 		const deltaY = event.clientY - dragGesture.startY;
-		const viewportWidth = getViewportWidth(floor);
-		const viewportHeight = getViewportHeight(floor);
+		const viewportWidth = getViewportWidth(section);
+		const viewportHeight = getViewportHeight(section);
 
 		setViewportCenter(
 			dragGesture.centerX - (deltaX / rect.width) * viewportWidth,
 			dragGesture.centerY - (deltaY / rect.height) * viewportHeight,
-			floor
+			section
 		);
 
 		if (
@@ -608,7 +631,7 @@
 			<p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
 				{exhibition.mapTitle}
 			</p>
-			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">층별 부스 보기</h2>
+			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">전시 구역별 부스 보기</h2>
 			<p class="mt-2 text-xs leading-5 text-muted-foreground">{exhibition.mapNote}</p>
 		</div>
 
@@ -622,27 +645,27 @@
 			type="button"
 			class={[
 				'shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition',
-				activeFloor === 'all'
+				activeMapSection === 'all'
 					? 'border-gold/40 bg-gold text-black'
 					: 'border-border bg-navy-elevated text-muted-foreground'
 			]}
-			onclick={() => handleFloorSelect('all')}
+			onclick={() => handleMapSectionSelect('all')}
 		>
 			전체
 		</button>
 
-		{#each exhibition.floors as floor (floor.id)}
+		{#each exhibition.mapSections as section (section.id)}
 			<button
 				type="button"
 				class={[
 					'shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition',
-					activeFloor === floor.id
+					activeMapSection === section.id
 						? 'border-gold/40 bg-gold text-black'
 						: 'border-border bg-navy-elevated text-muted-foreground'
 				]}
-				onclick={() => handleFloorSelect(floor.id)}
+				onclick={() => handleMapSectionSelect(section.id)}
 			>
-				{floor.label}
+				{section.label}
 			</button>
 		{/each}
 	</div>
@@ -674,7 +697,9 @@
 				{isCoarsePointer ? 'Selected Booth' : 'Hover Booth'}
 			</p>
 			<p class="mt-1 text-sm text-muted-foreground">
-				{#if isCoarsePointer}
+				{#if activeMapSection !== 'all' && activeMapSectionItems.length === 0}
+					이 구역은 브랜드 부스보다 수령 안내와 동선 정보가 중심입니다.
+				{:else if isCoarsePointer}
 					부스를 탭하면 선택 요약이 이 영역에 표시됩니다.
 				{:else}
 					브랜드 박스에 커서를 올리면 층과 상태를 요약해 보여줍니다.
@@ -684,16 +709,16 @@
 	</div>
 
 	<div class="flex flex-col gap-4">
-		{#each visibleFloors as floor (floor.id)}
-			{@const floorItems = getFloorItems(floor.id)}
-			{@const floorMetrics = getFloorMetrics(floor)}
-			{@const isInteractiveFloor = activeFloor === floor.id}
-			{@const defaultFloorScale = getDefaultFloorScale(floor)}
+		{#each visibleMapSections as section (section.id)}
+			{@const sectionItems = getSectionItems(section.id)}
+			{@const sectionMetrics = getMapSectionMetrics(section)}
+			{@const isInteractiveSection = activeMapSection === section.id}
+			{@const defaultSectionScale = getDefaultMapSectionScale(section)}
 			<div class="overflow-hidden rounded-[28px] border border-border bg-black/20 p-3">
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
-						<h3 class="font-heading text-lg font-semibold text-foreground">{floor.label}</h3>
-						{#if activeFloor !== 'all'}
+						<h3 class="font-heading text-lg font-semibold text-foreground">{section.label}</h3>
+						{#if activeMapSection !== 'all'}
 							<p class="mt-1 text-[11px] text-muted-foreground">
 								지도 영역 안에서는 한 손가락 드래그가 지도 이동을 소유합니다. 핀치와 확대 버튼으로 배율을 바꿀 수 있고, 페이지 스크롤은 지도 밖에서 계속됩니다.
 							</p>
@@ -701,15 +726,15 @@
 					</div>
 
 					<div class="flex items-center gap-2">
-						{#if isInteractiveFloor}
+						{#if isInteractiveSection}
 							<div
 								class="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/35 p-1"
-								aria-label={`${floor.label} 지도 확대/축소 컨트롤`}
+								aria-label={`${section.label} 지도 확대/축소 컨트롤`}
 							>
 								<button
 									type="button"
 									class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-navy-elevated text-sm font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
-									aria-label={`${floor.label} 지도 축소`}
+									aria-label={`${section.label} 지도 축소`}
 									disabled={zoomScale <= MIN_SINGLE_FLOOR_SCALE + 0.001}
 									onclick={() => handleZoomStep(-BUTTON_ZOOM_STEP)}
 								>
@@ -718,8 +743,8 @@
 								<button
 									type="button"
 									class="inline-flex min-w-[52px] items-center justify-center rounded-full bg-navy-elevated px-3 py-2 text-[11px] font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
-									aria-label={`${floor.label} 지도 확대 리셋`}
-									disabled={Math.abs(zoomScale - defaultFloorScale) < 0.001}
+									aria-label={`${section.label} 지도 확대 리셋`}
+									disabled={Math.abs(zoomScale - defaultSectionScale) < 0.001}
 									onclick={handleZoomReset}
 								>
 									리셋
@@ -727,7 +752,7 @@
 								<button
 									type="button"
 									class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-navy-elevated text-sm font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
-									aria-label={`${floor.label} 지도 확대`}
+									aria-label={`${section.label} 지도 확대`}
 									disabled={zoomScale >= MAX_SINGLE_FLOOR_SCALE - 0.001}
 									onclick={() => handleZoomStep(BUTTON_ZOOM_STEP)}
 								>
@@ -737,39 +762,30 @@
 						{/if}
 
 						<span class="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-							{floorItems.length} booths
+							{sectionItems.length} booths
 						</span>
 					</div>
 				</div>
 
 				<div
 					role="group"
-					aria-label={`${floor.label} 지도 viewport`}
+					aria-label={`${section.label} 지도 viewport`}
 					class={[
 						'overflow-hidden rounded-[24px] border border-white/6 bg-[#0b1320]',
-						activeFloor !== 'all' && 'touch-none'
+						activeMapSection !== 'all' && 'touch-none'
 					]}
-					style={`aspect-ratio: ${floorMetrics.width} / ${floorMetrics.height}; touch-action: ${activeFloor === floor.id ? 'none' : 'auto'};`}
+					style={`aspect-ratio: ${sectionMetrics.width} / ${sectionMetrics.height}; touch-action: ${activeMapSection === section.id ? 'none' : 'auto'};`}
 					bind:this={zoomViewport}
-					onwheel={activeFloor === floor.id ? handleViewportWheel : undefined}
-					onpointerdown={activeFloor === floor.id ? handleViewportPointerDown : undefined}
-					onpointermove={activeFloor === floor.id ? handleViewportPointerMove : undefined}
-					onpointerup={activeFloor === floor.id ? handleViewportPointerUp : undefined}
-					onpointercancel={activeFloor === floor.id ? handleViewportPointerUp : undefined}
+					onwheel={activeMapSection === section.id ? handleViewportWheel : undefined}
+					onpointerdown={activeMapSection === section.id ? handleViewportPointerDown : undefined}
+					onpointermove={activeMapSection === section.id ? handleViewportPointerMove : undefined}
+					onpointerup={activeMapSection === section.id ? handleViewportPointerUp : undefined}
+					onpointercancel={activeMapSection === section.id ? handleViewportPointerUp : undefined}
 				>
-					<svg viewBox={getRenderedViewBox(floor)} class="h-full w-full p-2">
-						<rect
-							x="20"
-							y="20"
-							width={Math.max(floorMetrics.width - 40, 0)}
-							height={getFloorOutlineHeight(floor)}
-							fill="none"
-							stroke="#4caf50"
-							stroke-width="2"
-						/>
-
-						{#each floor.overlays as overlay, index (`${floor.id}-${overlay.kind}-${index}`)}
+					<svg viewBox={getRenderedViewBox(section)} class="h-full w-full">
+						{#each section.overlays as overlay, index (`${section.id}-${overlay.kind}-${index}`)}
 							{#if overlay.kind === 'eventZone'}
+								{@const overlayLabelLines = getOverlayLabelLines(overlay.label)}
 								<g pointer-events="none" opacity="0.78">
 									<rect
 										x={overlay.x}
@@ -779,18 +795,25 @@
 										fill="#dceede"
 										stroke="#84b68a"
 										stroke-width="1"
-										rx="6"
+										rx="2"
 									/>
 									<text
 										x={overlay.x + overlay.width / 2}
-										y={overlay.y + overlay.height / 2}
+										y={overlay.y + overlay.height / 2 - (overlayLabelLines.length > 1 ? (overlay.fontSize ?? 9) * 0.34 : 0)}
 										text-anchor="middle"
 										dominant-baseline="middle"
 										fill="#406347"
 										font-size={overlay.fontSize ?? 9}
 										font-weight="600"
 									>
-										{overlay.label}
+										{#each overlayLabelLines as line, lineIndex (line)}
+											<tspan
+												x={overlay.x + overlay.width / 2}
+												dy={lineIndex === 0 ? 0 : (overlay.fontSize ?? 9) * 0.9}
+											>
+												{line}
+											</tspan>
+										{/each}
 									</text>
 								</g>
 							{:else if overlay.kind === 'stairs'}
@@ -847,7 +870,7 @@
 							{/if}
 						{/each}
 
-						{#each floorItems as item (item.id)}
+						{#each sectionItems as item (item.id)}
 							{@const visual = getBoothVisual(item)}
 							{@const boothRect = getBoothRect(item)}
 							{@const labelLines = getLabelLines(item)}
@@ -856,7 +879,7 @@
 								role="button"
 								tabindex="0"
 								class="cursor-pointer"
-								aria-label={`${item.title} 상세 보기 - ${item.floorId}`}
+								aria-label={`${item.title} 상세 보기 - ${getFloorBadge(item)}`}
 								onmouseenter={() => {
 									if (!isCoarsePointer) {
 										hoveredItemId = item.id;
@@ -892,15 +915,15 @@
 								<title>{item.title}</title>
 								{#if isSelected}
 									<rect
-										x={boothRect.x - 6}
-										y={boothRect.y - 6}
-										width={boothRect.width + 12}
-										height={boothRect.height + 12}
-										rx="14"
+										x={boothRect.x - 3}
+										y={boothRect.y - 3}
+										width={boothRect.width + 6}
+										height={boothRect.height + 6}
+										rx="2"
 										fill="none"
 										stroke="#f5c35c"
-										stroke-width="3"
-										stroke-dasharray="8 4"
+										stroke-width="2.25"
+										stroke-dasharray="5 3"
 									/>
 								{/if}
 								<rect
@@ -908,14 +931,14 @@
 									y={boothRect.y}
 									width={boothRect.width}
 									height={boothRect.height}
-									rx="10"
+									rx="1.5"
 									fill={visual.fill}
 									stroke={isSelected ? '#f5c35c' : visual.stroke}
-									stroke-width={isSelected ? '2.2' : '1.5'}
+									stroke-width={isSelected ? '2' : '1.2'}
 								/>
 								<text
 									x={boothRect.x + boothRect.width / 2}
-									y={boothRect.y + boothRect.height / 2 - (labelLines.length > 1 ? getLabelFontSize(item) * 0.42 : 0)}
+									y={boothRect.y + boothRect.height / 2 - (labelLines.length > 1 ? getLabelFontSize(item) * 0.36 : 0)}
 									text-anchor="middle"
 									dominant-baseline="middle"
 									fill={visual.text}
@@ -925,7 +948,7 @@
 									{#each labelLines as line, lineIndex (line)}
 										<tspan
 											x={boothRect.x + boothRect.width / 2}
-											dy={lineIndex === 0 ? 0 : getLabelFontSize(item) * 1.05}
+											dy={lineIndex === 0 ? 0 : getLabelFontSize(item) * 0.92}
 										>
 											{line}
 										</tspan>
@@ -934,60 +957,60 @@
 
 								{#if item.isCompleted}
 									<circle
-										cx={boothRect.x + boothRect.width - 8}
-										cy={boothRect.y + 8}
-										r="8"
+										cx={boothRect.x + boothRect.width - 7}
+										cy={boothRect.y + 7}
+										r="7"
 										fill={visual.badge}
 										stroke="#0f1724"
 										stroke-width="1"
 									/>
 									<text
-										x={boothRect.x + boothRect.width - 8}
-										y={boothRect.y + 8}
+										x={boothRect.x + boothRect.width - 7}
+										y={boothRect.y + 7}
 										text-anchor="middle"
 										dominant-baseline="middle"
 										fill="#0f1724"
-										font-size="9"
+										font-size="8"
 										font-weight="700"
 									>
 										✓
 									</text>
 								{:else if item.isBookmarked}
 									<circle
-										cx={boothRect.x + boothRect.width - 8}
-										cy={boothRect.y + 8}
-										r="8"
+										cx={boothRect.x + boothRect.width - 7}
+										cy={boothRect.y + 7}
+										r="7"
 										fill={visual.badge}
 										stroke="#0f1724"
 										stroke-width="1"
 									/>
 									<text
-										x={boothRect.x + boothRect.width - 8}
-										y={boothRect.y + 8}
+										x={boothRect.x + boothRect.width - 7}
+										y={boothRect.y + 7}
 										text-anchor="middle"
 										dominant-baseline="middle"
 										fill="#0f1724"
-										font-size="9"
+										font-size="8"
 										font-weight="700"
 									>
 										★
 									</text>
 								{:else if item.firstComeEvent.trim().length > 0}
 									<circle
-										cx={boothRect.x + boothRect.width - 8}
-										cy={boothRect.y + 8}
-										r="8"
+										cx={boothRect.x + boothRect.width - 7}
+										cy={boothRect.y + 7}
+										r="7"
 										fill={visual.badge}
 										stroke="#0f1724"
 										stroke-width="1"
 									/>
 									<text
-										x={boothRect.x + boothRect.width - 8}
-										y={boothRect.y + 8}
+										x={boothRect.x + boothRect.width - 7}
+										y={boothRect.y + 7}
 										text-anchor="middle"
 										dominant-baseline="middle"
 										fill="#0f1724"
-										font-size="9"
+										font-size="8"
 										font-weight="700"
 									>
 										!
