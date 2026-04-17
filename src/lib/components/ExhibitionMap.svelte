@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import type {
 		ArrowOverlay,
 		Exhibition,
@@ -193,7 +193,7 @@
 		const floor = exhibition.floors.find((candidate) => candidate.id === nextFloor);
 		if (!floor) return;
 
-		const savedViewport = floorViewportStates[floor.id];
+		const savedViewport = untrack(() => floorViewportStates[floor.id]);
 		if (savedViewport) {
 			zoomScale = savedViewport.scale;
 			viewCenterX = savedViewport.centerX;
@@ -204,11 +204,12 @@
 		const metrics = getFloorMetrics(floor);
 		const defaultCenterX = metrics.x + metrics.width / 2;
 		const defaultCenterY = metrics.y + metrics.height / 2;
+		const previousViewportStates = untrack(() => floorViewportStates);
 		zoomScale = DEFAULT_SINGLE_FLOOR_SCALE;
 		viewCenterX = defaultCenterX;
 		viewCenterY = defaultCenterY;
 		floorViewportStates = {
-			...floorViewportStates,
+			...previousViewportStates,
 			[floor.id]: {
 				scale: DEFAULT_SINGLE_FLOOR_SCALE,
 				centerX: defaultCenterX,
@@ -232,10 +233,11 @@
 
 	function setViewportCenter(nextX: number, nextY: number, floor: FloorMap, scale = zoomScale) {
 		const nextCenter = clampViewportCenter(nextX, nextY, floor, scale);
+		const previousViewportStates = untrack(() => floorViewportStates);
 		viewCenterX = nextCenter.x;
 		viewCenterY = nextCenter.y;
 		floorViewportStates = {
-			...floorViewportStates,
+			...previousViewportStates,
 			[floor.id]: {
 				scale,
 				centerX: nextCenter.x,

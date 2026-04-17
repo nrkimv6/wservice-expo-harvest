@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - AHC, 에스트라, 피지오겔, 메디힐, 아벤느 등 기존 preset 누락/미연결 부스의 해시태그 블록을 다시 연결
 - 에뛰드 미션을 후기 기준 `인스타 업로드 + 뽑기`로 교체하고, 아리얼의 선착순 강조를 제거
 - 부스 상세 시트에 `업로드 조건` 칩과 `추첨 이벤트` 섹션을 추가해 피드/스토리/후속 추첨을 분리 표시
+- 루트 화면 지도 viewport 상태 저장 로직의 reactive loop를 끊어, `npm run dev -- --host` 환경에서도 하단 네비와 층 전환 버튼이 멈추지 않도록 수정
 
 ## [0.3.2] - 2026-04-17
 
