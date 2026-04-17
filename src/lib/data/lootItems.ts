@@ -90,6 +90,9 @@ const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
 	'cmbs-2026-banilaco': {
 		hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#바닐라코']
 	},
+	'cmbs-2026-age20s': {
+		hashtags: ['#AGE20S', '#에이지투웨니스', '#쿠팡뷰티', '#메가뷰티쇼']
+	},
 	'cmbs-2026-tonymoly': {
 		hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#토니모리', '#쇼킹립'],
 		hashtagAccountTags: ['@tonymory']
@@ -108,6 +111,9 @@ const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
 	'cmbs-2026-naturerepublic': {
 		hashtags: ['#네이처리퍼블릭', '#쿠팡뷰티', '#메가뷰티쇼'],
 		hashtagAccountTags: ['@naturerepublic_kr']
+	},
+	'cmbs-2026-easydew': {
+		hashtags: ['#이지듀', '#easydew', '#기미앰플', '#쿠팡메가뷰티쇼']
 	},
 	'cmbs-2026-dewytree': {
 		hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#듀이트리']
@@ -392,7 +398,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: [],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-age20s'),
 			socialLinks: [
 				createSocialLink(
 					'age20s-instagram',
@@ -655,7 +661,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: [],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-easydew'),
 			socialLinks: [
 				createSocialLink(
 					'easydew-instagram',
