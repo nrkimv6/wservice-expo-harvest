@@ -34,6 +34,7 @@ triggers: ["머지 테스트", "merge-test", "머지후테스트", "통합테스
 - 미완료 체크박스 → "미완료 항목이 있습니다: {목록}. 계속하시겠습니까?"
 - 루트 브랜치 자동 전환 실패 → "원본 프로젝트 루트가 {브랜치}이며 main 전환에 실패했습니다.({실패단계}) merge-test를 중단합니다."
 - 소유권 불일치 → "현재 plan은 다른 부모 계획서의 worktree를 가리키고 있어 merge-test를 중단합니다."
+- owner 계획서 dirty 감지 → "MERGE_PRECHECK_FAILED[owner_plan_dirty]: root 계획서를 먼저 별도 커밋하거나 수동 정리 후 재시도하세요."
 ```
 
 ## main 기존 수정사항 무시 모드 (사용자 명시 지시 시)
@@ -212,6 +213,39 @@ $collision = $untracked | Where-Object { $branchFiles -contains $_ }
   - **자동 삭제/자동 이동 금지** (운영자가 수동 정리 후 재시도)
 - `$collision`이 0개면 다음 단계로 진행한다.
 
+**현재 owner 계획서 dirty preflight:**
+
+root dirty를 stash하기 전에, 현재 merge 대상과 **같은 owner 계획서 문서**가 root `main`에서 dirty인지 먼저 판정한다.
+
+```powershell
+$rootDirtyPaths = git status --porcelain | ForEach-Object {
+  if ($_.Length -ge 4) { $_.Substring(3).Trim() }
+}
+
+$ownerDocCandidates = @($parent_plan_path)
+Get-ChildItem "docs" -Recurse -Filter "*.md" | ForEach-Object {
+  $relativePath = (Resolve-Path -Relative $_.FullName) -replace '^[.][\\/]', ''
+  $content = Get-Content $_.FullName -Raw
+  if ($content -match "(?m)^> worktree-owner:\s*$([regex]::Escape($parent_plan_path))\s*$") {
+    $ownerDocCandidates += $relativePath
+  }
+}
+
+$ownerDocCandidates = $ownerDocCandidates | Sort-Object -Unique
+$ownerDirty = $rootDirtyPaths | Where-Object { $ownerDocCandidates -contains $_ }
+```
+
+- `$ownerDirty`가 1개 이상이면 **stash 전에 즉시 중단**:
+  - 로그 prefix: `MERGE_PRECHECK_FAILED[owner_plan_dirty]`
+  - 안내 문구: `root 계획서를 먼저 별도 커밋하거나 수동 정리 후 재시도하세요. merge-test는 stash/apply를 시도하지 않습니다.`
+  - 상태 보존 계약: **merge 시작 전 중단**이므로 root/main, worktree, branch 상태를 그대로 보존한다.
+- `$ownerDirty`가 0개면 그때만 아래 stash-merge-apply로 진행한다.
+- 이 guard는 **현재 owner에만 적용**한다. unrelated root dirty는 기존 stash 흐름을 유지한다.
+
+경로 예시:
+- 단일 plan 프로젝트: 현재 `parent_plan_path`가 `docs/plan/2026-04-17_fix-foo.md`면, 그 파일 자체만 dirty 차단 대상으로 본다.
+- sibling plan/TODO 프로젝트: `docs/plan/2026-04-17_fix-foo_todo-1.md`를 머지 중이고 root의 `docs/plan/2026-04-17_fix-foo.md` 또는 같은 `> worktree-owner:`를 가진 `_todo-2.md`가 dirty면 모두 차단 대상으로 본다.
+
 **루트(main) dirty 처리 — stash-merge-apply:**
 
 머지 전 루트에 staged/unstaged 변경이 있으면 stash로 임시 보관 후 머지한다:
@@ -223,7 +257,7 @@ $stashTag = $null
 if ($rootDirty) {
   $timestamp = Get-Date -Format "yyyyMMddHHmmss"
   $stashTag = "merge-test/$($target.branch)/$timestamp"
-  Write-Host "[merge-test] root dirty 감지 — stash push: $stashTag"
+  Write-Host "[merge-test] unrelated root dirty 감지 — stash push: $stashTag"
   git stash push --include-untracked -m $stashTag
   if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ STASH_PUSH_FAILED: root stash 실패"
@@ -265,6 +299,10 @@ if ($stashRef) {
   Write-Host "[merge-test] stash apply/drop 완료: $stashRef"
 }
 ```
+
+`MERGE_PRECHECK_FAILED[owner_plan_dirty]` 경로에서는 이 stash 블록으로 진입하지 않는다. 이미 merge 이후 충돌이 난 상태라면 이 guard의 복구 범위를 벗어난 것이므로, stash/apply 재시도 대신 수동 복구 절차를 따른다.
+
+완료 기준: **같은 owner 계획서 dirty가 있으면 stash 전에 중단하고, unrelated dirty만 stash 대상으로 유지한다.**
 
 각 머지 성공 직후 커밋 해시를 추출하여 **해당 target 파일 헤더**에 기록한다:
 
