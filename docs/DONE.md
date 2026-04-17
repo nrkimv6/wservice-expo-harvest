@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-17: 다중 박람회 선택 + 쿠팡메가뷰티쇼 2026 데이터 + 부스별 해시태그/SNS 기능
+  - `/app`을 다중 박람회 선택 구조로 전환하고 상단 메뉴에서 행사 버전을 전환할 수 있게 정리
+  - `쿠팡메가뷰티쇼 2026` 테스트 데이터와 부스배치도 이미지를 추가하고 행사별 localStorage 상태를 분리
+  - 부스 상세에 해시태그 코드블럭 복사와 SNS 외부 링크 버튼을 추가하고 `npm run check`, `npm run build`로 검증 완료
+
 - [x] 2026-04-16: dev 서버 실행 중 build 잠금 충돌 방지
   - `package.json`의 `build`를 `scripts/run-build.mjs` wrapper로 전환하고 `build:raw`를 raw `vite build`로 분리
   - Windows에서 repo/path 기준으로 `npm run dev` 동시 실행을 감지해 `.svelte-kit/cloudflare` 충돌 시 명시적 실패 메시지 출력
