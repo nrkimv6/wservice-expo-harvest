@@ -1,9 +1,11 @@
 import http from 'node:http';
 import net from 'node:net';
 import { spawn } from 'node:child_process';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const defaultPort = 5173;
+const devRuntimeStatePath = resolve('.svelte-kit', 'dev-runtime.json');
 const args = process.argv.slice(2);
 const { host, port, forwardArgs } = parseCliArgs(args);
 const internalPort = await findAvailablePort(port + 1);
@@ -36,6 +38,8 @@ const viteChild = spawn(
 	}
 );
 
+persistDevRuntimeState();
+
 let splashClosed = false;
 
 const closeSplashServer = () =>
@@ -56,14 +60,34 @@ const shutdown = async (signal) => {
 	}
 };
 
+const clearDevRuntimeState = () => {
+	try {
+		const existing = JSON.parse(readFileSync(devRuntimeStatePath, 'utf8'));
+		if (existing?.launcherPid !== process.pid) {
+			return;
+		}
+	} catch {
+		// Ignore parse/read failures and best-effort remove the stale marker.
+	}
+
+	try {
+		rmSync(devRuntimeStatePath, { force: true });
+	} catch {
+		// Ignore cleanup failures; the build wrapper prunes stale markers.
+	}
+};
+
 for (const signal of ['SIGINT', 'SIGTERM']) {
 	process.on(signal, () => {
 		void shutdown(signal);
 	});
 }
 
+process.on('exit', clearDevRuntimeState);
+
 viteChild.on('exit', async (code, signal) => {
 	await closeSplashServer();
+	clearDevRuntimeState();
 	if (signal) {
 		process.kill(process.pid, signal);
 		return;
@@ -133,6 +157,27 @@ function parseCliArgs(inputArgs) {
 	}
 
 	return { host, port, forwardArgs };
+}
+
+function persistDevRuntimeState() {
+	mkdirSync(resolve('.svelte-kit'), { recursive: true });
+	writeFileSync(
+		devRuntimeStatePath,
+		JSON.stringify(
+			{
+				projectDir: resolve('.'),
+				host,
+				port,
+				internalPort,
+				launcherPid: process.pid,
+				vitePid: viteChild.pid,
+				updatedAt: new Date().toISOString()
+			},
+			null,
+			2
+		),
+		'utf8'
+	);
 }
 
 function findAvailablePort(startPort) {
