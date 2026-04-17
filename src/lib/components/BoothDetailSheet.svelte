@@ -91,6 +91,8 @@
 	const hasMission = $derived((item?.mission.trim().length ?? 0) > 0);
 	const hasDetailImage = $derived(Boolean(item?.detailImage?.src));
 	const hasMemoContent = $derived((item?.memo.trim().length ?? 0) > 0);
+	const hasCategory = $derived((item?.category.trim().length ?? 0) > 0);
+	const hasDetailedLocation = $derived(Boolean(item && item.location.trim().length > 0 && item.location !== item.floorId));
 	const detailTitle = $derived(
 		item ? (item.englishTitle ? `${item.title} (${item.englishTitle})` : item.title) : ''
 	);
@@ -175,16 +177,21 @@
 							<span class="rounded-full bg-gold/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gold">
 								{item.time}
 							</span>
-							<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] text-muted-foreground">
-								{item.category}
+							<span class="rounded-full bg-black/20 px-2.5 py-1 text-[10px] font-semibold text-gold">
+								{item.floorId}
 							</span>
+							{#if hasCategory}
+								<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] text-muted-foreground">
+									{item.category}
+								</span>
+							{/if}
 						</div>
 
 						<h2 id={`sheet-title-${item.id}`} class="mt-3 font-heading text-2xl font-semibold text-foreground">
 							{detailTitle}
 						</h2>
 
-						{#if item.location}
+						{#if hasDetailedLocation}
 							<div class="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
 								<MapPin size={15} />
 								<span>{item.location}</span>
@@ -202,6 +209,18 @@
 						<X size={16} />
 					</button>
 				</div>
+
+				{#if hasFirstComeEvent}
+					<div class="mt-5 rounded-[24px] border border-rose-300/35 bg-[linear-gradient(135deg,rgba(251,113,133,0.18),rgba(244,63,94,0.1))] p-4 shadow-[0_18px_44px_rgba(244,63,94,0.16)]">
+						<div class="flex items-center gap-2 text-rose-50">
+							<BadgeAlert size={16} />
+							<p class="text-sm font-semibold tracking-[0.08em]">선착순 이벤트 있음</p>
+						</div>
+						{#if firstComeMessage}
+							<p class="mt-2 text-sm leading-6 text-rose-50/92">{firstComeMessage}</p>
+						{/if}
+					</div>
+				{/if}
 
 				{#if hasHashtags}
 					<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">

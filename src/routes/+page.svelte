@@ -61,6 +61,7 @@
 	let itemsByExhibition = $state<Record<string, LootItem[]>>(createInitialItemMap());
 	let selectedExhibitionId = $state(DEFAULT_EXHIBITION_ID);
 	let selectedId = $state<string | null>(null);
+	let mapFloorOverride = $state<string | null>(null);
 	let activeTab = $state<AppTab>('map');
 	let isExhibitionMenuOpen = $state(false);
 	let isPadoTipsCollapsed = $state(false);
@@ -139,6 +140,10 @@
 	});
 
 	$effect(() => {
+		mapFloorOverride = selectedExhibition.defaultFloorId;
+	});
+
+	$effect(() => {
 		if (!browser || !isExhibitionMenuOpen) return;
 
 		const previousOverflow = document.body.style.overflow;
@@ -156,7 +161,19 @@
 		};
 	}
 
-	function selectItem(id: string) {
+	function selectItem(id: string, focusMap = false) {
+		const nextItem =
+			(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items).find((item) => item.id === id) ??
+			null;
+
+		if (nextItem) {
+			mapFloorOverride = nextItem.floorId;
+		}
+
+		if (focusMap) {
+			activeTab = 'map';
+		}
+
 		selectedId = id;
 	}
 
@@ -166,6 +183,7 @@
 
 	function selectExhibition(exhibition: Exhibition) {
 		selectedExhibitionId = exhibition.id;
+		mapFloorOverride = exhibition.defaultFloorId;
 		selectedId = null;
 		isExhibitionMenuOpen = false;
 	}
@@ -348,7 +366,12 @@
 				</div>
 			</section>
 		{:else if activeTab === 'map'}
-			<ExhibitionMap exhibition={selectedExhibition} items={items} onPinClick={selectItem} />
+			<ExhibitionMap
+				exhibition={selectedExhibition}
+				items={items}
+				onPinClick={(id) => selectItem(id)}
+				activeFloorOverride={mapFloorOverride}
+			/>
 			{#if shouldShowPadoTips}
 				<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
 					<div class="flex items-start justify-between gap-4">
@@ -392,7 +415,7 @@
 			<LootFeed
 				items={items}
 				onToggleComplete={toggleComplete}
-				onSelectItem={selectItem}
+				onSelectItem={(id) => selectItem(id, true)}
 				eyebrow="All Booths"
 				title="전체 이벤트 리스트"
 				summaryLabel="Farmed"
@@ -401,7 +424,7 @@
 			<LootFeed
 				items={favoriteItems}
 				onToggleComplete={toggleComplete}
-				onSelectItem={selectItem}
+				onSelectItem={(id) => selectItem(id, true)}
 				eyebrow="Favorite Booths"
 				title="즐겨찾기"
 				summaryLabel="Favorites"
