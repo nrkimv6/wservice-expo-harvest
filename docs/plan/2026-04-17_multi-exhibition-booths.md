@@ -3,7 +3,7 @@
 > 작성일시: 2026-04-17 01:20
 > 기준커밋: 2e620de
 > 대상 프로젝트: expo-harvest
-> 상태: 구현완료
+> 상태: 구현중
 > 진행률: 8/8 (100%)
 > branch: impl/multi-exhibition-booths
 > worktree: .worktrees/impl-multi-exhibition-booths
@@ -28,4 +28,4 @@
 7. [x] P2: 부스별 SNS 링크 버튼을 추가한다
 8. [x] P2: 화면 문구와 메타데이터를 선택된 박람회 기준으로 정리한다
 
-_상태: 구현완료 | 진행률: 8/8 (100%)_
+_상태: 구현중 | 진행률: 8/8 (100%)_
