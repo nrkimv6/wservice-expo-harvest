@@ -218,6 +218,7 @@
 	}
 
 	function dismissOnboarding(nextTab?: AppTab) {
+		isExhibitionMenuOpen = false;
 		showOnboarding = false;
 		persistOnboardingDismissed(true);
 
@@ -227,11 +228,11 @@
 	}
 
 	function reopenOnboarding() {
+		isExhibitionMenuOpen = false;
 		showOnboarding = true;
 	}
 
 	function toggleExhibitionMenu() {
-		if (EXHIBITIONS.length < 2) return;
 		isExhibitionMenuOpen = !isExhibitionMenuOpen;
 	}
 
@@ -452,10 +453,12 @@
 						Hamburger Menu
 					</p>
 					<h2 id="exhibition-menu-title" class="mt-1 font-heading text-2xl font-semibold text-foreground">
-						박람회 선택
+						{EXHIBITIONS.length > 1 ? '박람회 선택' : '현재 박람회'}
 					</h2>
 					<p class="mt-2 text-sm leading-6 text-muted-foreground">
-						메인 홈에서는 숨기고 여기서만 박람회를 전환합니다.
+						{EXHIBITIONS.length > 1
+							? '메인 홈에서는 숨기고 여기서만 박람회를 전환합니다.'
+							: '현재 활성화된 박람회 정보와 진입 상태를 여기서 확인합니다.'}
 					</p>
 				</div>
 

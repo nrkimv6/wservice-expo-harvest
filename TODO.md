@@ -1,6 +1,7 @@
 # TODO
 
 ## In Progress
+- [ ] **fix: hamburger menu and cache regression** — [plan](docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md) (21/44, 48%)
 
 ## Pending
 

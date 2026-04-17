@@ -1,17 +1,25 @@
 /// <reference types="@sveltejs/kit" />
 
-import { build, files, prerendered, version } from '$service-worker';
+import { build, files, version } from '$service-worker';
 
 declare const self: ServiceWorkerGlobalScope;
 
 const CACHE_NAME = `expo-harvest-${version}`;
-const APP_SHELL = ['/', '/app', ...build, ...files, ...prerendered];
+const PRECACHE_ASSETS = [...build, ...files];
+
+function isCacheableAsset(pathname: string) {
+	return (
+		PRECACHE_ASSETS.includes(pathname) ||
+		pathname.startsWith('/_app/immutable/') ||
+		pathname.startsWith('/images/')
+	);
+}
 
 self.addEventListener('install', (event) => {
 	event.waitUntil(
 		(async () => {
 			const cache = await caches.open(CACHE_NAME);
-			await cache.addAll(APP_SHELL);
+			await cache.addAll(PRECACHE_ASSETS);
 			await self.skipWaiting();
 		})()
 	);
@@ -32,40 +40,22 @@ self.addEventListener('activate', (event) => {
 });
 
 async function cacheFirst(request: Request) {
-	const cached = await caches.match(request);
+	const cache = await caches.open(CACHE_NAME);
+	const cached = await cache.match(request);
 	if (cached) return cached;
 
 	const response = await fetch(request);
-	const cache = await caches.open(CACHE_NAME);
 	cache.put(request, response.clone());
 	return response;
 }
 
 async function networkFirst(request: Request) {
 	try {
-		const response = await fetch(request);
-		const cache = await caches.open(CACHE_NAME);
-		cache.put(request, response.clone());
-		return response;
+		return await fetch(request);
 	} catch {
 		const cached = await caches.match(request);
-		if (cached) return cached;
-		return caches.match('/') || caches.match('/app');
+		return cached ?? Response.error();
 	}
-}
-
-async function staleWhileRevalidate(request: Request) {
-	const cache = await caches.open(CACHE_NAME);
-	const cached = await cache.match(request);
-
-	const networkPromise = fetch(request)
-		.then((response) => {
-			cache.put(request, response.clone());
-			return response;
-		})
-		.catch(() => cached);
-
-	return cached || networkPromise;
 }
 
 self.addEventListener('fetch', (event) => {
@@ -81,10 +71,10 @@ self.addEventListener('fetch', (event) => {
 		return;
 	}
 
-	if (APP_SHELL.includes(url.pathname)) {
+	if (isCacheableAsset(url.pathname)) {
 		event.respondWith(cacheFirst(request));
 		return;
 	}
 
-	event.respondWith(staleWhileRevalidate(request));
+	event.respondWith(fetch(request));
 });
