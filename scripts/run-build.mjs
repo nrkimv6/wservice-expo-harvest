@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import http from 'node:http';
 import path from 'node:path';
 import { cwd } from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 const projectDir = cwd();
 const cloudflareOutputDir = '.svelte-kit/cloudflare';
 export const devRuntimeStateRelativePath = path.join('.svelte-kit', 'dev-runtime.json');
+const defaultDevProbePorts = [5173, 5174, 5175, 5176, 5177, 5178];
+const repoProbePaths = ['/src/lib/components/ExhibitionMap.svelte', '/src/lib/data/lootItems.ts'];
 const require = createRequire(import.meta.url);
 const viteEntry = require.resolve('vite');
 const viteRoot = path.dirname(path.dirname(path.dirname(viteEntry)));
@@ -135,11 +138,71 @@ export function findRepoDevServerSignal(projectDirToUse = projectDir) {
 	// - process tree: repo scoping is indirect and child lookup is brittle on Windows
 	// - TCP port scan: custom ports are possible and port ownership alone is ambiguous
 	// - runtime marker: repo scope is explicit, stale files are pruneable, implementation is small
-	return getRepoDevRuntimeSignal(projectDirToUse);
+	const runtimeSignal = getRepoDevRuntimeSignal(projectDirToUse);
+	if (runtimeSignal) {
+		return runtimeSignal;
+	}
+
+	// Final fallback: probe the default splash/Vite port band for repo-specific source paths.
+	// This covers Windows node/cmd children with blank CommandLine and missing runtime markers.
+	return null;
 }
 
-export function run() {
-	const devSignal = findRepoDevServerSignal();
+function probeHttp(url) {
+	return new Promise((resolve) => {
+		const request = http.get(
+			url,
+			{
+				timeout: 600
+			},
+			(response) => {
+				const { statusCode = 0 } = response;
+				response.resume();
+				response.on('end', () => resolve(statusCode >= 200 && statusCode < 300));
+			}
+		);
+
+		request.on('timeout', () => {
+			request.destroy();
+			resolve(false);
+		});
+		request.on('error', () => resolve(false));
+	});
+}
+
+export async function findRepoDevServerSignalAsync(
+	projectDirToUse = projectDir,
+	probeFn = probeHttp
+) {
+	const syncSignal = findRepoDevServerSignal(projectDirToUse);
+	if (syncSignal) {
+		return syncSignal;
+	}
+
+	for (const port of defaultDevProbePorts) {
+		const hasViteClient = await probeFn(`http://127.0.0.1:${port}/@vite/client`);
+		if (!hasViteClient) {
+			continue;
+		}
+
+		for (const probePath of repoProbePaths) {
+			const hasRepoFile = await probeFn(`http://127.0.0.1:${port}${probePath}`);
+			if (hasRepoFile) {
+				return {
+					source: 'http-probe',
+					activePids: [],
+					port,
+					probePath
+				};
+			}
+		}
+	}
+
+	return null;
+}
+
+export async function run() {
+	const devSignal = await findRepoDevServerSignalAsync();
 	if (devSignal) {
 		process.stderr.write(`${buildClearFailureMessage()}\n`);
 		process.exit(1);
@@ -178,5 +241,5 @@ const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : null;
 const modulePath = fileURLToPath(import.meta.url);
 
 if (invokedPath === modulePath) {
-	run();
+	void run();
 }

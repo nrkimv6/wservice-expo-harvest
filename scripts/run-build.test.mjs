@@ -7,6 +7,7 @@ import test from 'node:test';
 import {
 	buildClearFailureMessage,
 	devRuntimeStateRelativePath,
+	findRepoDevServerSignalAsync,
 	getRepoDevRuntimeSignal,
 	looksLikeCloudflareLockError,
 	readDevRuntimeState
@@ -88,4 +89,26 @@ test('build failure helpers keep Windows cloudflare guidance intact', () => {
 		looksLikeCloudflareLockError('EPERM: Permission denied, unlink .svelte-kit\\cloudflare\\_worker.js'),
 		true
 	);
+});
+
+test('findRepoDevServerSignalAsync detects repo-specific http probe fallback', async () => {
+	const calls = [];
+	const signal = await findRepoDevServerSignalAsync(
+		'D:\\work\\project\\service\\wtools\\expo-harvest',
+		async (url) => {
+			calls.push(url);
+			if (url.endsWith('/@vite/client')) {
+				return true;
+			}
+			return url.endsWith('/src/lib/components/ExhibitionMap.svelte');
+		}
+	);
+
+	assert.equal(signal?.source, 'http-probe');
+	assert.equal(signal?.port, 5173);
+	assert.equal(signal?.probePath, '/src/lib/components/ExhibitionMap.svelte');
+	assert.deepEqual(calls.slice(0, 2), [
+		'http://127.0.0.1:5173/@vite/client',
+		'http://127.0.0.1:5173/src/lib/components/ExhibitionMap.svelte'
+	]);
 });
