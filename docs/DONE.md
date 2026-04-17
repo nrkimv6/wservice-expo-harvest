@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-18: implement/merge-test/done 상태 게이트 정합성 복구
+  - `.agents/skills/merge-test/SKILL.md`가 `머지대기` 상태에서도 정상 진입하도록 전제조건과 실패 안내를 확장
+  - `.agents/skills/implement/SKILL.md`, `.agents/skills/done/SKILL.md`에서 구현 완료 후 `머지대기 -> /merge-test -> /done` 흐름이 끊기지 않도록 상태 용어와 차단 메시지를 통일
+  - worktree 브랜치 `impl/fix-implement-merge-test-status-gate`를 `main`에 머지한 뒤 plan archive, TODO 정리, DONE 반영 완료
+
 - [x] 2026-04-18: 쿠팡 메가뷰티쇼 맵 부스 패킹/카피 정리
   - `src/lib/data/lootItems.ts`에서 1F/2F/뷰티박스 수령존 배치를 벽·행 기준 무간격 packing으로 다시 맞추고 2F 우측 lane 계단/포토존/포렌코즈/홍보부스를 한 column 계약으로 고정
   - `src/lib/components/ExhibitionMap.svelte`, `AGENTS.md`에서 지도 제목·helper copy를 짧게 줄이고 booth/event zone 텍스트 충전도와 라벨 분할 규칙을 조정

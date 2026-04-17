@@ -1,14 +1,16 @@
 # fix: implement merge-test status gate mismatch
 
-> 출처: /review에서 자동 생성
+> 완료일: 2026-04-18
+> 아카이브됨
+> 진행률: 14/14 (100%)
 > 작성일시: 2026-04-17 19:05
 > 기준커밋: 16ee892
 > 대상 프로젝트: expo-harvest
-> 상태: 머지대기
+> 상태: 구현완료
+> 반영일시: 2026-04-18 00:59
+> 머지커밋: 892d0ff
 > 진행률: 14/14 (100%)
-> branch: impl/fix-implement-merge-test-status-gate
-> worktree: .worktrees/impl-fix-implement-merge-test-status-gate
-> worktree-owner: D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-17_fix-implement-merge-test-status-gate.md
+> 출처: /review에서 자동 생성
 > 요약: `implement` 흐름에서는 워크트리 구현 직후 plan 상태를 `머지대기`로 올릴 수 있는데, `merge-test`는 여전히 `구현중` 상태만 허용하도록 적혀 있어 실제 완료 직후 `merge-test`가 차단될 수 있다. 이후 `done`은 활성 `branch/worktree`가 남아 있으면 중단되므로, 세 스킬 사이에서 완료 흐름이 막히는 deadlock 성격의 절차 불일치가 발생한다.
 > 재검토일시: 2026-04-18
 > 재검토 결론: 적용한다. 2026-04-18 기준 `merge-test`에는 `owner_plan_dirty` preflight가 추가됐지만, 상태 게이트는 여전히 `구현중`만 허용하고 있어 본 계획의 핵심 불일치는 그대로 남아 있다.
@@ -83,4 +85,4 @@
 
 ---
 
-*상태: 머지대기 | 진행률: 14/14 (100%)*
+*상태: 구현완료 | 진행률: 14/14 (100%)*
