@@ -2,12 +2,14 @@
 
 ## In Progress
 
+- [ ] **refine: coupang map booth packing and copy cleanup** — [plan](docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md) (93/93, 100%)
+
 ## Pending
 - [ ] **test: map booth interaction regression coverage** — [plan](docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md) (0/8, 0%)
-- [ ] **refine: coupang map booth packing and copy cleanup** — [plan](docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md) (0/93, 0%)
 - [ ] **refine: adopt plans worktree for doc isolation** — [plan](docs/plan/2026-04-17_refine-adopt-plans-worktree-for-doc-isolation.md) (0/20, 0%)
 
 ## Merged
+
 - [x] **refine: map pin hover UX** — [plan](docs/plan/2026-04-17_refine-map-pin-hover-ux.md) (0/9, 0%, superseded by readability/mobile plan)
 
 ## Done

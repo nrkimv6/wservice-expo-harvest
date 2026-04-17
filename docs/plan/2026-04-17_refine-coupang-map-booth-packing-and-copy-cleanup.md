@@ -3,8 +3,11 @@
 > 작성일시: 2026-04-17 23:15
 > 기준커밋: 61d3d82
 > 대상 프로젝트: expo-harvest
-> 상태: 초안
-> 진행률: 0/93 (0%)
+> branch: impl/refine-coupang-map-booth-packing-and-copy-cleanup
+> worktree: .worktrees/impl-refine-coupang-map-booth-packing-and-copy-cleanup
+> worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md
+> 상태: 구현중
+> 진행률: 93/93 (100%)
 > 요약: 쿠팡 메가뷰티쇼 지도는 section split 회귀를 복구한 뒤에도 여백이 많은 박스, 벽에서 뜬 배치, 긴 안내 문구가 남아 있다. 이번 후속 변경은 1F/2F/외부 수령존의 부스를 벽과 행 기준으로 다시 붙이고, 표기와 타이포를 짧고 조밀하게 정리해 지도 자체가 표처럼 읽히도록 만드는 데 목적이 있다.
 
 ---
@@ -35,123 +38,136 @@
 
 ### Phase 1: 범위와 전파 경로를 다시 고정한다 (12 tasks)
 
-1. - [ ] **표기 변경이 퍼지는 surface를 코드 기준으로 고정한다** — section 탭만 바꾸고 다른 화면을 놓치지 않게 한다
-   - [ ] `src/lib/data/lootItems.ts`: `hall-1f`, `hall-2f`, `beauty-box-pickup`의 `label` → `1F`, `2F`, `뷰티박스 수령존`
-   - [ ] `src/lib/data/lootItems.ts`: `venue` 문자열을 `1F / 2F / 뷰티박스 수령존`으로 축약, 괄호 제거
-   - [ ] `src/lib/data/lootItems.ts`: `description` 필드를 새 짧은 구역 표기와 맞는 문장으로 축약할지 여부를 분리해 기록한다.
-   - [ ] `src/lib/data/lootItems.ts`: `mapNote` 필드를 유지할지, 한 줄 short note로 줄일지, 제거할지 셋 중 하나로 확정한다.
-   - [ ] `src/routes/+page.svelte`: home 카드의 `selectedExhibition.venue` 노출 블록을 전파 확인 대상으로 고정한다.
-   - [ ] `src/routes/+page.svelte`: 전시회 선택 목록의 `exhibition.venue` 노출 블록을 전파 확인 대상으로 고정한다.
+1. - [x] **표기 변경이 퍼지는 surface를 코드 기준으로 고정한다** — section 탭만 바꾸고 다른 화면을 놓치지 않게 한다
+   - [x] `src/lib/data/lootItems.ts`: `hall-1f`, `hall-2f`, `beauty-box-pickup`의 `label` → `1F`, `2F`, `뷰티박스 수령존`
+   - [x] `src/lib/data/lootItems.ts`: `venue` 문자열을 `1F / 2F / 뷰티박스 수령존`으로 축약, 괄호 제거
+   - [x] `src/lib/data/lootItems.ts`: `description` 필드를 새 짧은 구역 표기에 맞춘 짧은 문장으로 정리한다.
+   - [x] `src/lib/data/lootItems.ts`: `mapNote`는 한 줄 short note로 유지한다.
+   - [x] `src/routes/+page.svelte`: home 카드의 `selectedExhibition.venue` 노출 블록을 전파 확인 대상으로 유지한다.
+   - [x] `src/routes/+page.svelte`: 전시회 선택 목록의 `exhibition.venue` 노출 블록을 전파 확인 대상으로 유지한다.
 
-2. - [ ] **사용자 요구와 현재 데이터 키 차이를 구현 단위로 매핑한다** — id rename 없이 표시문구만 조정하게 만든다
-   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-mediheal`이 사용자 요구의 `메디필`이 아니라 현재 코드상 `메디힐`이라는 점을 기준 표기로 기록한다.
-   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-ariul`이 사용자 요구의 `아리엘`이 아니라 현재 코드상 `아리얼`이라는 점을 기준 표기로 기록한다.
-   - [ ] `src/lib/data/lootItems.ts`: `쿠팡 뉴존 체험존`, `뉴존 선물 수령존`, `파페치 / TW 홍보 부스`가 사용자 문장과 다르더라도 기존 label key는 유지하고 표시문구만 조정한다는 원칙을 적는다.
-   - [ ] `AGENTS.md` (new file): 루트에 새 파일을 만들고 "지도 UI 안에는 장문 사용법/설명문을 넣지 않는다"는 규칙 추가를 이번 구현 범위에 포함한다고 기록한다.
+2. - [x] **사용자 요구와 현재 데이터 키 차이를 구현 단위로 매핑한다** — id rename 없이 표시문구만 조정하게 만든다
+   - [x] `src/lib/data/lootItems.ts`: `cmbs-2026-mediheal`의 기준 표기를 현재 코드상 `메디힐`로 기록한다.
+   - [x] `src/lib/data/lootItems.ts`: `cmbs-2026-ariul`의 기준 표기를 현재 코드상 `아리얼`로 기록한다.
+   - [x] `src/lib/data/lootItems.ts`: `쿠팡 뉴존 체험존`, `뉴존 선물 수령존`, `파페치 / TW 홍보 부스` key 유지 원칙을 주석으로 기록한다.
+   - [x] `AGENTS.md` (new file): 루트에 새 파일을 만들고 "지도 UI 안에는 장문 사용법/설명문을 넣지 않는다"는 규칙을 추가한다.
 
 ### Phase 2: 1F 브랜드축과 하단 동선을 초원자 단위로 다시 붙인다 (22 tasks)
 
-3. - [ ] **1F 좌측 벽 세로열 3부스를 무간격 column으로 맞춘다** — 좌측 브랜드 축을 표 셀처럼 복원한다
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-romand']`의 `renderX/renderY`를 좌측 벽 세로열 최상단 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-dewytree']`의 `renderX/renderY`를 같은 좌측 column 중단 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-naturerepublic']`의 `renderX/renderY`를 같은 좌측 column 하단 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: 좌측 3부스가 세로 gap 없이 맞닿는다는 계약을 `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS` 인접 주석이나 assertion 대상에 추가한다.
+3. - [x] **1F 좌측 벽 세로열 3부스를 무간격 column으로 맞춘다** — 좌측 브랜드 축을 표 셀처럼 복원한다
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-romand']`의 `renderX/renderY`를 좌측 벽 세로열 최상단 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-dewytree']`의 `renderX/renderY`를 같은 좌측 column 중단 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-naturerepublic']`의 `renderX/renderY`를 같은 좌측 column 하단 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: 좌측 3부스가 세로 gap 없이 맞닿는 계약을 assertion 대상으로 추가한다.
 
-4. - [ ] **1F 중앙 가로열 4부스를 한 줄로 내린다** — 중앙 브랜드 row를 현재보다 아래에서 재정렬한다
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-aestura']`의 `renderX/renderY`를 1F 중앙 row 시작점으로 내린다.
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-banilaco']`의 `renderX/renderY`를 같은 중앙 row 두 번째 칸에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-drg']`의 `renderX/renderY`를 같은 중앙 row 세 번째 칸에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-ahc']`의 `renderX/renderY`를 같은 중앙 row 네 번째 칸에 맞추고 모든 칸의 가로 gap을 0으로 맞춘다.
+4. - [x] **1F 중앙 가로열 4부스를 한 줄로 내린다** — 중앙 브랜드 row를 현재보다 아래에서 재정렬한다
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-aestura']`의 `renderX/renderY`를 1F 중앙 row 시작점으로 내린다.
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-banilaco']`의 `renderX/renderY`를 같은 중앙 row 두 번째 칸에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-drg']`의 `renderX/renderY`를 같은 중앙 row 세 번째 칸에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-ahc']`의 `renderX/renderY`를 같은 중앙 row 네 번째 칸에 맞추고 모든 칸의 가로 gap을 0으로 맞춘다.
 
-5. - [ ] **1F 우측 벽 세로열 3부스를 무간격 column으로 맞춘다** — 우측 브랜드 축을 벽 기준선에 붙인다
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-thefaceshop']`의 `renderX/renderY`를 우측 벽 세로열 최상단 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-espoir']`의 `renderX/renderY`를 같은 우측 column 중단 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-tonymoly']`의 `renderX/renderY`를 같은 우측 column 하단 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: 우측 3부스가 벽과 뜨지 않고 서로 맞닿는다는 계약을 주석 또는 assertion 대상으로 추가한다.
+5. - [x] **1F 우측 벽 세로열 3부스를 무간격 column으로 맞춘다** — 우측 브랜드 축을 벽 기준선에 붙인다
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-thefaceshop']`의 `renderX/renderY`를 우측 벽 세로열 최상단 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-espoir']`의 `renderX/renderY`를 같은 우측 column 중단 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-tonymoly']`의 `renderX/renderY`를 같은 우측 column 하단 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: 우측 3부스가 벽과 뜨지 않고 서로 맞닿는 계약을 assertion 대상으로 추가한다.
 
-6. - [ ] **1F 중앙 체험존과 하단 event row를 다시 맞춘다** — 브랜드축 아래 동선을 요청 위치에 고정한다
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_OVERLAYS`의 `쿠팡 어워즈 체험존` center 좌표를 중앙 브랜드 row 아랫줄 정중앙으로 옮긴다.
-   - [ ] `src/lib/data/lootItems.ts`: `피부측정 이벤트` overlay center 좌표를 1F 하단 row 첫 칸 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `뷰티 디바이스 체험존` overlay center 좌표를 같은 하단 row 두 번째 칸 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `쿠팡 뉴존 체험존` overlay center 좌표를 같은 하단 row 세 번째 칸 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `뉴존 선물 수령존` overlay center 좌표를 같은 하단 row 네 번째 칸 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `hall-1f` `OUT` arrow 좌표를 하단 row 끝의 출구 위치에 맞춰 다시 조정한다.
+6. - [x] **1F 중앙 체험존과 하단 event row를 다시 맞춘다** — 브랜드축 아래 동선을 요청 위치에 고정한다
+   - [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_OVERLAYS`의 `쿠팡 어워즈 체험존` center 좌표를 중앙 브랜드 row 아랫줄 정중앙으로 옮긴다.
+   - [x] `src/lib/data/lootItems.ts`: `피부측정 이벤트` overlay center 좌표를 1F 하단 row 첫 칸 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `뷰티 디바이스 체험존` overlay center 좌표를 같은 하단 row 두 번째 칸 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `쿠팡 뉴존 체험존` overlay center 좌표를 같은 하단 row 세 번째 칸 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `뉴존 선물 수령존` overlay center 좌표를 같은 하단 row 네 번째 칸 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `hall-1f` `OUT` arrow 좌표를 하단 row 끝의 출구 위치에 맞춰 다시 조정한다.
 
 ### Phase 3: 외부 수령존과 2F 벽 부착 레이아웃을 lane 단위로 고정한다 (20 tasks)
 
-7. - [ ] **외부 뷰티박스 수령존 입출구 배치를 다시 고정한다** — 수령존 아래 입구, 좌하단 출구 규칙을 복원한다
-   - [ ] `src/lib/data/lootItems.ts`: `beauty-box-pickup`의 `뷰티박스 수령존` event zone 중심은 유지할지 미세 조정할지 current `viewBox` 기준으로 확정한다.
-   - [ ] `src/lib/data/lootItems.ts`: `beauty-box-pickup`의 `IN` arrow 좌표를 수령존 바로 아래로 재배치한다.
-   - [ ] `src/lib/data/lootItems.ts`: `beauty-box-pickup`의 `OUT` arrow 좌표를 section 좌하단으로 재배치한다.
-   - [ ] `src/lib/data/lootItems.ts`: `hall-1f` stair gap의 `decorRect` entry를 삭제하고, 상하단 `stairs` 2개는 그대로 유지되게 정리한다.
+7. - [x] **외부 뷰티박스 수령존 입출구 배치를 다시 고정한다** — 수령존 아래 입구, 좌하단 출구 규칙을 복원한다
+   - [x] `src/lib/data/lootItems.ts`: `beauty-box-pickup`의 `뷰티박스 수령존` event zone 중심은 현재 `viewBox` 기준으로 유지한다고 확정한다.
+   - [x] `src/lib/data/lootItems.ts`: `beauty-box-pickup`의 `IN` arrow 좌표를 수령존 바로 아래로 재배치한다.
+   - [x] `src/lib/data/lootItems.ts`: `beauty-box-pickup`의 `OUT` arrow 좌표를 section 좌하단으로 재배치한다.
+   - [x] `src/lib/data/lootItems.ts`: `hall-1f` stair gap의 `decorRect` entry를 삭제하고, 상하단 `stairs` 2개는 그대로 유지되게 정리한다.
 
-8. - [ ] **2F 상단 벽 가로 1열 8부스를 무간격 top row로 맞춘다** — 상단 브랜드 대열을 한 줄로 복원한다
-   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-avene`, `cmbs-2026-etude`, `cmbs-2026-easydew`, `cmbs-2026-mediheal`의 `renderY`를 동일 top-row 기준으로 맞추고 좌→우 순서를 다시 고정한다.
-   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-innisfree`, `cmbs-2026-physiogel`, `cmbs-2026-age20s`, `cmbs-2026-ariul`의 `renderY`를 같은 top-row 기준으로 맞추고 좌→우 순서를 다시 고정한다.
-   - [ ] `src/lib/data/lootItems.ts`: 상단 8부스 전체가 가로 gap 없이 맞닿도록 `renderX` 간격을 다시 계산한다.
-   - [ ] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 top-row 동일 `renderY`뿐 아니라 row packing 유지 조건을 추가한다.
+8. - [x] **2F 상단 벽 가로 1열 8부스를 무간격 top row로 맞춘다** — 상단 브랜드 대열을 한 줄로 복원한다
+   - [x] `src/lib/data/lootItems.ts`: `cmbs-2026-avene`, `cmbs-2026-etude`, `cmbs-2026-easydew`, `cmbs-2026-mediheal`의 `renderY`를 동일 top-row 기준으로 맞추고 좌→우 순서를 다시 고정한다.
+   - [x] `src/lib/data/lootItems.ts`: `cmbs-2026-innisfree`, `cmbs-2026-physiogel`, `cmbs-2026-age20s`, `cmbs-2026-ariul`의 `renderY`를 같은 top-row 기준으로 맞추고 좌→우 순서를 다시 고정한다.
+   - [x] `src/lib/data/lootItems.ts`: 상단 8부스 전체가 가로 gap 없이 맞닿도록 `renderX` 간격을 다시 계산한다.
+   - [x] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 top-row 동일 `renderY`뿐 아니라 row packing 유지 조건을 추가한다.
 
-9. - [ ] **2F 좌측 벽 가로 1열 3부스를 요청 순서대로 붙인다** — story/wow/hairshow lane을 하나의 수평 축으로 맞춘다
-   - [ ] `src/lib/data/lootItems.ts`: `쿠팡 메가뷰티쇼 스토리` overlay center 좌표를 2F 좌측 lane 첫 칸 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `쿠팡 와우회원 인증존` overlay center 좌표를 같은 lane 두 번째 칸 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `헤어쇼 이벤트(4/18)` overlay center 좌표를 같은 lane 세 번째 칸 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: 좌측 3칸이 같은 `renderY`와 무간격 `centerX` spacing을 공유한다는 계약을 주석 또는 assertion 대상으로 추가한다.
+9. - [x] **2F 좌측 벽 가로 1열 3부스를 요청 순서대로 붙인다** — story/wow/hairshow lane을 하나의 수평 축으로 맞춘다
+   - [x] `src/lib/data/lootItems.ts`: `쿠팡 메가뷰티쇼 스토리` overlay center 좌표를 2F 좌측 lane 첫 칸 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `쿠팡 와우회원 인증존` overlay center 좌표를 같은 lane 두 번째 칸 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: `헤어쇼 이벤트(4/18)` overlay center 좌표를 같은 lane 세 번째 칸 anchor에 맞춘다.
+   - [x] `src/lib/data/lootItems.ts`: 좌측 3칸이 같은 `renderY`와 무간격 `centerX` spacing을 공유하는 계약을 assertion 대상으로 추가한다.
 
-10. - [ ] **2F 우측 벽 vertical lane을 계단 포함 4블록으로 고정한다** — stairs와 포토/부스/홍보존이 한 column을 공유하게 만든다
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_OVERLAYS`에 `hall-2f` 우측 lane 최상단용 새 `stairs` entry를 추가하고 `x/y/width/height`를 column anchor 기준으로 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `인생네컷 포토존` overlay center 좌표를 같은 우측 lane 두 번째 블록 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-forencos']`의 `renderX/renderY`를 같은 우측 lane 세 번째 블록 anchor에 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: `파페치 / TW 홍보 부스` overlay center 좌표를 같은 우측 lane 최하단 anchor에 맞추고 column 공통 `x`를 contract에 추가한다.
+10. - [x] **2F 우측 벽 vertical lane을 계단 포함 4블록으로 고정한다** — stairs와 포토/부스/홍보존이 한 column을 공유하게 만든다
+
+- [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_OVERLAYS`에 `hall-2f` 우측 lane 최상단용 새 `stairs` entry를 추가하고 `x/y/width/height`를 column anchor 기준으로 맞춘다.
+- [x] `src/lib/data/lootItems.ts`: `인생네컷 포토존` overlay center 좌표를 같은 우측 lane 두 번째 블록 anchor에 맞춘다.
+- [x] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-forencos']`의 `renderX/renderY`를 같은 우측 lane 세 번째 블록 anchor에 맞춘다.
+- [x] `src/lib/data/lootItems.ts`: `파페치 / TW 홍보 부스` overlay center 좌표를 같은 우측 lane 최하단 anchor에 맞추고 column 공통 `x`를 contract에 추가한다.
 
 ### Phase 4: 표기와 타이포를 중복 렌더 경로까지 포함해 줄인다 (27 tasks)
 
-11. - [ ] **지도 표기와 헤더 문구를 요청된 짧은 형태로 줄인다** — 탭, 제목, 전시회 표기가 같은 톤을 갖게 한다
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 상단 `전시 구역별 부스 보기` 제목을 `부스보기`로 바꾼다.
-   - [ ] `src/lib/data/lootItems.ts`: `venue`의 구역명을 `1F / 2F / 뷰티박스 수령존` 표기로 정리한다.
-   - [ ] `src/lib/data/lootItems.ts`: `description`을 유지한다면 새 축약 표기 기준 문장으로 다시 쓴다.
-   - [ ] `src/lib/data/lootItems.ts`: `mapNote`를 유지한다면 한 줄 short note로 줄이고, 제거한다면 빈자리 없는 대체 문구 기준을 정한다.
-   - [ ] `src/routes/+page.svelte`: `exhibition.venue`가 짧아진 뒤 home 카드와 전시회 목록 줄바꿈이 어색하지 않은지 확인 대상으로 남긴다.
+11. - [x] **지도 표기와 헤더 문구를 요청된 짧은 형태로 줄인다** — 탭, 제목, 전시회 표기가 같은 톤을 갖게 한다
 
-12. - [ ] **장문 사용법/hover 문구를 짧은 상태 문구로 교체한다** — 지도 내부 정보 밀도를 올린다
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: coarse-pointer `focusItem` 블록의 `activeMapSection === 'all'` 장문 안내를 제거하거나 한 문장으로 축약한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: coarse-pointer `focusItem` 블록의 단일층 장문 안내를 제거하거나 한 문장으로 축약한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: fine-pointer `activeMapSection === 'all'` empty-state 문구를 삭제하고 짧은 상태 문구로 교체한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: fine-pointer 단일층 empty-state 문구를 삭제하고 짧은 상태 문구로 교체한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: active section empty-state 문구를 두 줄 이하 helper copy로 정리한다.
-   - [ ] `AGENTS.md` (new file): "지도 UI에는 장문 설명/사용법을 넣지 않는다" 규칙 추가 (task 1.4와 통합)
+- [x] `src/lib/components/ExhibitionMap.svelte`: 상단 `전시 구역별 부스 보기` 제목을 `부스보기`로 바꾼다.
+- [x] `src/lib/data/lootItems.ts`: `venue`의 구역명을 `1F / 2F / 뷰티박스 수령존` 표기로 정리한다.
+- [x] `src/lib/data/lootItems.ts`: `description`을 새 축약 표기 기준 문장으로 다시 쓴다.
+- [x] `src/lib/data/lootItems.ts`: `mapNote`를 한 줄 short note로 줄인다.
+- [x] `src/routes/+page.svelte`: `exhibition.venue`가 짧아진 뒤 home 카드와 전시회 목록이 같은 필드를 그대로 쓰도록 유지한다.
 
-13. - [ ] **booth 타이포 기본값을 더 크게 잡는다** — 박스 내부 공백보다 글자 점유율을 우선한다
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `getLabelFontSize(item)`의 기본 fallback 값을 현재 `11.5`보다 크게 조정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: overview booth `<text>` 블록의 `y` 기준점 계산을 multi-line 기준으로 다시 조정해 상단 여백을 줄인다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: single-section booth `<text>` 블록의 `y` 기준점 계산을 multi-line 기준으로 다시 조정해 상단 여백을 줄인다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: overview booth `<tspan>` 블록의 `dy` line spacing을 현재보다 조밀하게 줄인다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: single-section booth `<tspan>` 블록의 `dy` line spacing을 현재보다 조밀하게 줄인다.
-   - [ ] `src/lib/data/lootItems.ts`: 폰트 상향 후에도 예외가 필요한 브랜드만 `mapLabelFontSize`로 다시 조정한다.
+12. - [x] **장문 사용법/hover 문구를 짧은 상태 문구로 교체한다** — 지도 내부 정보 밀도를 올린다
 
-14. - [ ] **event zone 타이포와 라벨 분할도 같이 맞춘다** — booth와 event box의 조밀도가 따로 놀지 않게 한다
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `getOverlayLabelLines(label)`가 `쿠팡 뉴존 체험존`, `뉴존 선물 수령존`, `파페치 / TW 홍보 부스`를 박스 안에 맞게 나누는지 기준을 다시 정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `getEventZoneFontSize(overlay)`의 booth-sized default를 상향 조정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `getEventZoneLineGap(overlay)`를 새 폰트 기준으로 다시 맞춰 multi-line event zone 간격을 조정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: overview event zone `<text>` 블록의 `getEventZoneTextOffset(overlay, lineCount)` 적용 결과가 상하 여백을 줄이도록 다시 맞춘다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: single-section event zone `<text>` 블록의 `getEventZoneTextOffset(overlay, lineCount)` 적용 결과가 상하 여백을 줄이도록 다시 맞춘다.
-   - [ ] `src/lib/data/lootItems.ts`: 필요한 event zone만 `fontSize` 예외값을 다시 지정한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: coarse-pointer `focusItem` 블록의 `activeMapSection === 'all'` 장문 안내를 한 문장으로 축약한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: coarse-pointer `focusItem` 블록의 단일층 장문 안내를 한 문장으로 축약한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: fine-pointer `activeMapSection === 'all'` empty-state 문구를 짧은 상태 문구로 교체한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: fine-pointer 단일층 empty-state 문구를 짧은 상태 문구로 교체한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: active section empty-state 문구를 두 줄 이하 helper copy로 정리한다.
+- [x] `AGENTS.md` (new file): "지도 UI에는 장문 설명/사용법을 넣지 않는다" 규칙 추가 (task 1.4와 통합)
+
+13. - [x] **booth 타이포 기본값을 더 크게 잡는다** — 박스 내부 공백보다 글자 점유율을 우선한다
+
+- [x] `src/lib/components/ExhibitionMap.svelte`: `getLabelFontSize(item)`의 기본 fallback 값을 현재 `11.5`보다 크게 조정한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: overview booth `<text>` 블록의 `y` 기준점 계산을 multi-line 기준으로 다시 조정해 상단 여백을 줄인다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: single-section booth `<text>` 블록의 `y` 기준점 계산을 multi-line 기준으로 다시 조정해 상단 여백을 줄인다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: overview booth `<tspan>` 블록의 `dy` line spacing을 현재보다 조밀하게 줄인다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: single-section booth `<tspan>` 블록의 `dy` line spacing을 현재보다 조밀하게 줄인다.
+- [x] `src/lib/data/lootItems.ts`: 폰트 상향 후에도 예외가 필요한 브랜드만 `mapLabelFontSize`로 다시 조정한다.
+
+14. - [x] **event zone 타이포와 라벨 분할도 같이 맞춘다** — booth와 event box의 조밀도가 따로 놀지 않게 한다
+
+- [x] `src/lib/components/ExhibitionMap.svelte`: `getOverlayLabelLines(label)`가 `쿠팡 뉴존 체험존`, `뉴존 선물 수령존`, `파페치 / TW 홍보 부스`를 박스 안에 맞게 나누는 기준을 다시 정한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: `getEventZoneFontSize(overlay)`의 booth-sized default를 상향 조정한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: `getEventZoneLineGap(overlay)`를 새 폰트 기준으로 다시 맞춰 multi-line event zone 간격을 조정한다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: overview event zone `<text>` 블록의 `getEventZoneTextOffset(overlay, lineCount)` 적용 결과가 상하 여백을 줄이도록 다시 맞춘다.
+- [x] `src/lib/components/ExhibitionMap.svelte`: single-section event zone `<text>` 블록의 `getEventZoneTextOffset(overlay, lineCount)` 적용 결과가 상하 여백을 줄이도록 다시 맞춘다.
+- [x] `src/lib/data/lootItems.ts`: 필요한 event zone만 `fontSize` 예외값을 다시 지정한다.
 
 ### Phase 5: 회귀 방지 계약과 검증 순서를 문서로 남긴다 (12 tasks)
 
-15. - [ ] **좌표 회귀를 막는 contract assertion을 넓힌다** — 이번 후속 배치가 다시 흐트러지지 않게 한다
-   - [ ] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 1F 좌측 세로열 동일 `renderX` 검증을 추가한다.
-   - [ ] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 1F 중앙 가로열 동일 `renderY` 검증을 추가한다.
-   - [ ] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 1F 우측 세로열 동일 `renderX` 검증을 추가한다.
-   - [ ] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 2F 좌측 lane과 우측 lane 공통 axis 검증을 추가한다.
+15. - [x] **좌표 회귀를 막는 contract assertion을 넓힌다** — 이번 후속 배치가 다시 흐트러지지 않게 한다
 
-16. - [ ] **정적 검증과 육안 검증 순서를 구현용 문서에 남긴다** — 레이아웃 수정 후 확인 루틴을 고정한다
-   - [ ] `MANUAL_TASKS.md`: 1F 좌측/중앙/우측 브랜드축이 서로 무간격으로 붙는지 확인하는 항목을 추가한다.
-   - [ ] `MANUAL_TASKS.md`: 1F 중앙 `쿠팡 어워즈 체험존`, 하단 4개 event box, `출구`, 외부 수령존 `입구/출구` 위치를 확인하는 항목을 추가한다.
-   - [ ] `MANUAL_TASKS.md`: 2F 상단 8부스와 좌측 3칸 packing이 벽에 붙어 보이는지 확인하는 항목을 추가한다.
-   - [ ] `MANUAL_TASKS.md`: 새 `hall-2f` 계단 포함 우측 4블록 vertical lane이 한 column으로 보이는지 확인하는 항목을 추가한다.
-   - [ ] `MANUAL_TASKS.md`: 장문 안내 제거와 부스 글자 점유율 증가를 확인하는 항목을 추가한다.
-   - [ ] `docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md`: 구현 검증 순서를 `npm run check` → `npm run build` → 브라우저 육안 검증으로 명시한다.
+- [x] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 1F 좌측 세로열 동일 `renderX` 검증을 추가한다.
+- [x] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 1F 중앙 가로열 동일 `renderY` 검증을 추가한다.
+- [x] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 1F 우측 세로열 동일 `renderX` 검증을 추가한다.
+- [x] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`에 2F 좌측 lane과 우측 lane 공통 axis 검증을 추가한다.
+
+16. - [x] **정적 검증과 육안 검증 순서를 구현용 문서에 남긴다** — 레이아웃 수정 후 확인 루틴을 고정한다
+
+- [x] `MANUAL_TASKS.md`: 1F 좌측/중앙/우측 브랜드축이 서로 무간격으로 붙는지 확인하는 항목을 추가한다.
+- [x] `MANUAL_TASKS.md`: 1F 중앙 `쿠팡 어워즈 체험존`, 하단 4개 event box, `출구`, 외부 수령존 `입구/출구` 위치를 확인하는 항목을 추가한다.
+- [x] `MANUAL_TASKS.md`: 2F 상단 8부스와 좌측 3칸 packing이 벽에 붙어 보이는지 확인하는 항목을 추가한다.
+- [x] `MANUAL_TASKS.md`: 새 `hall-2f` 계단 포함 우측 4블록 vertical lane이 한 column으로 보이는지 확인하는 항목을 추가한다.
+- [x] `MANUAL_TASKS.md`: 장문 안내 제거와 부스 글자 점유율 증가를 확인하는 항목을 추가한다.
+- [x] `docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md`: 구현 검증 순서를 `npm run check` → `npm run build` → 브라우저 육안 검증으로 명시한다.
+
+## 구현 검증 순서
+
+1. `npm run check`
+2. `npm run build`
+3. 브라우저 육안 검증
 
 ---
 
-*상태: 초안 | 진행률: 0/93 (0%)*
+_상태: 구현중 | 진행률: 93/93 (100%)_

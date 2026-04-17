@@ -440,11 +440,29 @@
 	}
 
 	function getLabelFontSize(item: LootItem) {
-		return item.mapLabelFontSize ?? item.fontSize ?? 11.5;
+		return item.mapLabelFontSize ?? item.fontSize ?? 12.4;
+	}
+
+	function getBoothTextOffset(item: LootItem, lineCount: number) {
+		if (lineCount <= 1) return 0;
+		return getLabelFontSize(item) * 0.3;
+	}
+
+	function getBoothLineGap(item: LootItem) {
+		return getLabelFontSize(item) * 0.84;
 	}
 
 	function getOverlayLabelLines(label: string) {
 		const normalized = label.trim();
+		if (normalized === '쿠팡 뉴존 체험존') {
+			return ['쿠팡 뉴존', '체험존'];
+		}
+		if (normalized === '뉴존 선물 수령존') {
+			return ['뉴존 선물', '수령존'];
+		}
+		if (normalized === '파페치 / TW 홍보 부스') {
+			return ['파페치 / TW', '홍보 부스'];
+		}
 		if (normalized.includes(' / ')) {
 			return normalized.split(' / ').slice(0, 2);
 		}
@@ -464,16 +482,16 @@
 			return overlay.fontSize;
 		}
 
-		return isBoothSizedEventZone(overlay) ? 8 : 9;
+		return isBoothSizedEventZone(overlay) ? 9 : 9.6;
 	}
 
 	function getEventZoneTextOffset(overlay: EventZoneOverlay, lineCount: number) {
 		if (lineCount <= 1) return 0;
-		return getEventZoneFontSize(overlay) * 0.34;
+		return getEventZoneFontSize(overlay) * 0.3;
 	}
 
 	function getEventZoneLineGap(overlay: EventZoneOverlay) {
-		return getEventZoneFontSize(overlay) * 0.9;
+		return getEventZoneFontSize(overlay) * 0.82;
 	}
 
 	function getBoothVisual(item: LootItem) {
@@ -799,7 +817,7 @@
 			<p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
 				{exhibition.mapTitle}
 			</p>
-			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">전시 구역별 부스 보기</h2>
+			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">부스보기</h2>
 			<p class="mt-2 text-xs leading-5 text-muted-foreground">{exhibition.mapNote}</p>
 		</div>
 
@@ -857,9 +875,7 @@
 			</div>
 			{#if isCoarsePointer}
 				<p class="mt-2 text-xs leading-5 text-muted-foreground">
-					부스를 다시 탭하면 상세 시트가 열립니다. {activeMapSection === 'all'
-						? '전체보기에서도 핀치 확대, 드래그 이동, 확대 버튼으로 원하는 구역을 바로 살펴볼 수 있습니다.'
-						: '단일층에서는 핀치 확대, 드래그 이동, 확대 버튼을 함께 사용할 수 있습니다.'}
+					한 번 더 탭하면 상세 시트가 열립니다.
 				</p>
 			{/if}
 		{:else}
@@ -868,15 +884,15 @@
 			</p>
 			<p class="mt-1 text-sm text-muted-foreground">
 				{#if activeMapSection !== 'all' && activeMapSectionItems.length === 0}
-					이 구역은 브랜드 부스보다 수령 안내와 동선 정보가 중심입니다.
+					수령과 동선 안내 중심 구역입니다.
 				{:else if isCoarsePointer}
 					{activeMapSection === 'all'
-						? '전체 overview에서는 부스를 탭한 뒤 확대 상태를 유지한 채 다른 구역을 이어서 탐색할 수 있습니다.'
-						: '부스를 탭하면 선택 요약이 이 영역에 표시됩니다.'}
+						? '부스를 탭하면 구역 요약이 표시됩니다.'
+						: '부스를 탭하면 현재 구역 요약이 표시됩니다.'}
 				{:else}
 					{activeMapSection === 'all'
-						? '브랜드 박스에 커서를 올리면 전체 overview 안에서 현재 구역과 상태를 함께 요약해 보여줍니다.'
-						: '브랜드 박스에 커서를 올리면 층과 상태를 요약해 보여줍니다.'}
+						? '포인터를 올리면 구역과 상태를 보여줍니다.'
+						: '포인터를 올리면 상태를 보여줍니다.'}
 				{/if}
 			</p>
 		{/if}
@@ -890,9 +906,7 @@
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
 						<h3 class="font-heading text-lg font-semibold text-foreground">전체 Overview</h3>
-						<p class="mt-1 text-[11px] text-muted-foreground">
-							전체 구역을 한 장의 지도처럼 훑으면서 핀치 확대, 드래그 이동, 확대 버튼으로 원하는 섹션을 바로 살펴볼 수 있습니다.
-						</p>
+						<p class="mt-1 text-[11px] text-muted-foreground">한 장으로 보고 필요한 구역만 확대하세요.</p>
 					</div>
 
 					<div class="flex items-center gap-2">
@@ -998,9 +1012,9 @@
 												stroke-width={EVENT_ZONE_STROKE_WIDTH}
 												rx={EVENT_ZONE_RADIUS}
 											/>
-											<text
-												x={overlay.x + overlay.width / 2}
-												y={overlay.y + overlay.height / 2 - getEventZoneTextOffset(overlay, overlayLabelLines.length)}
+										<text
+											x={overlay.x + overlay.width / 2}
+											y={overlay.y + overlay.height / 2 - getEventZoneTextOffset(overlay, overlayLabelLines.length)}
 												text-anchor="middle"
 												dominant-baseline="middle"
 												fill={EVENT_ZONE_TEXT}
@@ -1145,7 +1159,7 @@
 										/>
 										<text
 											x={boothRect.x + boothRect.width / 2}
-											y={boothRect.y + boothRect.height / 2 - (labelLines.length > 1 ? getLabelFontSize(item) * 0.36 : 0)}
+											y={boothRect.y + boothRect.height / 2 - getBoothTextOffset(item, labelLines.length)}
 											text-anchor="middle"
 											dominant-baseline="middle"
 											fill={visual.text}
@@ -1155,7 +1169,7 @@
 											{#each labelLines as line, lineIndex (line)}
 												<tspan
 													x={boothRect.x + boothRect.width / 2}
-													dy={lineIndex === 0 ? 0 : getLabelFontSize(item) * 0.92}
+													dy={lineIndex === 0 ? 0 : getBoothLineGap(item)}
 												>
 													{line}
 												</tspan>
@@ -1241,9 +1255,7 @@
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
 						<h3 class="font-heading text-lg font-semibold text-foreground">{section.label}</h3>
-						<p class="mt-1 text-[11px] text-muted-foreground">
-							지도 영역 안에서는 한 손가락 드래그가 지도 이동을 소유합니다. 핀치와 확대 버튼으로 배율을 바꿀 수 있고, 페이지 스크롤은 지도 밖에서 계속됩니다.
-						</p>
+						<p class="mt-1 text-[11px] text-muted-foreground">드래그로 이동하고 핀치나 버튼으로 확대하세요.</p>
 					</div>
 
 					<div class="flex items-center gap-2">
@@ -1463,7 +1475,7 @@
 								/>
 								<text
 									x={boothRect.x + boothRect.width / 2}
-									y={boothRect.y + boothRect.height / 2 - (labelLines.length > 1 ? getLabelFontSize(item) * 0.36 : 0)}
+									y={boothRect.y + boothRect.height / 2 - getBoothTextOffset(item, labelLines.length)}
 									text-anchor="middle"
 									dominant-baseline="middle"
 									fill={visual.text}
@@ -1473,7 +1485,7 @@
 									{#each labelLines as line, lineIndex (line)}
 										<tspan
 											x={boothRect.x + boothRect.width / 2}
-											dy={lineIndex === 0 ? 0 : getLabelFontSize(item) * 0.92}
+											dy={lineIndex === 0 ? 0 : getBoothLineGap(item)}
 										>
 											{line}
 										</tspan>
