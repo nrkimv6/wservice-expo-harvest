@@ -732,6 +732,19 @@ function getCoupangMegaBeautyStairs(mapSectionId: MapSectionId): StairsOverlay {
 	return overlay;
 }
 
+function getRequiredBoothRenderValue(
+	itemId: string,
+	key: 'renderX' | 'renderY'
+): number {
+	const value = COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId][key];
+
+	if (value === undefined) {
+		throw new Error(`Missing ${key} for ${itemId}`);
+	}
+
+	return value;
+}
+
 function assertSingleAxis(values: readonly number[], message: string) {
 	if (new Set(values).size !== 1) {
 		throw new Error(message);
@@ -748,28 +761,28 @@ function assertPackedAxis(values: readonly number[], step: number, message: stri
 
 function assertCoupangMegaBeautyLayoutContract() {
 	const hall1fLeftColumnX = HALL_1F_LEFT_COLUMN_BOOTH_IDS.map(
-		(itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderX
+		(itemId) => getRequiredBoothRenderValue(itemId, 'renderX')
 	);
 	const hall1fLeftColumnY = HALL_1F_LEFT_COLUMN_BOOTH_IDS.map(
-		(itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderY
+		(itemId) => getRequiredBoothRenderValue(itemId, 'renderY')
 	);
 	const hall1fCenterRowY = HALL_1F_CENTER_ROW_BOOTH_IDS.map(
-		(itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderY
+		(itemId) => getRequiredBoothRenderValue(itemId, 'renderY')
 	);
 	const hall1fCenterRowX = HALL_1F_CENTER_ROW_BOOTH_IDS.map(
-		(itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderX
+		(itemId) => getRequiredBoothRenderValue(itemId, 'renderX')
 	);
 	const hall1fRightColumnX = HALL_1F_RIGHT_COLUMN_BOOTH_IDS.map(
-		(itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderX
+		(itemId) => getRequiredBoothRenderValue(itemId, 'renderX')
 	);
 	const hall1fRightColumnY = HALL_1F_RIGHT_COLUMN_BOOTH_IDS.map(
-		(itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderY
+		(itemId) => getRequiredBoothRenderValue(itemId, 'renderY')
 	);
 	const hall2fTopRowY = HALL_2F_TOP_ROW_BOOTH_IDS.map(
-		(itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderY
+		(itemId) => getRequiredBoothRenderValue(itemId, 'renderY')
 	);
 	const hall2fTopRowX = HALL_2F_TOP_ROW_BOOTH_IDS.map(
-		(itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderX
+		(itemId) => getRequiredBoothRenderValue(itemId, 'renderX')
 	);
 	const hall2fLeftLaneX = HALL_2F_LEFT_LANE_EVENT_ZONE_LABELS.map(
 		(label) => getCoupangMegaBeautyEventZone('hall-2f', label).x
@@ -781,7 +794,7 @@ function assertCoupangMegaBeautyLayoutContract() {
 		getCoupangMegaBeautyStairs('hall-2f').x,
 		...HALL_2F_RIGHT_LANE_LABELS.map((label) =>
 			label === '포렌코즈'
-				? COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-forencos'].renderX
+				? getRequiredBoothRenderValue('cmbs-2026-forencos', 'renderX')
 				: getCoupangMegaBeautyEventZone('hall-2f', label).x
 		)
 	];
@@ -789,7 +802,7 @@ function assertCoupangMegaBeautyLayoutContract() {
 		getCoupangMegaBeautyStairs('hall-2f').y,
 		...HALL_2F_RIGHT_LANE_LABELS.map((label) =>
 			label === '포렌코즈'
-				? COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-forencos'].renderY
+				? getRequiredBoothRenderValue('cmbs-2026-forencos', 'renderY')
 				: getCoupangMegaBeautyEventZone('hall-2f', label).y
 		)
 	];
