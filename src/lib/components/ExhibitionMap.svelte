@@ -16,7 +16,7 @@
 	type Props = {
 		exhibition: Exhibition;
 		items: LootItem[];
-		onPinClick: (id: string) => void;
+		onPinClick: (id: string, options?: { preserveMapSectionOverride?: boolean }) => void;
 		activeMapSectionOverride?: MapSectionId | null;
 		selectedItemId?: string | null;
 	};
@@ -31,6 +31,22 @@
 	type PointerSnapshot = {
 		x: number;
 		y: number;
+	};
+
+	type OverviewSectionPlacement = {
+		sectionId: MapSectionId;
+		offsetX: number;
+		offsetY: number;
+		width: number;
+		height: number;
+		titleWidth: number;
+	};
+
+	type OverviewMapMetrics = {
+		viewBox: ViewBoxMetrics;
+		width: number;
+		height: number;
+		placements: Record<MapSectionId, OverviewSectionPlacement>;
 	};
 
 	type DragGesture = {
@@ -57,6 +73,16 @@
 		centerY: number;
 	};
 
+	type ViewportTarget = {
+		key: string;
+		metrics: ViewBoxMetrics;
+		defaultScale: number;
+		defaultCenter: {
+			x: number;
+			y: number;
+		};
+	};
+
 	type GestureIntent = 'drag' | 'pinch';
 
 	const MIN_SINGLE_FLOOR_SCALE = 1;
@@ -65,6 +91,10 @@
 	const WHEEL_ZOOM_STEP = 0.24;
 	const DRAG_INTENT_THRESHOLD = 8;
 	const PINCH_INTENT_SCALE_THRESHOLD = 0.02;
+	const OVERVIEW_VIEWPORT_KEY = '__overview__';
+	const OVERVIEW_OUTER_PADDING = 24;
+	const OVERVIEW_SECTION_GAP = 28;
+	const OVERVIEW_SECTION_TITLE_HEIGHT = 28;
 
 	let {
 		exhibition,
@@ -153,7 +183,18 @@
 		const item = selectedItem;
 		const nextSection = activeMapSection;
 
-		if (!item || nextSection === 'all') {
+		if (!item) {
+			return;
+		}
+
+		if (nextSection === 'all') {
+			const nextKey = `${item.id}:all`;
+			if (lastFocusedSelectionKey === nextKey) {
+				return;
+			}
+
+			lastFocusedSelectionKey = nextKey;
+			focusOverviewViewportOnItem(item, true);
 			return;
 		}
 
@@ -189,9 +230,52 @@
 		return parseViewBox(section.viewBox);
 	}
 
+	function getOverviewMapMetrics(): OverviewMapMetrics {
+		let currentY = OVERVIEW_OUTER_PADDING;
+		let maxWidth = 0;
+		const placements = {} as Record<MapSectionId, OverviewSectionPlacement>;
+
+		for (const section of exhibition.mapSections) {
+			const metrics = getMapSectionMetrics(section);
+			placements[section.id] = {
+				sectionId: section.id,
+				offsetX: OVERVIEW_OUTER_PADDING - metrics.x,
+				offsetY: currentY + OVERVIEW_SECTION_TITLE_HEIGHT - metrics.y,
+				width: metrics.width,
+				height: metrics.height,
+				titleWidth: Math.min(Math.max(metrics.width, 156), 320)
+			};
+			currentY += OVERVIEW_SECTION_TITLE_HEIGHT + metrics.height + OVERVIEW_SECTION_GAP;
+			maxWidth = Math.max(maxWidth, metrics.width);
+		}
+
+		const width = maxWidth + OVERVIEW_OUTER_PADDING * 2;
+		const height = currentY - OVERVIEW_SECTION_GAP + OVERVIEW_OUTER_PADDING;
+
+		return {
+			viewBox: {
+				x: 0,
+				y: 0,
+				width,
+				height
+			},
+			width,
+			height,
+			placements
+		};
+	}
+
+	function getOverviewPlacement(sectionId: MapSectionId) {
+		return getOverviewMapMetrics().placements[sectionId];
+	}
+
 	function getActiveMapSectionData() {
 		if (activeMapSection === 'all') return null;
 		return exhibition.mapSections.find((section) => section.id === activeMapSection) ?? null;
+	}
+
+	function getDefaultOverviewScale() {
+		return 1;
 	}
 
 	function getDefaultMapSectionScale(section: MapSection) {
@@ -199,42 +283,70 @@
 		return metrics.height <= 220 ? 1.9 : 1.6;
 	}
 
-	function getDefaultViewportCenter(section: MapSection) {
-		const metrics = getMapSectionMetrics(section);
+	function getDefaultViewportCenter(metrics: ViewBoxMetrics) {
 		return {
 			x: metrics.x + metrics.width / 2,
 			y: metrics.y + metrics.height / 2
 		};
 	}
 
-	function getViewportMetrics(section: MapSection, scale = zoomScale) {
+	function createSectionViewportTarget(section: MapSection): ViewportTarget {
 		const metrics = getMapSectionMetrics(section);
+		return {
+			key: section.id,
+			metrics,
+			defaultScale: getDefaultMapSectionScale(section),
+			defaultCenter: getDefaultViewportCenter(metrics)
+		};
+	}
+
+	function getOverviewViewportTarget(): ViewportTarget {
+		const metrics = getOverviewMapMetrics().viewBox;
+		return {
+			key: OVERVIEW_VIEWPORT_KEY,
+			metrics,
+			defaultScale: getDefaultOverviewScale(),
+			defaultCenter: getDefaultViewportCenter(metrics)
+		};
+	}
+
+	function getActiveViewportTarget(): ViewportTarget | null {
+		if (activeMapSection === 'all') {
+			return getOverviewViewportTarget();
+		}
+
+		const section = getActiveMapSectionData();
+		if (!section) return null;
+		return createSectionViewportTarget(section);
+	}
+
+	function getViewportMetrics(target: ViewportTarget, scale = zoomScale) {
+		const metrics = target.metrics;
 		return {
 			width: metrics.width / scale,
 			height: metrics.height / scale
 		};
 	}
 
-	function getViewportWidth(section: MapSection) {
-		return getViewportMetrics(section).width;
+	function getViewportWidth(target: ViewportTarget) {
+		return getViewportMetrics(target).width;
 	}
 
-	function getViewportHeight(section: MapSection) {
-		return getViewportMetrics(section).height;
+	function getViewportHeight(target: ViewportTarget) {
+		return getViewportMetrics(target).height;
 	}
 
 	function resetViewport(nextSection: ActiveMapSection) {
-		if (nextSection === 'all') {
-			zoomScale = 1;
-			viewCenterX = 0;
-			viewCenterY = 0;
-			return;
-		}
+		const target =
+			nextSection === 'all'
+				? getOverviewViewportTarget()
+				: (() => {
+						const section = exhibition.mapSections.find((candidate) => candidate.id === nextSection);
+						return section ? createSectionViewportTarget(section) : null;
+					})();
+		if (!target) return;
 
-		const section = exhibition.mapSections.find((candidate) => candidate.id === nextSection);
-		if (!section) return;
-
-		const savedViewport = untrack(() => mapSectionViewportStates[section.id]);
+		const savedViewport = untrack(() => mapSectionViewportStates[target.key]);
 		if (savedViewport) {
 			zoomScale = savedViewport.scale;
 			viewCenterX = savedViewport.centerX;
@@ -242,25 +354,23 @@
 			return;
 		}
 
-		const defaultCenter = getDefaultViewportCenter(section);
-		const defaultScale = getDefaultMapSectionScale(section);
 		const previousViewportStates = untrack(() => mapSectionViewportStates);
-		zoomScale = defaultScale;
-		viewCenterX = defaultCenter.x;
-		viewCenterY = defaultCenter.y;
+		zoomScale = target.defaultScale;
+		viewCenterX = target.defaultCenter.x;
+		viewCenterY = target.defaultCenter.y;
 		mapSectionViewportStates = {
 			...previousViewportStates,
-			[section.id]: {
-				scale: defaultScale,
-				centerX: defaultCenter.x,
-				centerY: defaultCenter.y
+			[target.key]: {
+				scale: target.defaultScale,
+				centerX: target.defaultCenter.x,
+				centerY: target.defaultCenter.y
 			}
 		};
 	}
 
-	function clampViewportCenter(centerX: number, centerY: number, section: MapSection, scale = zoomScale) {
-		const metrics = getMapSectionMetrics(section);
-		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(section, scale);
+	function clampViewportCenter(centerX: number, centerY: number, target: ViewportTarget, scale = zoomScale) {
+		const metrics = target.metrics;
+		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(target, scale);
 		const halfWidth = viewportWidth / 2;
 		const halfHeight = viewportHeight / 2;
 
@@ -270,14 +380,14 @@
 		};
 	}
 
-	function setViewportCenter(nextX: number, nextY: number, section: MapSection, scale = zoomScale) {
-		const nextCenter = clampViewportCenter(nextX, nextY, section, scale);
+	function setViewportCenter(nextX: number, nextY: number, target: ViewportTarget, scale = zoomScale) {
+		const nextCenter = clampViewportCenter(nextX, nextY, target, scale);
 		const previousViewportStates = untrack(() => mapSectionViewportStates);
 		viewCenterX = nextCenter.x;
 		viewCenterY = nextCenter.y;
 		mapSectionViewportStates = {
 			...previousViewportStates,
-			[section.id]: {
+			[target.key]: {
 				scale,
 				centerX: nextCenter.x,
 				centerY: nextCenter.y
@@ -285,14 +395,10 @@
 		};
 	}
 
-	function getRenderedViewBox(section: MapSection) {
-		if (activeMapSection === 'all') {
-			return section.viewBox;
-		}
-
-		const metrics = getMapSectionMetrics(section);
-		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(section);
-		const nextCenter = clampViewportCenter(viewCenterX, viewCenterY, section);
+	function getRenderedViewBox(target: ViewportTarget) {
+		const metrics = target.metrics;
+		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(target);
+		const nextCenter = clampViewportCenter(viewCenterX, viewCenterY, target);
 
 		return `${nextCenter.x - viewportWidth / 2} ${nextCenter.y - viewportHeight / 2} ${viewportWidth} ${viewportHeight}`;
 	}
@@ -392,15 +498,41 @@
 		return Array.from({ length: steps }, (_, index) => overlay.y + stepHeight * (index + 1));
 	}
 
+	function getOverviewItemCenter(item: LootItem) {
+		const placement = getOverviewPlacement(item.mapSectionId);
+		if (!placement) return null;
+
+		const { x, y, width, height } = getBoothRect(item);
+		return {
+			x: x + placement.offsetX + width / 2,
+			y: y + placement.offsetY + height / 2
+		};
+	}
+
+	function focusOverviewViewportOnItem(item: LootItem, preserveZoom = false) {
+		const target = getOverviewViewportTarget();
+		const itemCenter = getOverviewItemCenter(item);
+		if (!itemCenter) return;
+
+		const nextScale = preserveZoom ? Math.max(zoomScale, target.defaultScale) : target.defaultScale;
+		applyZoomScale(nextScale, target, itemCenter.x, itemCenter.y);
+	}
+
 	function focusViewportOnItem(item: LootItem, preserveZoom = false) {
+		if (activeMapSection === 'all') {
+			focusOverviewViewportOnItem(item, preserveZoom);
+			return;
+		}
+
 		const section = exhibition.mapSections.find((candidate) => candidate.id === item.mapSectionId);
 		if (!section) return;
 
 		const { x, y, width, height } = getBoothRect(item);
-		const defaultScale = getDefaultMapSectionScale(section);
+		const target = createSectionViewportTarget(section);
+		const defaultScale = target.defaultScale;
 		const nextScale = preserveZoom ? Math.max(zoomScale, defaultScale) : defaultScale;
 
-		applyZoomScale(nextScale, section, x + width / 2, y + height / 2);
+		applyZoomScale(nextScale, target, x + width / 2, y + height / 2);
 	}
 
 	function getSinglePointer() {
@@ -440,31 +572,29 @@
 
 	function applyZoomScale(
 		nextScale: number,
-		section: MapSection,
+		target: ViewportTarget,
 		centerX = viewCenterX,
 		centerY = viewCenterY
 	) {
 		const clampedScale = clamp(nextScale, MIN_SINGLE_FLOOR_SCALE, MAX_SINGLE_FLOOR_SCALE);
 		zoomScale = clampedScale;
-		setViewportCenter(centerX, centerY, section, clampedScale);
+		setViewportCenter(centerX, centerY, target, clampedScale);
 	}
 
 	function handleZoomStep(delta: number) {
-		const section = getActiveMapSectionData();
-		if (!section) return;
+		const target = getActiveViewportTarget();
+		if (!target) return;
 
 		const nextScale = clamp(zoomScale + delta, MIN_SINGLE_FLOOR_SCALE, MAX_SINGLE_FLOOR_SCALE);
 		if (nextScale === zoomScale) return;
 
-		applyZoomScale(nextScale, section);
+		applyZoomScale(nextScale, target);
 	}
 
 	function handleZoomReset() {
-		const section = getActiveMapSectionData();
-		if (!section) return;
-
-		const defaultCenter = getDefaultViewportCenter(section);
-		applyZoomScale(getDefaultMapSectionScale(section), section, defaultCenter.x, defaultCenter.y);
+		const target = getActiveViewportTarget();
+		if (!target) return;
+		applyZoomScale(target.defaultScale, target, target.defaultCenter.x, target.defaultCenter.y);
 	}
 
 	function handleMapSectionSelect(nextSection: ActiveMapSection) {
@@ -472,9 +602,13 @@
 		hoveredItemId = null;
 	}
 
+	function handleItemPinClick(itemId: string) {
+		onPinClick(itemId, activeMapSection === 'all' ? { preserveMapSectionOverride: true } : undefined);
+	}
+
 	function handleViewportWheel(event: WheelEvent) {
-		const section = getActiveMapSectionData();
-		if (!section || !zoomViewport) return;
+		const target = getActiveViewportTarget();
+		if (!target || !zoomViewport) return;
 
 		event.preventDefault();
 
@@ -483,12 +617,12 @@
 
 		if (nextScale === zoomScale) return;
 
-		applyZoomScale(nextScale, section);
+		applyZoomScale(nextScale, target);
 	}
 
 	function handleViewportPointerDown(event: PointerEvent) {
-		const section = getActiveMapSectionData();
-		if (!section || !zoomViewport) return;
+		const target = getActiveViewportTarget();
+		if (!target || !zoomViewport) return;
 
 		if (activePointers.size === 0) {
 			gestureIntent = null;
@@ -528,8 +662,8 @@
 	}
 
 	function handleViewportPointerMove(event: PointerEvent) {
-		const section = getActiveMapSectionData();
-		if (!section || !zoomViewport || !activePointers.has(event.pointerId)) return;
+		const target = getActiveViewportTarget();
+		if (!target || !zoomViewport || !activePointers.has(event.pointerId)) return;
 
 		const previousPoint = activePointers.get(event.pointerId);
 		activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -547,13 +681,13 @@
 				MIN_SINGLE_FLOOR_SCALE,
 				MAX_SINGLE_FLOOR_SCALE
 			);
-			const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(section, nextScale);
+			const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(target, nextScale);
 			const deltaX = midpoint.x - pinchGesture.midpointX;
 			const deltaY = midpoint.y - pinchGesture.midpointY;
 
 			applyZoomScale(
 				nextScale,
-				section,
+				target,
 				pinchGesture.centerX - (deltaX / rect.width) * viewportWidth,
 				pinchGesture.centerY - (deltaY / rect.height) * viewportHeight
 			);
@@ -574,13 +708,13 @@
 
 		const deltaX = event.clientX - dragGesture.startX;
 		const deltaY = event.clientY - dragGesture.startY;
-		const viewportWidth = getViewportWidth(section);
-		const viewportHeight = getViewportHeight(section);
+		const viewportWidth = getViewportWidth(target);
+		const viewportHeight = getViewportHeight(target);
 
 		setViewportCenter(
 			dragGesture.centerX - (deltaX / rect.width) * viewportWidth,
 			dragGesture.centerY - (deltaY / rect.height) * viewportHeight,
-			section
+			target
 		);
 
 		if (
@@ -689,7 +823,9 @@
 			</div>
 			{#if isCoarsePointer}
 				<p class="mt-2 text-xs leading-5 text-muted-foreground">
-					부스를 다시 탭하면 상세 시트가 열립니다. 단일층에서는 핀치 확대, 드래그 이동, 확대 버튼을 함께 사용할 수 있습니다.
+					부스를 다시 탭하면 상세 시트가 열립니다. {activeMapSection === 'all'
+						? '전체보기에서도 핀치 확대, 드래그 이동, 확대 버튼으로 원하는 구역을 바로 살펴볼 수 있습니다.'
+						: '단일층에서는 핀치 확대, 드래그 이동, 확대 버튼을 함께 사용할 수 있습니다.'}
 				</p>
 			{/if}
 		{:else}
@@ -700,20 +836,366 @@
 				{#if activeMapSection !== 'all' && activeMapSectionItems.length === 0}
 					이 구역은 브랜드 부스보다 수령 안내와 동선 정보가 중심입니다.
 				{:else if isCoarsePointer}
-					부스를 탭하면 선택 요약이 이 영역에 표시됩니다.
+					{activeMapSection === 'all'
+						? '전체 overview에서는 부스를 탭한 뒤 확대 상태를 유지한 채 다른 구역을 이어서 탐색할 수 있습니다.'
+						: '부스를 탭하면 선택 요약이 이 영역에 표시됩니다.'}
 				{:else}
-					브랜드 박스에 커서를 올리면 층과 상태를 요약해 보여줍니다.
+					{activeMapSection === 'all'
+						? '브랜드 박스에 커서를 올리면 전체 overview 안에서 현재 구역과 상태를 함께 요약해 보여줍니다.'
+						: '브랜드 박스에 커서를 올리면 층과 상태를 요약해 보여줍니다.'}
 				{/if}
 			</p>
 		{/if}
 	</div>
 
 	<div class="flex flex-col gap-4">
+		{#if activeMapSection === 'all'}
+			{@const overviewMetrics = getOverviewMapMetrics()}
+			{@const overviewTarget = getOverviewViewportTarget()}
+			<div class="overflow-hidden rounded-[28px] border border-border bg-black/20 p-3">
+				<div class="mb-3 flex items-center justify-between gap-3 px-1">
+					<div>
+						<h3 class="font-heading text-lg font-semibold text-foreground">전체 Overview</h3>
+						<p class="mt-1 text-[11px] text-muted-foreground">
+							전체 구역을 한 장의 지도처럼 훑으면서 핀치 확대, 드래그 이동, 확대 버튼으로 원하는 섹션을 바로 살펴볼 수 있습니다.
+						</p>
+					</div>
+
+					<div class="flex items-center gap-2">
+						<div
+							class="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/35 p-1"
+							aria-label="전체 지도 확대/축소 컨트롤"
+						>
+							<button
+								type="button"
+								class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-navy-elevated text-sm font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
+								aria-label="전체 지도 축소"
+								disabled={zoomScale <= overviewTarget.defaultScale + 0.001}
+								onclick={() => handleZoomStep(-BUTTON_ZOOM_STEP)}
+							>
+								-
+							</button>
+							<button
+								type="button"
+								class="inline-flex min-w-[52px] items-center justify-center rounded-full bg-navy-elevated px-3 py-2 text-[11px] font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
+								aria-label="전체 지도 확대 리셋"
+								disabled={Math.abs(zoomScale - overviewTarget.defaultScale) < 0.001}
+								onclick={handleZoomReset}
+							>
+								리셋
+							</button>
+							<button
+								type="button"
+								class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-navy-elevated text-sm font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
+								aria-label="전체 지도 확대"
+								disabled={zoomScale >= MAX_SINGLE_FLOOR_SCALE - 0.001}
+								onclick={() => handleZoomStep(BUTTON_ZOOM_STEP)}
+							>
+								+
+							</button>
+						</div>
+
+						<span class="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+							{exhibition.mapSections.length} sections
+						</span>
+					</div>
+				</div>
+
+				<div
+					role="group"
+					aria-label="전체 지도 viewport"
+					class="overflow-hidden rounded-[24px] border border-white/6 bg-[#0b1320] touch-none"
+					style={`aspect-ratio: ${overviewMetrics.width} / ${overviewMetrics.height}; touch-action: none;`}
+					bind:this={zoomViewport}
+					onwheel={handleViewportWheel}
+					onpointerdown={handleViewportPointerDown}
+					onpointermove={handleViewportPointerMove}
+					onpointerup={handleViewportPointerUp}
+					onpointercancel={handleViewportPointerUp}
+				>
+					<svg viewBox={getRenderedViewBox(overviewTarget)} class="h-full w-full">
+						{#each exhibition.mapSections as section (section.id)}
+							{@const placement = overviewMetrics.placements[section.id]}
+							{@const sectionItems = getSectionItems(section.id)}
+							{@const sectionMetrics = getMapSectionMetrics(section)}
+							<g transform={`translate(${placement.offsetX} ${placement.offsetY})`}>
+								<rect
+									x={sectionMetrics.x - 6}
+									y={sectionMetrics.y - OVERVIEW_SECTION_TITLE_HEIGHT}
+									width={placement.titleWidth}
+									height={OVERVIEW_SECTION_TITLE_HEIGHT - 8}
+									rx="8"
+									fill="#122031"
+									stroke="#2a3f59"
+									stroke-width="1"
+									opacity="0.92"
+								/>
+								<text
+									x={sectionMetrics.x + 10}
+									y={sectionMetrics.y - 10}
+									fill="#f6d16d"
+									font-size="12"
+									font-weight="700"
+								>
+									{section.label}
+								</text>
+								<text
+									x={sectionMetrics.x + placement.titleWidth - 10}
+									y={sectionMetrics.y - 10}
+									text-anchor="end"
+									fill="#b7c6da"
+									font-size="9"
+									font-weight="600"
+								>
+									{sectionItems.length} booths
+								</text>
+								{#each section.overlays as overlay, index (`overview-${section.id}-${overlay.kind}-${index}`)}
+									{#if overlay.kind === 'eventZone'}
+										{@const overlayLabelLines = getOverlayLabelLines(overlay.label)}
+										<g pointer-events="none" opacity="0.78">
+											<rect
+												x={overlay.x}
+												y={overlay.y}
+												width={overlay.width}
+												height={overlay.height}
+												fill="#dceede"
+												stroke="#84b68a"
+												stroke-width="1"
+												rx="2"
+											/>
+											<text
+												x={overlay.x + overlay.width / 2}
+												y={overlay.y + overlay.height / 2 - (overlayLabelLines.length > 1 ? (overlay.fontSize ?? 9) * 0.34 : 0)}
+												text-anchor="middle"
+												dominant-baseline="middle"
+												fill="#406347"
+												font-size={overlay.fontSize ?? 9}
+												font-weight="600"
+											>
+												{#each overlayLabelLines as line, lineIndex (line)}
+													<tspan
+														x={overlay.x + overlay.width / 2}
+														dy={lineIndex === 0 ? 0 : (overlay.fontSize ?? 9) * 0.9}
+													>
+														{line}
+													</tspan>
+												{/each}
+											</text>
+										</g>
+									{:else if overlay.kind === 'stairs'}
+										<g pointer-events="none" opacity="0.7">
+											<rect
+												x={overlay.x}
+												y={overlay.y}
+												width={overlay.width}
+												height={overlay.height}
+												fill="#f5f5f5"
+												stroke="#8db794"
+												stroke-width="1"
+											/>
+											{#each getStairsLines(overlay) as lineY}
+												<line
+													x1={overlay.x}
+													y1={lineY}
+													x2={overlay.x + overlay.width}
+													y2={lineY}
+													stroke="#8db794"
+													stroke-width="0.5"
+												/>
+											{/each}
+										</g>
+									{:else if overlay.kind === 'arrow'}
+										<g pointer-events="none" opacity="0.86">
+											<path
+												d={getArrowPath(overlay)}
+												stroke={overlay.color ?? '#c62828'}
+												stroke-width="2"
+												fill="none"
+											/>
+											<text
+												x={getOverlayTextX(overlay)}
+												y={getOverlayTextY(overlay)}
+												text-anchor="middle"
+												fill={overlay.color ?? '#c62828'}
+												font-size="10"
+												font-weight="700"
+											>
+												{overlay.label}
+											</text>
+										</g>
+									{:else}
+										<rect
+											x={overlay.x}
+											y={overlay.y}
+											width={overlay.width}
+											height={overlay.height}
+											fill={overlay.fill}
+											opacity="0.5"
+											pointer-events="none"
+										/>
+									{/if}
+								{/each}
+
+								{#each sectionItems as item (item.id)}
+									{@const visual = getBoothVisual(item)}
+									{@const boothRect = getBoothRect(item)}
+									{@const labelLines = getLabelLines(item)}
+									{@const isSelected = item.id === selectedItemId}
+									<g
+										role="button"
+										tabindex="0"
+										class="cursor-pointer"
+										aria-label={`${item.title} 상세 보기 - ${getFloorBadge(item)}`}
+										onmouseenter={() => {
+											if (!isCoarsePointer) {
+												hoveredItemId = item.id;
+											}
+										}}
+										onmouseleave={() => {
+											if (hoveredItemId === item.id) {
+												hoveredItemId = null;
+											}
+										}}
+										onfocus={() => {
+											hoveredItemId = item.id;
+										}}
+										onblur={() => {
+											if (hoveredItemId === item.id) {
+												hoveredItemId = null;
+											}
+										}}
+										onclick={() => {
+											if (gestureIntent !== null) {
+												gestureIntent = null;
+												return;
+											}
+											handleItemPinClick(item.id);
+										}}
+										onkeydown={(event) => {
+											if (event.key === 'Enter' || event.key === ' ') {
+												event.preventDefault();
+												handleItemPinClick(item.id);
+											}
+										}}
+									>
+										<title>{item.title}</title>
+										{#if isSelected}
+											<rect
+												x={boothRect.x - 3}
+												y={boothRect.y - 3}
+												width={boothRect.width + 6}
+												height={boothRect.height + 6}
+												rx="2"
+												fill="none"
+												stroke="#f5c35c"
+												stroke-width="2.25"
+												stroke-dasharray="5 3"
+											/>
+										{/if}
+										<rect
+											x={boothRect.x}
+											y={boothRect.y}
+											width={boothRect.width}
+											height={boothRect.height}
+											rx="1.5"
+											fill={visual.fill}
+											stroke={isSelected ? '#f5c35c' : visual.stroke}
+											stroke-width={isSelected ? '2' : '1.2'}
+										/>
+										<text
+											x={boothRect.x + boothRect.width / 2}
+											y={boothRect.y + boothRect.height / 2 - (labelLines.length > 1 ? getLabelFontSize(item) * 0.36 : 0)}
+											text-anchor="middle"
+											dominant-baseline="middle"
+											fill={visual.text}
+											font-size={getLabelFontSize(item)}
+											font-weight="700"
+										>
+											{#each labelLines as line, lineIndex (line)}
+												<tspan
+													x={boothRect.x + boothRect.width / 2}
+													dy={lineIndex === 0 ? 0 : getLabelFontSize(item) * 0.92}
+												>
+													{line}
+												</tspan>
+											{/each}
+										</text>
+
+										{#if item.isCompleted}
+											<circle
+												cx={boothRect.x + boothRect.width - 7}
+												cy={boothRect.y + 7}
+												r="7"
+												fill={visual.badge}
+												stroke="#0f1724"
+												stroke-width="1"
+											/>
+											<text
+												x={boothRect.x + boothRect.width - 7}
+												y={boothRect.y + 7}
+												text-anchor="middle"
+												dominant-baseline="middle"
+												fill="#0f1724"
+												font-size="8"
+												font-weight="700"
+											>
+												✓
+											</text>
+										{:else if item.isBookmarked}
+											<circle
+												cx={boothRect.x + boothRect.width - 7}
+												cy={boothRect.y + 7}
+												r="7"
+												fill={visual.badge}
+												stroke="#0f1724"
+												stroke-width="1"
+											/>
+											<text
+												x={boothRect.x + boothRect.width - 7}
+												y={boothRect.y + 7}
+												text-anchor="middle"
+												dominant-baseline="middle"
+												fill="#0f1724"
+												font-size="8"
+												font-weight="700"
+											>
+												★
+											</text>
+										{:else if item.firstComeEvent.trim().length > 0}
+											<circle
+												cx={boothRect.x + boothRect.width - 7}
+												cy={boothRect.y + 7}
+												r="7"
+												fill={visual.badge}
+												stroke="#0f1724"
+												stroke-width="1"
+											/>
+											<text
+												x={boothRect.x + boothRect.width - 7}
+												y={boothRect.y + 7}
+												text-anchor="middle"
+												dominant-baseline="middle"
+												fill="#0f1724"
+												font-size="8"
+												font-weight="700"
+											>
+												!
+											</text>
+										{/if}
+									</g>
+								{/each}
+							</g>
+						{/each}
+					</svg>
+				</div>
+			</div>
+		{:else}
 		{#each visibleMapSections as section (section.id)}
 			{@const sectionItems = getSectionItems(section.id)}
 			{@const sectionMetrics = getMapSectionMetrics(section)}
 			{@const isInteractiveSection = activeMapSection === section.id}
-			{@const defaultSectionScale = getDefaultMapSectionScale(section)}
+			{@const sectionTarget = createSectionViewportTarget(section)}
+			{@const defaultSectionScale = sectionTarget.defaultScale}
 			<div class="overflow-hidden rounded-[28px] border border-border bg-black/20 p-3">
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
@@ -782,7 +1264,7 @@
 					onpointerup={activeMapSection === section.id ? handleViewportPointerUp : undefined}
 					onpointercancel={activeMapSection === section.id ? handleViewportPointerUp : undefined}
 				>
-					<svg viewBox={getRenderedViewBox(section)} class="h-full w-full">
+					<svg viewBox={getRenderedViewBox(sectionTarget)} class="h-full w-full">
 						{#each section.overlays as overlay, index (`${section.id}-${overlay.kind}-${index}`)}
 							{#if overlay.kind === 'eventZone'}
 								{@const overlayLabelLines = getOverlayLabelLines(overlay.label)}
@@ -903,12 +1385,12 @@
 										gestureIntent = null;
 										return;
 									}
-									onPinClick(item.id);
+									handleItemPinClick(item.id);
 								}}
 								onkeydown={(event) => {
 									if (event.key === 'Enter' || event.key === ' ') {
 										event.preventDefault();
-										onPinClick(item.id);
+										handleItemPinClick(item.id);
 									}
 								}}
 							>
@@ -1022,5 +1504,6 @@
 				</div>
 			</div>
 		{/each}
+		{/if}
 	</div>
 </section>

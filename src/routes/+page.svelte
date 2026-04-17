@@ -163,12 +163,17 @@
 		};
 	}
 
-	function selectItem(id: string, focusMap = false, openDetail = false) {
+	function selectItem(
+		id: string,
+		focusMap = false,
+		openDetail = false,
+		preserveMapSectionOverride = false
+	) {
 		const nextItem =
 			(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items).find((item) => item.id === id) ??
 			null;
 
-		if (nextItem) {
+		if (nextItem && !preserveMapSectionOverride) {
 			mapSectionOverride = nextItem.mapSectionId;
 		}
 
@@ -381,13 +386,13 @@
 			<ExhibitionMap
 				exhibition={selectedExhibition}
 				items={items}
-				onPinClick={(id) => {
+				onPinClick={(id, options) => {
 					if (selectedId === id) {
 						detailItemId = id;
 						return;
 					}
 
-					selectItem(id);
+					selectItem(id, false, false, options?.preserveMapSectionOverride ?? false);
 				}}
 				activeMapSectionOverride={mapSectionOverride}
 				selectedItemId={selectedId}

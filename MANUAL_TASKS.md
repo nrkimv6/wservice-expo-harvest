@@ -5,6 +5,10 @@
 
 ## 미완료
 
+- [ ] `전체` overview에서 두 손가락 pinch와 `+ / - / 리셋` 버튼으로 확대/축소가 모두 동작하는지 확인 — from: 2026-04-17_refine-coupang-overview-map-zoom.md#12 (2026-04-17)
+- [ ] `전체` overview에서 드래그 pan 후 선택이 유지되고 의도치 않은 상세 시트 오탭이 발생하지 않는지 확인 — from: 2026-04-17_refine-coupang-overview-map-zoom.md#12 (2026-04-17)
+- [ ] `전체` overview에서 같은 부스를 한 번 탭하면 선택만 되고, 두 번째 탭에서 상세 시트가 열리는지 확인 — from: 2026-04-17_refine-coupang-overview-map-zoom.md#12 (2026-04-17)
+- [ ] 홈/리스트/상세의 `지도에서 보기`는 기존처럼 해당 섹션으로 이동하고, overview 안에서 지도 부스를 탭할 때만 `all` 상태가 유지되는지 확인 — from: 2026-04-17_refine-coupang-overview-map-zoom.md#12 (2026-04-17)
 - [ ] 단일층 지도에서 두 손가락 pinch로 확대/축소가 체감될 정도로 반응하는지 확인 — from: 2026-04-17_refine-coupang-floor-map-gesture-usability.md#7 (2026-04-17)
 - [ ] 단일층 지도에서 한 손가락 drag pan 후 의도치 않은 부스 상세 시트가 바로 열리지 않는지 확인 — from: 2026-04-17_refine-coupang-floor-map-gesture-usability.md#7 (2026-04-17)
 - [ ] `+ / - / 리셋` zoom 버튼이 단일층 지도에서 모두 동작하는지 확인 — from: 2026-04-17_refine-coupang-floor-map-gesture-usability.md#7 (2026-04-17)
