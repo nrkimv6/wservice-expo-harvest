@@ -95,7 +95,9 @@
 
 				<div class="pointer-events-none absolute left-1/2 top-[calc(100%+10px)] hidden -translate-x-1/2 rounded-xl border border-border bg-black/90 px-3 py-2 text-left shadow-lg group-hover:block">
 					<p class="whitespace-nowrap text-xs font-semibold text-foreground">{item.title}</p>
-					<p class="mt-1 whitespace-nowrap text-[10px] text-muted-foreground">{item.location}</p>
+					{#if item.location}
+						<p class="mt-1 whitespace-nowrap text-[10px] text-muted-foreground">{item.location}</p>
+					{/if}
 				</div>
 			</button>
 		{/each}

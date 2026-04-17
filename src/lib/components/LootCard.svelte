@@ -79,15 +79,19 @@
 				<span>{item.prize}</span>
 			</div>
 
-			<div class="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-				<MapPin size={14} />
-				<span>{item.location}</span>
-			</div>
+			{#if item.location}
+				<div class="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+					<MapPin size={14} />
+					<span>{item.location}</span>
+				</div>
+			{/if}
 
 			<div class="mt-3 flex flex-wrap gap-2 text-[11px]">
-				<span class="rounded-full border border-border bg-black/20 px-2.5 py-1 text-muted-foreground">
-					#{item.hashtags.length} hashtags
-				</span>
+				{#if item.hashtags.length > 0}
+					<span class="rounded-full border border-border bg-black/20 px-2.5 py-1 text-muted-foreground">
+						#{item.hashtags.length} hashtags
+					</span>
+				{/if}
 				<span class="rounded-full border border-border bg-black/20 px-2.5 py-1 text-muted-foreground">
 					{item.socialLinks.length} SNS links
 				</span>

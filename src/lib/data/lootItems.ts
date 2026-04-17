@@ -64,6 +64,14 @@ function createSocialLink(
 	return { id, label, url, platform };
 }
 
+function stripBoothMeta(items: LootItem[], hashtagOverrides: Record<string, string[]> = {}): LootItem[] {
+	return items.map((item) => ({
+		...item,
+		location: '',
+		hashtags: hashtagOverrides[item.id] ?? []
+	}));
+}
+
 const demoExhibition: Exhibition = {
 	id: 'expo-harvest-demo',
 	name: 'Expo Harvest Demo',
@@ -75,7 +83,7 @@ const demoExhibition: Exhibition = {
 	mapNote: '다음 단계에서 실제 pinch/drag 지도로 교체 예정입니다.',
 	mapAspectRatio: '16 / 10',
 	hallLabels: ['Hall A', 'Hall B', 'Hall C'],
-	items: [
+	items: stripBoothMeta([
 		{
 			id: 'demo-nvidia-roulette',
 			title: 'NVIDIA RTX Booth',
@@ -263,7 +271,7 @@ const demoExhibition: Exhibition = {
 				createSocialLink('rog-youtube', 'YouTube', 'https://www.youtube.com/@asusrog', 'youtube')
 			]
 		}
-	]
+	])
 };
 
 const coupangMegaBeautyShow2026: Exhibition = {
@@ -278,7 +286,8 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		'현재 지도는 2026-04-17 시안 이미지 기준입니다. 실제 운영 전 배치도 변경 가능성을 전제로 둡니다.',
 	mapAspectRatio: '11 / 12',
 	mapBackgroundImage: '/images/exhibitions/coupang-mega-beauty-show-2026-layout.png',
-	items: [
+	items: stripBoothMeta(
+		[
 		{
 			id: 'cmbs-2026-drg',
 			title: 'Dr.G',
@@ -716,7 +725,17 @@ const coupangMegaBeautyShow2026: Exhibition = {
 				)
 			]
 		}
-	]
+		],
+		{
+			'cmbs-2026-ariul': ['#쿠팡뷰티', '#메가뷰티쇼', '#아리얼', '@ariul_official'],
+			'cmbs-2026-naturerepublic': [
+				'#네이처리퍼블릭',
+				'#쿠팡뷰티',
+				'#메가뷰티쇼',
+				'@naturerepublic_kr'
+			]
+		}
+	)
 };
 
 export const EXHIBITIONS: Exhibition[] = [coupangMegaBeautyShow2026, demoExhibition];

@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
-	import { MapPinned, Route, Search } from 'lucide-svelte';
+	import { MapPinned, Menu, Route, Search, X } from 'lucide-svelte';
 	import AlertBanner from '$lib/components/AlertBanner.svelte';
 	import BoothDetailSheet from '$lib/components/BoothDetailSheet.svelte';
 	import ExhibitionMap from '$lib/components/ExhibitionMap.svelte';
@@ -31,6 +32,7 @@
 	let selectedId = $state<string | null>(null);
 	let liveAlertMessage = $state<string | null>(null);
 	let alertChannelStatus = $state<AlertChannelStatus>('connecting');
+	let isExhibitionMenuOpen = $state(false);
 
 	let clearLiveAlertTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -58,7 +60,7 @@
 			return `${selectedExhibition.name}에서 바로 파밍 가능한 상시 부스를 확인하세요`;
 		}
 
-		return `${selectedExhibition.name} · ${nextHotItem.time} ${nextHotItem.title} 임박 → ${nextHotItem.location}`;
+		return `${selectedExhibition.name} · ${nextHotItem.time} ${nextHotItem.title} 임박`;
 	});
 
 	const alertMessage = $derived(liveAlertMessage || fallbackAlertMessage);
@@ -106,6 +108,17 @@
 		persistSelectedExhibitionId(selectedExhibitionId);
 	});
 
+	$effect(() => {
+		if (!browser || !isExhibitionMenuOpen) return;
+
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+
+		return () => {
+			document.body.style.overflow = previousOverflow;
+		};
+	});
+
 	function updateSelectedItems(updater: (currentItems: LootItem[]) => LootItem[]) {
 		itemsByExhibition = {
 			...itemsByExhibition,
@@ -121,9 +134,18 @@
 		selectedId = null;
 	}
 
+	function toggleExhibitionMenu() {
+		isExhibitionMenuOpen = !isExhibitionMenuOpen;
+	}
+
+	function closeExhibitionMenu() {
+		isExhibitionMenuOpen = false;
+	}
+
 	function selectExhibition(exhibition: Exhibition) {
 		selectedExhibitionId = exhibition.id;
 		selectedId = null;
+		isExhibitionMenuOpen = false;
 	}
 
 	function toggleComplete(id: string) {
@@ -145,6 +167,14 @@
 	}
 </script>
 
+<svelte:window
+	onkeydown={(event) => {
+		if (isExhibitionMenuOpen && event.key === 'Escape') {
+			closeExhibitionMenu();
+		}
+	}}
+/>
+
 <svelte:head>
 	<title>{selectedExhibition.name} | expo-harvest</title>
 	<meta name="description" content={selectedExhibition.description} />
@@ -165,20 +195,34 @@
 					<p class="mt-3 text-sm leading-6 text-muted-foreground">{selectedExhibition.description}</p>
 				</div>
 
-				<div class="rounded-2xl border border-gold/20 bg-gold/10 px-3 py-2 text-right">
-					<p class="text-[10px] uppercase tracking-[0.18em] text-gold">Live Queue</p>
-					<p class="mt-1 text-sm font-semibold text-foreground">{items.length} booths</p>
-					<p class="mt-1 text-[10px] text-white/55">
-						{#if liveAlertMessage}
-							Realtime override
-						{:else if alertChannelStatus === 'connected'}
-							Realtime standby
-						{:else if alertChannelStatus === 'connecting'}
-							Realtime connecting
-						{:else}
-							Fallback schedule
-						{/if}
-					</p>
+				<div class="flex shrink-0 flex-col items-end gap-3">
+					<button
+						type="button"
+						class="flex items-center gap-2 rounded-2xl border border-border bg-navy-elevated px-3 py-2 text-sm font-semibold text-foreground transition hover:border-gold/30 hover:text-gold"
+						aria-controls="exhibition-menu-drawer"
+						aria-expanded={isExhibitionMenuOpen}
+						aria-haspopup="dialog"
+						onclick={toggleExhibitionMenu}
+					>
+						<Menu size={16} />
+						<span>박람회 메뉴</span>
+					</button>
+
+					<div class="rounded-2xl border border-gold/20 bg-gold/10 px-3 py-2 text-right">
+						<p class="text-[10px] uppercase tracking-[0.18em] text-gold">Live Queue</p>
+						<p class="mt-1 text-sm font-semibold text-foreground">{items.length} booths</p>
+						<p class="mt-1 text-[10px] text-white/55">
+							{#if liveAlertMessage}
+								Realtime override
+							{:else if alertChannelStatus === 'connected'}
+								Realtime standby
+							{:else if alertChannelStatus === 'connecting'}
+								Realtime connecting
+							{:else}
+								Fallback schedule
+							{/if}
+						</p>
+					</div>
 				</div>
 			</div>
 
@@ -208,28 +252,82 @@
 		</section>
 
 		<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
-			<div class="flex items-center justify-between gap-3">
-				<div>
-					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-						Exhibition Menu
-					</p>
-					<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">박람회 선택</h2>
+			<div class="grid gap-3 sm:grid-cols-3">
+				<div class="rounded-2xl border border-border bg-navy-surface p-4">
+					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Current Expo</p>
+					<p class="mt-2 text-base font-semibold text-foreground">{selectedExhibition.name}</p>
+					<p class="mt-1 text-xs text-muted-foreground">{selectedExhibition.venue}</p>
+					<p class="mt-2 text-[11px] text-muted-foreground">전환은 우측 상단 햄버거 메뉴에서 합니다</p>
 				</div>
-
-				<div class="rounded-full border border-border bg-navy-surface px-3 py-1 text-xs text-muted-foreground">
-					{EXHIBITIONS.length} versions
+				<div class="rounded-2xl border border-border bg-navy-surface p-4">
+					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Bookmarked</p>
+					<p class="mt-2 text-2xl font-heading font-semibold text-gold">{bookmarkedCount}</p>
+					<p class="mt-1 text-xs text-muted-foreground">관심 부스 수</p>
+				</div>
+				<div class="rounded-2xl border border-border bg-navy-surface p-4">
+					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Farmed</p>
+					<p class="mt-2 text-2xl font-heading font-semibold text-mint">{doneCount}</p>
+					<p class="mt-1 text-xs text-muted-foreground">완료 처리한 부스 수</p>
 				</div>
 			</div>
+		</section>
 
-			<div class="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-1">
+		<ExhibitionMap exhibition={selectedExhibition} items={items} onPinClick={selectItem} />
+
+		<div class="h-px bg-white/6"></div>
+
+		<LootFeed items={items} onToggleComplete={toggleComplete} onSelectItem={selectItem} />
+	</div>
+</div>
+
+{#if isExhibitionMenuOpen}
+	<div class="fixed inset-0 z-40">
+		<button
+			type="button"
+			class="absolute inset-0 bg-navy-deep/82 backdrop-blur-sm"
+			aria-label="박람회 메뉴 닫기"
+			onclick={closeExhibitionMenu}
+		></button>
+
+		<div
+			id="exhibition-menu-drawer"
+			class="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-border bg-navy-surface shadow-[-18px_0_48px_rgba(0,0,0,0.45)]"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="exhibition-menu-title"
+		>
+			<div class="flex items-start justify-between gap-3 border-b border-white/6 px-5 pb-4 pt-5">
+				<div>
+					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+						Hamburger Menu
+					</p>
+					<h2 id="exhibition-menu-title" class="mt-1 font-heading text-2xl font-semibold text-foreground">
+						박람회 선택
+					</h2>
+					<p class="mt-2 text-sm leading-6 text-muted-foreground">
+						메인 화면에서는 숨기고 여기서만 박람회를 전환합니다.
+					</p>
+				</div>
+
+				<button
+					type="button"
+					class="rounded-full border border-border bg-navy-elevated p-2 text-muted-foreground transition hover:border-gold/30 hover:text-gold"
+					aria-label="박람회 메뉴 닫기"
+					onclick={closeExhibitionMenu}
+				>
+					<X size={16} />
+				</button>
+			</div>
+
+			<div class="no-scrollbar flex-1 space-y-3 overflow-y-auto px-5 py-5">
 				{#each EXHIBITIONS as exhibition (exhibition.id)}
 					<button
 						type="button"
 						class={[
-							'min-w-[220px] rounded-[24px] border px-4 py-4 text-left transition',
+							'w-full rounded-[24px] border px-4 py-4 text-left transition',
 							exhibition.id === selectedExhibitionId
 								? 'border-gold/40 bg-gold/10 shadow-[0_18px_40px_rgba(255,199,94,0.12)]'
-								: 'border-border bg-navy-surface hover:border-gold/25'
+								: 'border-border bg-navy-elevated hover:border-gold/25'
 						]}
 						aria-pressed={exhibition.id === selectedExhibitionId}
 						onclick={() => selectExhibition(exhibition)}
@@ -256,35 +354,9 @@
 					</button>
 				{/each}
 			</div>
-		</section>
-
-		<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
-			<div class="grid gap-3 sm:grid-cols-3">
-				<div class="rounded-2xl border border-border bg-navy-surface p-4">
-					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Current Expo</p>
-					<p class="mt-2 text-base font-semibold text-foreground">{selectedExhibition.name}</p>
-					<p class="mt-1 text-xs text-muted-foreground">{selectedExhibition.venue}</p>
-				</div>
-				<div class="rounded-2xl border border-border bg-navy-surface p-4">
-					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Bookmarked</p>
-					<p class="mt-2 text-2xl font-heading font-semibold text-gold">{bookmarkedCount}</p>
-					<p class="mt-1 text-xs text-muted-foreground">관심 부스 수</p>
-				</div>
-				<div class="rounded-2xl border border-border bg-navy-surface p-4">
-					<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Farmed</p>
-					<p class="mt-2 text-2xl font-heading font-semibold text-mint">{doneCount}</p>
-					<p class="mt-1 text-xs text-muted-foreground">완료 처리한 부스 수</p>
-				</div>
-			</div>
-		</section>
-
-		<ExhibitionMap exhibition={selectedExhibition} items={items} onPinClick={selectItem} />
-
-		<div class="h-px bg-white/6"></div>
-
-		<LootFeed items={items} onToggleComplete={toggleComplete} onSelectItem={selectItem} />
+		</div>
 	</div>
-</div>
+{/if}
 
 <BoothDetailSheet
 	item={selectedItem}

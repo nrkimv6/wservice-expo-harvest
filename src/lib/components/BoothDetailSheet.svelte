@@ -28,6 +28,7 @@
 	let copyState = $state<'idle' | 'done' | 'error'>('idle');
 
 	const hashtagBlock = $derived(item ? item.hashtags.join('\n') : '');
+	const hasHashtags = $derived((item?.hashtags.length ?? 0) > 0);
 
 	$effect(() => {
 		if (!item || !browser) return;
@@ -116,10 +117,12 @@
 							{item.title}
 						</h2>
 
-						<div class="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-							<MapPin size={15} />
-							<span>{item.location}</span>
-						</div>
+						{#if item.location}
+							<div class="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+								<MapPin size={15} />
+								<span>{item.location}</span>
+							</div>
+						{/if}
 					</div>
 
 					<button
@@ -146,37 +149,39 @@
 					<p class="mt-2 text-sm leading-6 text-muted-foreground">{item.mission}</p>
 				</div>
 
-				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
-					<div class="flex items-center justify-between gap-3">
-						<div class="flex items-center gap-2 text-foreground">
-							<Share2 size={16} />
-							<p class="text-sm font-semibold">Hashtag Block</p>
+				{#if hasHashtags}
+					<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
+						<div class="flex items-center justify-between gap-3">
+							<div class="flex items-center gap-2 text-foreground">
+								<Share2 size={16} />
+								<p class="text-sm font-semibold">Hashtag Block</p>
+							</div>
+
+							<button
+								type="button"
+								class={[
+									'flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition',
+									copyState === 'done'
+										? 'border-mint/40 bg-mint/10 text-mint'
+										: copyState === 'error'
+											? 'border-red-400/30 bg-red-400/10 text-red-200'
+											: 'border-border bg-black/20 text-foreground'
+								]}
+								onclick={copyHashtags}
+							>
+								{#if copyState === 'done'}
+									<Check size={14} />
+									<span>복사됨</span>
+								{:else}
+									<Copy size={14} />
+									<span>{copyState === 'error' ? '다시 시도' : '코드블럭 복사'}</span>
+								{/if}
+							</button>
 						</div>
 
-						<button
-							type="button"
-							class={[
-								'flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition',
-								copyState === 'done'
-									? 'border-mint/40 bg-mint/10 text-mint'
-									: copyState === 'error'
-										? 'border-red-400/30 bg-red-400/10 text-red-200'
-										: 'border-border bg-black/20 text-foreground'
-							]}
-							onclick={copyHashtags}
-						>
-							{#if copyState === 'done'}
-								<Check size={14} />
-								<span>복사됨</span>
-							{:else}
-								<Copy size={14} />
-								<span>{copyState === 'error' ? '다시 시도' : '코드블럭 복사'}</span>
-							{/if}
-						</button>
+						<pre class="mt-3 overflow-x-auto rounded-2xl border border-white/6 bg-black/35 px-4 py-3 text-xs leading-6 text-gold"><code>{hashtagBlock}</code></pre>
 					</div>
-
-					<pre class="mt-3 overflow-x-auto rounded-2xl border border-white/6 bg-black/35 px-4 py-3 text-xs leading-6 text-gold"><code>{hashtagBlock}</code></pre>
-				</div>
+				{/if}
 
 				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
 					<div class="flex items-center gap-2 text-foreground">
@@ -207,7 +212,7 @@
 					<textarea
 						class="mt-3 min-h-28 w-full resize-none rounded-2xl border border-border bg-black/20 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
 						aria-label="부스 메모"
-						placeholder="필수 해시태그, 대기열 위치, 받는 곳 위치 같은 현장 메모를 남기세요"
+						placeholder="현장 확인 내용이나 수령 메모를 남기세요"
 						value={item.memo}
 						oninput={(event) => {
 							onMemoChange(item.id, (event.currentTarget as HTMLTextAreaElement).value);
