@@ -8,7 +8,7 @@
 > worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-18_fix-hamburger-menu-cache-regression.md
 > 상태: 구현중
 > 진행률: 2/8 (25%)
-> 요약: 현재 햄버거 무반응 증상은 코드상 두 축으로 정리된다. 첫째, 단일 박람회 데이터 상태에서 [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest-hamburger-fix/src/routes/+page.svelte)의 가드가 햄버거 클릭을 100% 막고 있었다. 둘째, [`src/service-worker.ts`](D:/work/project/service/wtools/expo-harvest-hamburger-fix/src/service-worker.ts)가 라우트 HTML까지 앱 셸로 캐시해 오래된 HTML과 새 JS가 섞일 수 있었다. 두 원인은 이미 수정됐지만, 실제 브라우저에서 완료 판정을 내릴 증거는 아직 부족하다.
+> 요약: 현재 햄버거 무반응 증상은 코드상 두 축으로 정리된다. 첫째, 단일 박람회 데이터 상태에서 [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest-hamburger-fix/src/routes/+page.svelte)의 가드가 햄버거 클릭을 100% 막고 있었다. 둘째, [`src/service-worker.ts`](D:/work/project/service/wtools/expo-harvest-hamburger-fix/src/service-worker.ts)가 라우트 HTML까지 앱 셸로 캐시해 오래된 HTML과 새 JS가 섞일 수 있었다. 두 원인은 이미 수정됐으며, Phase 2에서 DevTools 캐시 검증, 수동 브라우저 테스트, online/offline 회귀 검증을 통해 merge-test 통과 가능성을 판정한다.
 
 ---
 
@@ -46,31 +46,39 @@
 
 ### Phase 2: 완료 가능성을 판정하는 증거를 만든다
 
-3. [ ] **캐시 경로가 정말 줄었는지 연결 지점을 다시 확인한다** — manifest/service-worker 등록면에서 추가 회귀 포인트가 없는지 닫는다
-   - [ ] `src/app.html`: manifest 연결과 기본 head 구성이 현재 서비스워커 전략과 충돌하지 않는지 확인한다.
-   - [ ] `static/manifest.webmanifest`: start_url/scope가 루트 문서 캐시 회귀를 다시 키우는 별도 설정을 갖고 있지 않은지 확인한다.
+3. [ ] **서비스워커 캐시 감소를 DevTools로 검증한다** — 라우트 HTML이 캐시에서 제외되었는지 확인한다
+   - [ ] `npm run build:raw` 재실행 후 `npm run preview` 실행
+   - [ ] DevTools → Application → Cache Storage에서 기존 캐시 항목 개수와 비교 (route HTML 항목 제거 확인)
+   - [ ] DevTools → Network 탭에서 `/` route 요청이 캐시(disk cache/memory cache)가 아닌 네트워크에서 오는지 확인
 
-4. [ ] **실서버와 가까운 smoke 환경을 다시 올린다** — preview가 실제 build 산출물을 기준으로 열리게 만든다
-   - [ ] `src/service-worker.ts`, `package.json`: `npm run check`, `npm run build:raw`를 다시 실행해 정적 검증을 고정한다.
-   - [ ] `.env.example`: preview 실행 시 필요한 public env를 주입해 500 없이 루트 `/`가 뜨는지 확인한다.
+4. [ ] **Manifest와 Service Worker 등록점에서 회귀가 없는지 닫는다** — 캐시 전략 변경이 PWA 동작을 깨뜨리지 않았는지 본다
+   - [ ] `src/app.html`: manifest 연결 및 head 구성이 현재 `networkFirst` 라우트 전략과 충돌하지 않는지 코드 검토
+   - [ ] `static/manifest.webmanifest`: `start_url: "/"` 설정이 루트 문서 캐시 회귀를 다시 유발하지 않는지 확인 (로직상 모순 없음)
 
-5. [ ] **실제 클릭 기준으로 햄버거 동작을 최종 판정한다** — synthetic event 한계를 넘는 실제 브라우저 상호작용 결과를 확보한다
-   - [ ] `src/routes/+page.svelte`: 브라우저에서 햄버거 1회 클릭 시 drawer open, 닫기 클릭 시 close 되는지 확인한다.
-   - [ ] `src/routes/+page.svelte`: 단일 박람회 데이터 상태에서도 drawer가 "현재 박람회" 정보 패널로 열리는지 확인한다.
+5. [ ] **실제 브라우저에서 햄버거 동작을 최종 검증한다** — synthetic event 한계를 넘는 실제 상호작용 결과를 확보한다
+   - [ ] `npm run preview`에서 localhost:5173 접근 후 single exhibition 상태 로드
+   - [ ] **기능 확인**: 햄버거 아이콘 클릭 → drawer 열림 / 닫기 버튼 클릭 → drawer 닫힘 (2회 반복)
+   - [ ] **상태 확인**: 단일 박람회 상태에서 drawer 제목/설명이 "현재 박람회" 문구로 표시되는지 확인
+   - [ ] **캐시 무효화 검증**: DevTools에서 Service Workers 탭 → 기존 워커 `unregister` → 새로고침 → 오래된 HTML 버전이 아닌 현재 코드가 로드되는지 확인
 
-6. [ ] **회귀 범위를 함께 닫는다** — 햄버거 수정이 다른 클릭 경로를 깨지 않았는지 본다
-   - [ ] `src/routes/+page.svelte`: 하단 네비 `map/list/saved` 탭 전환이 그대로 살아 있는지 확인한다.
-   - [ ] `src/routes/+page.svelte`, `src/service-worker.ts`: 새 서비스워커 전략에서 hard refresh 없이도 route hydration이 깨지지 않는지 확인한다.
+6. [ ] **햄버거 수정이 다른 라우트/기능을 깨뜨리지 않았는지 회귀 테스트한다** — 서비스워커 캐시 전략 변경의 side effect를 검증한다
+   - [ ] `src/routes/+page.svelte`: 하단 네비 `map/list/saved` 탭 전환 동작 확인 (햄버거 수정과 독립적이나, 드로어 열림 상태에서도 탭 전환 가능 확인)
+   - [ ] **online/offline 시나리오**: 개발자 모드 → Network 탭 → Throttling을 `Offline`으로 설정 후 이미 로드된 상태에서 route 전환 시도 → 오프라인에서도 정적 자산은 캐시에서 로드되는지, 새 route HTML은 대기하지 않고 적절한 에러/fallback을 보이는지 확인
 
-### Phase 3: merge-test 전 상태를 만들 수 있는지 결정한다
+### Phase 3: merge-test 통과 가능성을 최종 판정한다
 
-7. [ ] **완료 판정의 남은 리스크를 문서화한다** — "고쳐짐"과 "머지 가능"을 분리해 적는다
-   - [ ] `docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md`: 자동 검증과 실제 브라우저 검증의 차이를 결과 섹션에 기록한다.
-   - [ ] `MANUAL_TASKS.md`: PWA/모바일에서 필요한 캐시 초기화 또는 확인 절차가 남는다면 수동 항목으로 남긴다.
+7. [ ] **검증 결과를 정리하고 merge-test 통과 조건을 확인한다** — 항목 3-6의 검증 결과가 모두 완료되면 merge-test로 진행한다
+   - [ ] Phase 2 항목 3, 4, 5, 6 모두 ✓ 완료 확인
+   - [ ] **merge-test 통과 기준**: 
+     * 항목 3 DevTools 검증 완료 (캐시 감소 증명) 
+     * 항목 5 수동 브라우저 테스트 완료 (햄버거 동작 확인)
+     * 항목 6 온라인/오프라인 회귀 테스트 완료 (side effect 없음)
+   - [ ] 위 세 조건이 모두 충족되지 않으면 merge-test 불가 → 추가 수정 필요
 
-8. [ ] **머지 가능한 상태인지 최종 결정한다** — 완료면 커밋/merge-test, 아니면 추가 수정으로 되돌린다
-   - [ ] `src/routes/+page.svelte`, `src/service-worker.ts`: 검증이 충분하면 워크트리 변경을 커밋 가능한 상태로 정리한다.
-   - [ ] `docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md`: 완료 가능이면 상태를 유지한 채 구현 완료 직전으로 올리고, 불충분하면 추가 수정 필요 근거를 남긴다.
+8. [ ] **워크트리 변경을 정리하고 merge-test로 진행한다** — 검증 충분 시 커밋 → /merge-test 호출
+   - [ ] `src/routes/+page.svelte`, `src/service-worker.ts` 변경사항 최종 확인
+   - [ ] `git status` 확인 후 커밋 (메시지: `fix: hamburger menu guard and service worker cache strategy`)
+   - [ ] `/merge-test` 스킬 호출 → main 머지 후 T4/T5 통합 테스트 실행
 
 ---
 
