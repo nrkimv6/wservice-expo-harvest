@@ -39,7 +39,9 @@
 	const coupangMegaBeautyShowId = 'coupang-mega-beauty-show-2026';
 	const padoTips = [
 		'들어가자마자 쿠팡 2.4g 와이파이 연결하기',
-		'에스쁘아 선착순'
+		'에스쁘아 선착순',
+		'40분 부터 마감하는 부스가 생긴다',
+		'2층 아벤느, 에뛰드 줄이 길다'
 	];
 
 	function createInitialItemMap() {
