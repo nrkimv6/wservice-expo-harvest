@@ -277,7 +277,7 @@
 		{/if}
 
 		<header class="px-1 py-2">
-			<h1 class="font-heading text-3xl font-bold text-foreground">박람회 파밍 트래커</h1>
+			<h1 class="font-heading text-3xl font-bold text-foreground">오늘도 파밍</h1>
 		</header>
 
 		{#if activeTab === 'home'}
