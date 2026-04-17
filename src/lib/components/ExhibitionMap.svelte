@@ -233,8 +233,12 @@
 		return items.filter((item) => item.mapSectionId === mapSectionId);
 	}
 
-	function getMapSectionMetrics(section: MapSection) {
+	function getSourceMapSectionMetrics(section: MapSection) {
 		return parseViewBox(section.viewBox);
+	}
+
+	function getDisplayMapSectionMetrics(section: MapSection) {
+		return parseViewBox(section.displayViewBox ?? section.viewBox);
 	}
 
 	function getOverviewMapMetrics(): OverviewMapMetrics {
@@ -243,7 +247,7 @@
 		const placements = {} as Record<MapSectionId, OverviewSectionPlacement>;
 
 		for (const section of exhibition.mapSections) {
-			const metrics = getMapSectionMetrics(section);
+			const metrics = getSourceMapSectionMetrics(section);
 			placements[section.id] = {
 				sectionId: section.id,
 				offsetX: OVERVIEW_OUTER_PADDING - metrics.x,
@@ -286,7 +290,7 @@
 	}
 
 	function getDefaultMapSectionScale(section: MapSection) {
-		return DEFAULT_MAP_SECTION_SCALE;
+		return section.defaultScale ?? DEFAULT_MAP_SECTION_SCALE;
 	}
 
 	function getDefaultViewportCenter(metrics: ViewBoxMetrics) {
@@ -297,7 +301,7 @@
 	}
 
 	function createSectionViewportTarget(section: MapSection): ViewportTarget {
-		const metrics = getMapSectionMetrics(section);
+		const metrics = getDisplayMapSectionMetrics(section);
 		return {
 			key: section.id,
 			metrics,
@@ -961,7 +965,7 @@
 						{#each exhibition.mapSections as section (section.id)}
 							{@const placement = overviewMetrics.placements[section.id]}
 							{@const sectionItems = getSectionItems(section.id)}
-							{@const sectionMetrics = getMapSectionMetrics(section)}
+							{@const sectionMetrics = getSourceMapSectionMetrics(section)}
 							<g transform={`translate(${placement.offsetX} ${placement.offsetY})`}>
 								<rect
 									x={sectionMetrics.x - 6}
@@ -1243,7 +1247,7 @@
 		{:else}
 		{#each visibleMapSections as section (section.id)}
 			{@const sectionItems = getSectionItems(section.id)}
-			{@const sectionMetrics = getMapSectionMetrics(section)}
+			{@const sectionMetrics = getDisplayMapSectionMetrics(section)}
 			{@const isInteractiveSection = activeMapSection === section.id}
 			{@const sectionTarget = createSectionViewportTarget(section)}
 			{@const defaultSectionScale = sectionTarget.defaultScale}

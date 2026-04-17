@@ -73,6 +73,8 @@ export interface MapSection {
 	id: MapSectionId;
 	label: string;
 	viewBox: string;
+	displayViewBox?: string;
+	defaultScale?: number;
 	overlays: MapOverlay[];
 }
 
@@ -215,6 +217,12 @@ type BaseLootItem = Omit<
 
 const NORMALIZED_BOOTH_RENDER_WIDTH = 72;
 const NORMALIZED_BOOTH_RENDER_HEIGHT = 54;
+const HALL_1F_REFERENCE_DISPLAY_WIDTH = 666;
+const HALL_1F_REFERENCE_DISPLAY_HEIGHT = 364;
+const HALL_2F_REFERENCE_DEFAULT_SCALE = 726 / HALL_1F_REFERENCE_DISPLAY_WIDTH;
+const HALL_1F_VIEW_BOX = '12 16 666 364';
+const HALL_2F_VIEW_BOX = '12 16 726 308';
+const BEAUTY_BOX_PICKUP_SOURCE_VIEW_BOX = '418 296 144 96';
 const NORMALIZED_BOOTH_IDS = new Set<string>(['cmbs-2026-forencos']);
 const COUPANG_MEGA_BEAUTY_SOURCE_LAYOUT_COMMIT = '13f12bd';
 const BOOTH_SIZED_EVENT_ZONE_WIDTH = NORMALIZED_BOOTH_RENDER_WIDTH;
@@ -286,6 +294,15 @@ function createBoothSizedEventZoneAtCenter(
 		label,
 		fontSize
 	};
+}
+
+function createCenteredDisplayViewBox(
+	centerX: number,
+	centerY: number,
+	width = HALL_1F_REFERENCE_DISPLAY_WIDTH,
+	height = HALL_1F_REFERENCE_DISPLAY_HEIGHT
+) {
+	return `${centerX - width / 2} ${centerY - height / 2} ${width} ${height}`;
 }
 
 const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
@@ -896,20 +913,26 @@ const coupangMegaBeautyShow2026MapSections: MapSection[] = [
 	{
 		id: 'hall-1f',
 		label: '1F',
-		viewBox: '12 16 666 364',
+		viewBox: HALL_1F_VIEW_BOX,
+		displayViewBox: HALL_1F_VIEW_BOX,
+		defaultScale: 1,
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter((overlay) => overlay.mapSectionId === 'hall-1f')
 	},
 	{
 		id: 'hall-2f',
 		label: '2F',
-		viewBox: '12 16 726 308',
+		viewBox: HALL_2F_VIEW_BOX,
+		displayViewBox: HALL_2F_VIEW_BOX,
+		defaultScale: HALL_2F_REFERENCE_DEFAULT_SCALE,
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter((overlay) => overlay.mapSectionId === 'hall-2f')
 	},
 	{
 		id: 'beauty-box-pickup',
 		label: '뷰티박스 수령존',
-		// This isolated section keeps the original pickup position but caps the zoom with extra padding.
-		viewBox: '418 296 144 96',
+		// Keep overview placement on the original bounds, but match the default booth density to 1F.
+		viewBox: BEAUTY_BOX_PICKUP_SOURCE_VIEW_BOX,
+		displayViewBox: createCenteredDisplayViewBox(497, 341),
+		defaultScale: 1,
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter(
 			(overlay) => overlay.mapSectionId === 'beauty-box-pickup'
 		)

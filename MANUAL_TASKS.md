@@ -37,5 +37,8 @@
 - [ ] 정보 부족 부스가 긴 가로형이 아니라 공통 4:3 박스로 보이고, 부스 글씨가 이전보다 더 꽉 차게 보이는지 확인 — from: 2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md#8 (2026-04-17)
 - [ ] SVG 외곽 녹색 테두리가 사라졌는지, 부스 모서리가 각지고 부스 간 간격이 이전보다 조밀해졌는지 확인 — from: 2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md#8 (2026-04-17)
 - [ ] `인생네컷 포토존 / 포렌코즈 / 파페치·TW 홍보 부스`가 2F 우측 컬럼에서 세로로 나란히 보이는지 확인 — from: 2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md#8 (2026-04-17)
+- [ ] `1F → 2F → 뷰티박스 수령존` 순서로 탭을 바꿔도 기본 진입 시 부스 체감 크기가 1F 기준과 크게 다르지 않은지 확인 — from: 2026-04-18_fix-map-booth-viewport-normalization.md#7 (2026-04-18)
+- [ ] `2F` 첫 진입에서 좌측 lane과 우측 column이 모두 보이는 상태로 시작하면서도 상단 8부스가 1F보다 과하게 작아 보이지 않는지 확인 — from: 2026-04-18_fix-map-booth-viewport-normalization.md#7 (2026-04-18)
+- [ ] `뷰티박스 수령존`에서 `리셋` 후에도 같은 시야로 돌아오고, 단독 section 과대 확대처럼 보이지 않는지 확인 — from: 2026-04-18_fix-map-booth-viewport-normalization.md#7 (2026-04-18)
 
 ## 완료
