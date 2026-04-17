@@ -387,12 +387,7 @@
 				exhibition={selectedExhibition}
 				items={items}
 				onPinClick={(id, options) => {
-					if (selectedId === id) {
-						detailItemId = id;
-						return;
-					}
-
-					selectItem(id, false, false, options?.preserveMapSectionOverride ?? false);
+					selectItem(id, false, true, options?.preserveMapSectionOverride ?? false);
 				}}
 				activeMapSectionOverride={mapSectionOverride}
 				selectedItemId={selectedId}

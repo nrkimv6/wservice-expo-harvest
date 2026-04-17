@@ -655,6 +655,8 @@
 	function handleViewportPointerDown(event: PointerEvent) {
 		const target = getActiveViewportTarget();
 		if (!target || !zoomViewport) return;
+		const eventTarget = event.target as Element | null;
+		if (eventTarget?.closest('.map-booth-target')) return;
 
 		if (activePointers.size === 0) {
 			gestureIntent = null;
@@ -1077,7 +1079,7 @@
 									<g
 										role="button"
 										tabindex="0"
-										class="cursor-pointer"
+										class="map-booth-target cursor-pointer"
 										aria-label={`${item.title} 상세 보기 - ${getFloorBadge(item)}`}
 										onmouseenter={() => {
 											if (!isCoarsePointer) {
@@ -1097,7 +1099,13 @@
 												hoveredItemId = null;
 											}
 										}}
-										onclick={() => {
+										onpointerdown={(event) => {
+											event.stopPropagation();
+											if (event.button !== 0) return;
+											const currentTarget = event.currentTarget as SVGGElement & {
+												blur?: () => void;
+											};
+											currentTarget.blur?.();
 											if (gestureIntent !== null) {
 												gestureIntent = null;
 												return;
@@ -1389,7 +1397,7 @@
 							<g
 								role="button"
 								tabindex="0"
-								class="cursor-pointer"
+								class="map-booth-target cursor-pointer"
 								aria-label={`${item.title} 상세 보기 - ${getFloorBadge(item)}`}
 								onmouseenter={() => {
 									if (!isCoarsePointer) {
@@ -1409,7 +1417,13 @@
 										hoveredItemId = null;
 									}
 								}}
-								onclick={() => {
+								onpointerdown={(event) => {
+									event.stopPropagation();
+									if (event.button !== 0) return;
+									const currentTarget = event.currentTarget as SVGGElement & {
+										blur?: () => void;
+									};
+									currentTarget.blur?.();
 									if (gestureIntent !== null) {
 										gestureIntent = null;
 										return;
