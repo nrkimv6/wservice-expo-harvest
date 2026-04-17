@@ -1,12 +1,14 @@
 # fix: coupang map layout regressions after section split
 
+> 완료일: 2026-04-17
+> 아카이브됨
+> 진행률: 48/48 (100%)
 > 작성일시: 2026-04-17 20:15
 > 기준커밋: 1bb1185
 > 대상 프로젝트: expo-harvest
-> branch: impl/fix-coupang-map-layout-regressions-after-section-split
-> worktree: .worktrees/impl-fix-coupang-map-layout-regressions-after-section-split
-> worktree-owner: D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-17_fix-coupang-map-layout-regressions-after-section-split.md
-> 상태: 구현중
+> 상태: 구현완료
+> 반영일시: 2026-04-17 20:50
+> 머지커밋: dfa1da6
 > 진행률: 48/48 (100%)
 > 요약: 전시관 3분할 과정에서 사용자가 요청하지 않은 부스 재배치와 스케일 왜곡이 함께 들어가면서, 이벤트 부스 크기 정규화 누락, 2F 대열 붕괴, 전시관별 부스 크기 불균일, 계단 오버레이 누락이 발생했다. 이번 계획은 `13f12bd` 기준의 원래 형상을 참조해 “배치는 되돌리고, 크기만 균일화한다”는 원칙으로 회귀를 수정하는 데 목적이 있다.
 
@@ -113,4 +115,4 @@
 
 ---
 
-*상태: 구현중 | 진행률: 48/48 (100%)*
+*상태: 구현완료 | 진행률: 48/48 (100%)*

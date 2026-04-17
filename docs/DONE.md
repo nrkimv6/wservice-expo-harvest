@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-17: 쿠팡 맵 section 분리 후 레이아웃 회귀 복구
+  - `13f12bd` 기준 형상으로 2F 상단 8부스 가로열, 좌측 체험존 세로열, 우측 `인생네컷/포렌코즈/파페치` column 분리를 복원
+  - 1F/2F/뷰티박스 수령존의 booth-sized eventZone 크기를 공통 helper로 정규화하고, `hall-1f` 계단 2개와 `decorRect` 누락을 데이터에서 복구
+  - `npm run check`, `npm run build` 통과 후 plan archive 및 impl worktree 정리 진행
+
 - [x] 2026-04-17: 쿠팡 전체 overview 지도 확대/축소 지원
   - `ExhibitionMap.svelte`의 `전체` 탭을 단일 overview SVG와 전용 viewport 모델로 재구성해 pinch, drag, wheel, `+ / - / 리셋` 확대 흐름을 연결
   - overview에서 부스를 탭해도 `all` 상태를 유지하도록 `selectItem()` override 정책을 분리하고, 선택 부스 포커스와 안내 문구를 새 계약 기준으로 갱신

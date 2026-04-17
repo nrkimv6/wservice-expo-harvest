@@ -1,7 +1,6 @@
 # TODO
 
 ## In Progress
-- [ ] **fix: coupang map layout regressions after section split** — [plan](docs/plan/2026-04-17_fix-coupang-map-layout-regressions-after-section-split.md) (48/48, 100%)
 
 ## Pending
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
