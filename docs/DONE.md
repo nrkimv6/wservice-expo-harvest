@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-17: 쿠팡 메가뷰티쇼 지도 구역 분리 및 부스 정규화
+  - 지도를 `1F 전시관`, `2F 전시관`, `뷰티박스 수령존(1F 외부)` 3개 map section으로 분리하고 리스트/상세의 지도 포커스를 구역 기준으로 다시 연결
+  - 정보 부족 부스를 공통 4:3 박스로 정규화하고 내부 여백, 글자 밀도, 부스 간격, 우측 세로 컬럼 배치를 조정해 한 화면 정보량을 높임
+  - `npm run check`, `npm run build` 통과 후 plan archive와 impl worktree 정리까지 완료
+
 - [x] 2026-04-17: 쿠팡 메가뷰티쇼 지도 제스처 사용성 개선
   - `ExhibitionMap.svelte`의 단일층 viewport에 scale helper, drag/pinch intent 분리, pan 후 오탭 차단 로직을 추가해 모바일 확대/이동 체감을 높임
   - 단일층 헤더에 `+ / - / 리셋` 확대 컨트롤을 추가하고, 안내 문구와 `MANUAL_TASKS.md`를 새 제스처 계약 기준으로 갱신

@@ -1,13 +1,15 @@
 # refine: coupang map segmentation and booth normalization
 
+> 완료일: 2026-04-17
+> 아카이브됨
+> 진행률: 43/43 (100%)
 > 작성일시: 2026-04-17 18:40
 > 기준커밋: 849b4f1
 > 대상 프로젝트: expo-harvest
-> 상태: 구현중
-> 진행률: 40/43 (93%)
-> branch: impl/refine-coupang-map-segmentation-and-booth-normalization
-> worktree: .worktrees/impl-refine-coupang-map-segmentation-and-booth-normalization
-> worktree-owner: D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md
+> 상태: 구현완료
+> 반영일시: 2026-04-17 19:48
+> 머지커밋: 9622a22
+> 진행률: 43/43 (100%)
 > 요약: 현재 쿠팡 메가뷰티쇼 지도는 `1F/2F` 층 개념에 브랜드 부스와 `뷰티박스 수령존` 오버레이를 같이 얹는 구조라서, 사용자가 실제 동선상 별도 구역으로 인식하는 `1F 전시관`, `2F 전시관`, `뷰티박스 수령존(1F 외부)`을 독립 지도로 보기 어렵다. 이번 계획은 지도 모델을 층 중심에서 전시 구역 중심으로 재정의하고, 부스 정보가 부족한 항목도 다른 브랜드와 동일한 4:3 박스 규격으로 렌더되게 정규화하며, SVG 장식과 부스 내부 여백을 줄여 한 화면에 더 많은 부스를 읽을 수 있게 만들고, `인생네컷/포렌코즈/파페치` 우측 구역을 세로 축으로 정렬하는 데 목적이 있다.
 
 ---
@@ -84,13 +86,13 @@
 
 ### Phase 4: 검증 기준을 3개 지도와 부스 모양 변화에 맞춰 갱신한다
 
-8. - [ ] **수동 검증과 정적 검증 기준을 새 구조에 맞춰 업데이트한다**
+8. - [x] **수동 검증과 정적 검증 기준을 새 구조에 맞춰 업데이트한다**
    - [x] `MANUAL_TASKS.md`: `1F 전시관/2F 전시관/뷰티박스 수령존` 3개 지도 선택, 지도별 viewport 표시, 오버레이 전용 지도 진입, 리스트에서 지도 이동 동작을 확인하는 체크리스트를 추가한다.
    - [x] `MANUAL_TASKS.md`: **구역 간 왕복 시나리오**를 별도 항목으로 추가한다 — (a) 1F 브랜드 카드→상세→"지도에서 보기"로 1F 전시관 이동, (b) 거기서 뷰티박스 수령존 탭 전환→다시 2F 브랜드 상세 진입→2F 전시관 이동, (c) 오버레이 전용 지도 활성 상태에서 브랜드 부스 포커스 요청 시 viewport 리셋 fallback 확인.
    - [x] `MANUAL_TASKS.md`: 정보 부족 부스가 긴 가로형이 아니라 다른 브랜드와 동일한 4:3 박스로 보이는지, 내부 글씨가 더 꽉 차서 확대 의존이 줄었는지 확인하는 육안 검증 항목을 추가한다.
-   - [ ] `package.json`, `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 구현 후 `npm run check`로 타입/템플릿 회귀가 없는지 확인하는 검증 단계를 유지한다.
-   - [ ] `src/lib/components/LootCard.svelte`, `src/lib/components/BoothDetailSheet.svelte`, `src/lib/components/ExhibitionMap.svelte`: 층 배지와 지도 구역 라벨이 뒤섞여 보이지 않는지, 외곽 장식 제거 후에도 선택 상태가 충분히 식별되는지 최종 문구/스타일 점검 항목을 계획에 포함한다.
+   - [x] `package.json`, `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 구현 후 `npm run check`로 타입/템플릿 회귀가 없는지 확인하는 검증 단계를 유지한다.
+   - [x] `src/lib/components/LootCard.svelte`, `src/lib/components/BoothDetailSheet.svelte`, `src/lib/components/ExhibitionMap.svelte`: 층 배지와 지도 구역 라벨이 뒤섞여 보이지 않는지, 외곽 장식 제거 후에도 선택 상태가 충분히 식별되는지 최종 문구/스타일 점검 항목을 계획에 포함한다.
 
 ---
 
-*상태: 구현중 | 진행률: 40/43 (93%)*
+*상태: 구현완료 | 진행률: 43/43 (100%)*

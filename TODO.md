@@ -1,7 +1,6 @@
 # TODO
 
 ## In Progress
-- [ ] **refine: coupang map segmentation and booth normalization** — [plan](docs/plan/2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md) (40/43, 93%)
 
 ## Pending
 - [ ] **refine: coupang overview map zoom** — [plan](docs/plan/2026-04-17_refine-coupang-overview-map-zoom.md) (0/24, 0%)
@@ -12,6 +11,8 @@
 - [x] **refine: map pin hover UX** — [plan](docs/plan/2026-04-17_refine-map-pin-hover-ux.md) (0/9, 0%, superseded by readability/mobile plan)
 
 ## Done
+
+- [x] **refine: coupang map segmentation and booth normalization** — [plan](docs/archive/2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md) (43/43, 100%)
 
 - [x] **fix: align coupang mega beauty hardcoded review data** — [plan](docs/archive/2026-04-17_fix-coupang-mega-beauty-hardcoded-review-data.md) (50/50, 100%)
 
