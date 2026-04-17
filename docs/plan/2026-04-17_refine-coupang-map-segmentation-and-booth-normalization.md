@@ -4,7 +4,7 @@
 > 기준커밋: 849b4f1
 > 대상 프로젝트: expo-harvest
 > 상태: 초안
-> 진행률: 0/41 (0%)
+> 진행률: 0/43 (0%)
 > 요약: 현재 쿠팡 메가뷰티쇼 지도는 `1F/2F` 층 개념에 브랜드 부스와 `뷰티박스 수령존` 오버레이를 같이 얹는 구조라서, 사용자가 실제 동선상 별도 구역으로 인식하는 `1F 전시관`, `2F 전시관`, `뷰티박스 수령존(1F 외부)`을 독립 지도로 보기 어렵다. 이번 계획은 지도 모델을 층 중심에서 전시 구역 중심으로 재정의하고, 부스 정보가 부족한 항목도 다른 브랜드와 동일한 4:3 박스 규격으로 렌더되게 정규화하며, SVG 장식과 부스 내부 여백을 줄여 한 화면에 더 많은 부스를 읽을 수 있게 만들고, `인생네컷/포렌코즈/파페치` 우측 구역을 세로 축으로 정렬하는 데 목적이 있다.
 
 ---
@@ -34,11 +34,11 @@
 1. - [ ] **지도 구역 식별자와 물리적 층 표기를 다른 필드로 나눈다**
    - [ ] `src/lib/data/lootItems.ts`: `FloorId`와 별도로 `MapSectionId`(가칭) 및 지도 메타 타입을 추가해 `1F 전시관`, `2F 전시관`, `뷰티박스 수령존` 3개 구역을 표현한다.
    - [ ] `src/lib/data/lootItems.ts`: `FloorMap`/`defaultFloorId`/`MapOverlay.floorId` 등 지도 자체를 가리키는 타입 이름과 필드를 구역 중심 이름으로 바꾸거나 래핑해 의미 충돌을 제거한다.
-   - [ ] `src/lib/data/lootItems.ts`: `LootItem`에는 계속 물리적 위치를 나타내는 `floorId`/`location`을 유지하되, 지도 진입에 사용할 `mapSectionId` 또는 동등 helper를 둘지 결정한다.
+   - [ ] `src/lib/data/lootItems.ts`: `LootItem`에는 계속 물리적 위치를 나타내는 `floorId`/`location`을 유지하고, 지도 진입용으로는 **별도 필드 `mapSectionId`를 추가**한다(helper only로 우회 금지 — 데이터 자체에 귀속을 박아 Phase 2의 매핑이 단일 경로를 갖게 한다).
    - [ ] `src/lib/data/lootItems.ts`: `getFloorLabel()` 성격의 helper를 지도 구역 라벨과 물리적 층 배지 용도로 분리해 이후 UI가 어느 값을 써야 하는지 명확히 한다.
 
 2. - [ ] **쿠팡 메가뷰티쇼 지도 데이터를 3개 구역으로 다시 나눈다**
-   - [ ] `src/lib/data/lootItems.ts`: 현재 `coupangMegaBeautyShow2026Floors`를 3개 지도 구역 배열로 재구성하고, `1F 전시관`, `2F 전시관`, `뷰티박스 수령존(1F 외부)` 라벨과 `viewBox`를 정의한다.
+   - [ ] `src/lib/data/lootItems.ts`: 현재 `coupangMegaBeautyShow2026Floors`를 3개 지도 구역 배열로 재구성하고, `1F 전시관`, `2F 전시관`, `뷰티박스 수령존(1F 외부)` 라벨과 `viewBox`를 정의한다. **Phase 3-7에서 외곽 녹색 `rect`/SVG `p-2` 패딩을 제거하므로, 각 구역 `viewBox`는 부스 최외곽 좌표 + 최소 안쪽 여백만 포함하도록 여기에서 미리 맞춘다**(Phase 3에서 bounding 기준이 사라진 뒤 재계산 파편화 방지).
    - [ ] `src/lib/data/lootItems.ts`: 현재 1F 오버레이에 섞여 있는 `뷰티박스 수령존` 관련 `eventZone`, 화살표, 장식 요소를 외부 수령존 전용 지도 구역으로 이동한다.
    - [ ] `src/lib/data/lootItems.ts`: 브랜드 부스는 `1F 전시관`/`2F 전시관`에만 남기고, `뷰티박스 수령존` 지도는 오버레이 전용이어도 깨지지 않도록 데이터 조건을 정리한다.
    - [ ] `src/lib/data/lootItems.ts`: `venue`, `description`, `mapNote`, `defaultFloorId` 성격의 전시 설명 문구를 3개 지도 구역 탐색 기준에 맞게 갱신한다.
@@ -50,6 +50,7 @@
    - [ ] `src/lib/components/ExhibitionMap.svelte`: `getFloorItems()`와 `getActiveFloorData()`가 `item.floorId` 직접 비교 대신 부스-지도 구역 매핑 helper를 사용하도록 바꾼다.
    - [ ] `src/lib/components/ExhibitionMap.svelte`: `resetViewport()`, `focusViewportOnItem()`, `floorViewportStates` 저장 키를 새 지도 구역 식별자 기준으로 재연결한다.
    - [ ] `src/lib/components/ExhibitionMap.svelte`: 오버레이만 있는 `뷰티박스 수령존` 지도에서도 헤더, 빈 상태, booth count가 어색하지 않도록 요약 문구와 조건부 렌더를 정리한다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: `focusViewportOnItem()` 호출 시 대상 부스가 활성 지도 구역에 없는 경우(예: `뷰티박스 수령존` 지도 활성 상태에서 브랜드 부스 포커스 요청, 혹은 그 반대) **전체 viewport 리셋(resetViewport)으로 fallback**하고, 경고가 아닌 정상 경로로 처리한다.
 
 4. - [ ] **리스트/상세에서 지도 탭으로 돌아가는 흐름을 새 구역 모델에 맞춘다**
    - [ ] `src/routes/+page.svelte`: `mapFloorOverride`를 지도 구역 중심 이름으로 바꾸고, 전시 전환 초기값도 새 기본 지도 구역을 사용하도록 수정한다.
@@ -60,7 +61,7 @@
 ### Phase 3: 정보 부족 부스를 정규화하고 기본 렌더 밀도를 끌어올린다
 
 5. - [ ] **어떤 항목을 공통 부스 모양으로 강제할지 판정 기준을 고정한다**
-   - [ ] `src/lib/data/lootItems.ts`: 현재 쿠팡 부스 데이터 중 "부스 정보가 부족한 항목"의 판정 기준을 암묵적 빈 문자열이 아니라 명시적 목록 또는 명명된 조건으로 고정한다.
+   - [ ] `src/lib/data/lootItems.ts`: 현재 쿠팡 부스 데이터 중 "부스 정보가 부족한 항목"의 판정 기준을 **명시적 id 목록(상수)로 고정**한다(암묵적 빈 문자열/조건식 금지 — 재발 방지 목적이므로 목록 방식으로 단일화).
    - [ ] `src/lib/data/lootItems.ts`: 4:3 공통 렌더 박스를 위한 `NORMALIZED_BOOTH_RENDER_WIDTH/HEIGHT` 상수 또는 layout helper를 추가한다.
    - [ ] `src/lib/data/lootItems.ts`: 공통 박스 적용 대상이 소스 `boxWidth/boxHeight`와 무관하게 동일한 `renderWidth/renderHeight`를 쓰도록 레이아웃 정의를 재구성한다.
    - [ ] `src/lib/data/lootItems.ts`: 향후 다른 박람회 데이터에서도 같은 정규화 규칙을 재사용할 수 있게 쿠팡 전용 하드코딩과 공통 helper의 경계를 정리한다.
@@ -74,7 +75,7 @@
 7. - [ ] **부스 내부 여백과 지도 장식을 줄여 한 화면 정보량을 높인다**
    - [ ] `src/lib/components/ExhibitionMap.svelte`: 부스 텍스트가 더 꽉 차게 보이도록 라벨 폰트 크기, 다행 라벨 `tspan` 간격, 텍스트 기준점 보정을 밀도 우선 규칙으로 다시 조정한다.
    - [ ] `src/lib/components/ExhibitionMap.svelte`: `<svg class="h-full w-full p-2">`와 외곽 녹색 `rect`를 제거하거나 동등한 방식으로 축소해, 실제 지도에 쓸 수 있는 렌더 영역을 늘린다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 부스 본체 `rx="10"`과 선택 outline `rx="14"`를 제거하거나 최소화해 직사각형 중심 표현으로 바꾸고, selection 강조가 모서리 radius 없이도 읽히게 재설계한다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: 부스 본체 `rx="10"`과 선택 outline `rx="14"`를 제거(또는 `rx="2"` 이하)하고, 모서리 radius 없이도 selection이 읽히도록 **stroke-width 증가(예: 1.5→2.5) + 강조 색 대비 상승** 두 가지를 기본안으로 한다(대시/글로우는 보조 옵션).
    - [ ] `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`: 브랜드 부스 간 `renderX/renderY` 간격을 다시 조여, 겹침 없이 한 화면에 최대한 많은 박스가 보이도록 배치 밀도를 재조정한다.
    - [ ] `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`: `2F` 우측의 `인생네컷 포토존`, `포렌코즈`, `파페치 / TW 홍보 부스`가 같은 세로 축에서 위아래로 나란히 보이도록 overlay와 booth 좌표를 함께 재배치한다.
 
@@ -82,10 +83,11 @@
 
 8. - [ ] **수동 검증과 정적 검증 기준을 새 구조에 맞춰 업데이트한다**
    - [ ] `MANUAL_TASKS.md`: `1F 전시관/2F 전시관/뷰티박스 수령존` 3개 지도 선택, 지도별 viewport 표시, 오버레이 전용 지도 진입, 리스트에서 지도 이동 동작을 확인하는 체크리스트를 추가한다.
+   - [ ] `MANUAL_TASKS.md`: **구역 간 왕복 시나리오**를 별도 항목으로 추가한다 — (a) 1F 브랜드 카드→상세→"지도에서 보기"로 1F 전시관 이동, (b) 거기서 뷰티박스 수령존 탭 전환→다시 2F 브랜드 상세 진입→2F 전시관 이동, (c) 오버레이 전용 지도 활성 상태에서 브랜드 부스 포커스 요청 시 viewport 리셋 fallback 확인.
    - [ ] `MANUAL_TASKS.md`: 정보 부족 부스가 긴 가로형이 아니라 다른 브랜드와 동일한 4:3 박스로 보이는지, 내부 글씨가 더 꽉 차서 확대 의존이 줄었는지 확인하는 육안 검증 항목을 추가한다.
    - [ ] `package.json`, `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 구현 후 `npm run check`로 타입/템플릿 회귀가 없는지 확인하는 검증 단계를 유지한다.
    - [ ] `src/lib/components/LootCard.svelte`, `src/lib/components/BoothDetailSheet.svelte`, `src/lib/components/ExhibitionMap.svelte`: 층 배지와 지도 구역 라벨이 뒤섞여 보이지 않는지, 외곽 장식 제거 후에도 선택 상태가 충분히 식별되는지 최종 문구/스타일 점검 항목을 계획에 포함한다.
 
 ---
 
-*상태: 초안 | 진행률: 0/41 (0%)*
+*상태: 초안 | 진행률: 0/43 (0%)*
