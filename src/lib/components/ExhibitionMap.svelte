@@ -37,6 +37,7 @@
 		startY: number;
 		centerX: number;
 		centerY: number;
+		hasExceededThreshold: boolean;
 	};
 
 	type PinchGesture = {
@@ -54,9 +55,14 @@
 		centerY: number;
 	};
 
-	const DEFAULT_SINGLE_FLOOR_SCALE = 1.55;
-	const MIN_SINGLE_FLOOR_SCALE = 1.15;
-	const MAX_SINGLE_FLOOR_SCALE = 2.8;
+	type GestureIntent = 'drag' | 'pinch';
+
+	const MIN_SINGLE_FLOOR_SCALE = 1;
+	const MAX_SINGLE_FLOOR_SCALE = 4.6;
+	const BUTTON_ZOOM_STEP = 0.38;
+	const WHEEL_ZOOM_STEP = 0.24;
+	const DRAG_INTENT_THRESHOLD = 8;
+	const PINCH_INTENT_SCALE_THRESHOLD = 0.02;
 
 	let {
 		exhibition,
@@ -79,7 +85,7 @@
 	let activePointers = new Map<number, PointerSnapshot>();
 	let dragGesture: DragGesture | null = null;
 	let pinchGesture: PinchGesture | null = null;
-	let suppressPinClickUntil = 0;
+	let gestureIntent = $state<GestureIntent | null>(null);
 
 	const activeFloor = $derived(selectedFloor ?? exhibition.defaultFloorId);
 	const selectedItem = $derived(items.find((item) => item.id === selectedItemId) ?? null);
@@ -174,12 +180,33 @@
 		return Math.max(getFloorMetrics(floor).height - 40, 0);
 	}
 
+	function getDefaultFloorScale(floor: FloorMap) {
+		const metrics = getFloorMetrics(floor);
+		return metrics.height <= 340 ? 1.7 : 1.45;
+	}
+
+	function getDefaultViewportCenter(floor: FloorMap) {
+		const metrics = getFloorMetrics(floor);
+		return {
+			x: metrics.x + metrics.width / 2,
+			y: metrics.y + metrics.height / 2
+		};
+	}
+
+	function getViewportMetrics(floor: FloorMap, scale = zoomScale) {
+		const metrics = getFloorMetrics(floor);
+		return {
+			width: metrics.width / scale,
+			height: metrics.height / scale
+		};
+	}
+
 	function getViewportWidth(floor: FloorMap) {
-		return getFloorMetrics(floor).width / zoomScale;
+		return getViewportMetrics(floor).width;
 	}
 
 	function getViewportHeight(floor: FloorMap) {
-		return getFloorMetrics(floor).height / zoomScale;
+		return getViewportMetrics(floor).height;
 	}
 
 	function resetViewport(nextFloor: ActiveFloor) {
@@ -201,27 +228,25 @@
 			return;
 		}
 
-		const metrics = getFloorMetrics(floor);
-		const defaultCenterX = metrics.x + metrics.width / 2;
-		const defaultCenterY = metrics.y + metrics.height / 2;
+		const defaultCenter = getDefaultViewportCenter(floor);
+		const defaultScale = getDefaultFloorScale(floor);
 		const previousViewportStates = untrack(() => floorViewportStates);
-		zoomScale = DEFAULT_SINGLE_FLOOR_SCALE;
-		viewCenterX = defaultCenterX;
-		viewCenterY = defaultCenterY;
+		zoomScale = defaultScale;
+		viewCenterX = defaultCenter.x;
+		viewCenterY = defaultCenter.y;
 		floorViewportStates = {
 			...previousViewportStates,
 			[floor.id]: {
-				scale: DEFAULT_SINGLE_FLOOR_SCALE,
-				centerX: defaultCenterX,
-				centerY: defaultCenterY
+				scale: defaultScale,
+				centerX: defaultCenter.x,
+				centerY: defaultCenter.y
 			}
 		};
 	}
 
 	function clampViewportCenter(centerX: number, centerY: number, floor: FloorMap, scale = zoomScale) {
 		const metrics = getFloorMetrics(floor);
-		const viewportWidth = metrics.width / scale;
-		const viewportHeight = metrics.height / scale;
+		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(floor, scale);
 		const halfWidth = viewportWidth / 2;
 		const halfHeight = viewportHeight / 2;
 
@@ -252,8 +277,7 @@
 		}
 
 		const metrics = getFloorMetrics(floor);
-		const viewportWidth = getViewportWidth(floor);
-		const viewportHeight = getViewportHeight(floor);
+		const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(floor);
 		const nextCenter = clampViewportCenter(viewCenterX, viewCenterY, floor);
 
 		return `${nextCenter.x - viewportWidth / 2} ${nextCenter.y - viewportHeight / 2} ${viewportWidth} ${viewportHeight}`;
@@ -348,12 +372,12 @@
 		if (!floor) return;
 
 		const { x, y, width, height } = getBoothRect(item);
+		const defaultScale = getDefaultFloorScale(floor);
 		const nextScale = preserveZoom
-			? Math.max(zoomScale, DEFAULT_SINGLE_FLOOR_SCALE)
-			: DEFAULT_SINGLE_FLOOR_SCALE;
+			? Math.max(zoomScale, defaultScale)
+			: defaultScale;
 
-		zoomScale = nextScale;
-		setViewportCenter(x + width / 2, y + height / 2, floor, nextScale);
+		applyZoomScale(nextScale, floor, x + width / 2, y + height / 2);
 	}
 
 	function getSinglePointer() {
@@ -384,10 +408,40 @@
 		activePointers = new Map<number, PointerSnapshot>();
 		dragGesture = null;
 		pinchGesture = null;
+		gestureIntent = null;
 	}
 
-	function markPanIntent() {
-		suppressPinClickUntil = Date.now() + 250;
+	function markGestureIntent(kind: GestureIntent) {
+		gestureIntent = kind;
+	}
+
+	function applyZoomScale(
+		nextScale: number,
+		floor: FloorMap,
+		centerX = viewCenterX,
+		centerY = viewCenterY
+	) {
+		const clampedScale = clamp(nextScale, MIN_SINGLE_FLOOR_SCALE, MAX_SINGLE_FLOOR_SCALE);
+		zoomScale = clampedScale;
+		setViewportCenter(centerX, centerY, floor, clampedScale);
+	}
+
+	function handleZoomStep(delta: number) {
+		const floor = getActiveFloorData();
+		if (!floor) return;
+
+		const nextScale = clamp(zoomScale + delta, MIN_SINGLE_FLOOR_SCALE, MAX_SINGLE_FLOOR_SCALE);
+		if (nextScale === zoomScale) return;
+
+		applyZoomScale(nextScale, floor);
+	}
+
+	function handleZoomReset() {
+		const floor = getActiveFloorData();
+		if (!floor) return;
+
+		const defaultCenter = getDefaultViewportCenter(floor);
+		applyZoomScale(getDefaultFloorScale(floor), floor, defaultCenter.x, defaultCenter.y);
 	}
 
 	function handleFloorSelect(nextFloor: ActiveFloor) {
@@ -401,19 +455,21 @@
 
 		event.preventDefault();
 
-		const delta = event.deltaY < 0 ? 0.18 : -0.18;
+		const delta = event.deltaY < 0 ? WHEEL_ZOOM_STEP : -WHEEL_ZOOM_STEP;
 		const nextScale = clamp(zoomScale + delta, MIN_SINGLE_FLOOR_SCALE, MAX_SINGLE_FLOOR_SCALE);
 
 		if (nextScale === zoomScale) return;
 
-		zoomScale = nextScale;
-		setViewportCenter(viewCenterX, viewCenterY, floor, nextScale);
-		markPanIntent();
+		applyZoomScale(nextScale, floor);
 	}
 
 	function handleViewportPointerDown(event: PointerEvent) {
 		const floor = getActiveFloorData();
 		if (!floor || !zoomViewport) return;
+
+		if (activePointers.size === 0) {
+			gestureIntent = null;
+		}
 
 		zoomViewport.setPointerCapture(event.pointerId);
 		activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
@@ -424,7 +480,8 @@
 				startX: event.clientX,
 				startY: event.clientY,
 				centerX: viewCenterX,
-				centerY: viewCenterY
+				centerY: viewCenterY,
+				hasExceededThreshold: false
 			};
 			pinchGesture = null;
 			return;
@@ -432,10 +489,11 @@
 
 		if (activePointers.size === 2) {
 			const midpoint = getPointerMidpoint();
-			if (!midpoint) return;
+			const distance = getPointerDistance();
+			if (!midpoint || distance <= 0) return;
 
 			pinchGesture = {
-				distance: getPointerDistance(),
+				distance,
 				scale: zoomScale,
 				centerX: viewCenterX,
 				centerY: viewCenterY,
@@ -466,19 +524,24 @@
 				MIN_SINGLE_FLOOR_SCALE,
 				MAX_SINGLE_FLOOR_SCALE
 			);
-			const viewportWidth = getFloorMetrics(floor).width / nextScale;
-			const viewportHeight = getFloorMetrics(floor).height / nextScale;
+			const { width: viewportWidth, height: viewportHeight } = getViewportMetrics(floor, nextScale);
 			const deltaX = midpoint.x - pinchGesture.midpointX;
 			const deltaY = midpoint.y - pinchGesture.midpointY;
 
-			zoomScale = nextScale;
-			setViewportCenter(
-				pinchGesture.centerX - (deltaX / rect.width) * viewportWidth,
-				pinchGesture.centerY - (deltaY / rect.height) * viewportHeight,
+			applyZoomScale(
+				nextScale,
 				floor,
-				nextScale
+				pinchGesture.centerX - (deltaX / rect.width) * viewportWidth,
+				pinchGesture.centerY - (deltaY / rect.height) * viewportHeight
 			);
-			markPanIntent();
+
+			if (
+				Math.abs(nextScale - pinchGesture.scale) >= PINCH_INTENT_SCALE_THRESHOLD ||
+				Math.abs(deltaX) >= DRAG_INTENT_THRESHOLD ||
+				Math.abs(deltaY) >= DRAG_INTENT_THRESHOLD
+			) {
+				markGestureIntent('pinch');
+			}
 			return;
 		}
 
@@ -497,8 +560,15 @@
 			floor
 		);
 
-		if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
-			markPanIntent();
+		if (
+			!dragGesture.hasExceededThreshold &&
+			(Math.abs(deltaX) >= DRAG_INTENT_THRESHOLD || Math.abs(deltaY) >= DRAG_INTENT_THRESHOLD)
+		) {
+			dragGesture = {
+				...dragGesture,
+				hasExceededThreshold: true
+			};
+			markGestureIntent('drag');
 		}
 	}
 
@@ -524,7 +594,8 @@
 				startX: singlePointer.pointer.x,
 				startY: singlePointer.pointer.y,
 				centerX: viewCenterX,
-				centerY: viewCenterY
+				centerY: viewCenterY,
+				hasExceededThreshold: false
 			};
 			pinchGesture = null;
 		}
@@ -595,7 +666,7 @@
 			</div>
 			{#if isCoarsePointer}
 				<p class="mt-2 text-xs leading-5 text-muted-foreground">
-					부스를 다시 탭하면 상세 시트가 열립니다. 단일층에서는 핀치 확대와 드래그 이동이 가능합니다.
+					부스를 다시 탭하면 상세 시트가 열립니다. 단일층에서는 핀치 확대, 드래그 이동, 확대 버튼을 함께 사용할 수 있습니다.
 				</p>
 			{/if}
 		{:else}
@@ -616,20 +687,59 @@
 		{#each visibleFloors as floor (floor.id)}
 			{@const floorItems = getFloorItems(floor.id)}
 			{@const floorMetrics = getFloorMetrics(floor)}
+			{@const isInteractiveFloor = activeFloor === floor.id}
+			{@const defaultFloorScale = getDefaultFloorScale(floor)}
 			<div class="overflow-hidden rounded-[28px] border border-border bg-black/20 p-3">
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
 						<h3 class="font-heading text-lg font-semibold text-foreground">{floor.label}</h3>
 						{#if activeFloor !== 'all'}
 							<p class="mt-1 text-[11px] text-muted-foreground">
-								지도 영역 안에서는 한 손가락 드래그가 지도 이동을 소유합니다. 페이지 스크롤은 지도 밖에서 계속됩니다.
+								지도 영역 안에서는 한 손가락 드래그가 지도 이동을 소유합니다. 핀치와 확대 버튼으로 배율을 바꿀 수 있고, 페이지 스크롤은 지도 밖에서 계속됩니다.
 							</p>
 						{/if}
 					</div>
 
-					<span class="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-						{floorItems.length} booths
-					</span>
+					<div class="flex items-center gap-2">
+						{#if isInteractiveFloor}
+							<div
+								class="inline-flex items-center gap-1 rounded-full border border-white/10 bg-black/35 p-1"
+								aria-label={`${floor.label} 지도 확대/축소 컨트롤`}
+							>
+								<button
+									type="button"
+									class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-navy-elevated text-sm font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
+									aria-label={`${floor.label} 지도 축소`}
+									disabled={zoomScale <= MIN_SINGLE_FLOOR_SCALE + 0.001}
+									onclick={() => handleZoomStep(-BUTTON_ZOOM_STEP)}
+								>
+									-
+								</button>
+								<button
+									type="button"
+									class="inline-flex min-w-[52px] items-center justify-center rounded-full bg-navy-elevated px-3 py-2 text-[11px] font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
+									aria-label={`${floor.label} 지도 확대 리셋`}
+									disabled={Math.abs(zoomScale - defaultFloorScale) < 0.001}
+									onclick={handleZoomReset}
+								>
+									리셋
+								</button>
+								<button
+									type="button"
+									class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-navy-elevated text-sm font-semibold text-foreground transition disabled:cursor-not-allowed disabled:opacity-35"
+									aria-label={`${floor.label} 지도 확대`}
+									disabled={zoomScale >= MAX_SINGLE_FLOOR_SCALE - 0.001}
+									onclick={() => handleZoomStep(BUTTON_ZOOM_STEP)}
+								>
+									+
+								</button>
+							</div>
+						{/if}
+
+						<span class="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+							{floorItems.length} booths
+						</span>
+					</div>
 				</div>
 
 				<div
@@ -766,7 +876,10 @@
 									}
 								}}
 								onclick={() => {
-									if (Date.now() < suppressPinClickUntil) return;
+									if (gestureIntent !== null) {
+										gestureIntent = null;
+										return;
+									}
 									onPinClick(item.id);
 								}}
 								onkeydown={(event) => {

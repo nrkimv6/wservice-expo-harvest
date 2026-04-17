@@ -3,8 +3,11 @@
 > 작성일시: 2026-04-17 18:31
 > 기준커밋: f38947e
 > 대상 프로젝트: expo-harvest
-> 상태: 초안
-> 진행률: 0/22 (0%)
+> branch: impl/refine-coupang-floor-map-gesture-usability
+> worktree: .worktrees/impl-refine-coupang-floor-map-gesture-usability
+> worktree-owner: D:/work/project/service/wtools/expo-harvest/.worktrees/impl-refine-coupang-floor-map-gesture-usability/docs/plan/2026-04-17_refine-coupang-floor-map-gesture-usability.md
+> 상태: 구현중
+> 진행률: 32/34 (94%)
 > 요약: 현재 `ExhibitionMap`의 pinch/pan은 코드상 구현돼 있지만 확대 여유, pan 체감, tap 충돌 방지가 모두 보수적으로 잡혀 있어 모바일에서 거의 작동하지 않는 것처럼 느껴진다. 이번 계획은 제스처 체감을 실제 탐색 가능한 수준으로 끌어올리고, 이전 계획에서 제외했던 명시적 확대/축소 버튼을 별도 UX 보강 항목으로 재도입하는 데 목적이 있다.
 
 ---
@@ -19,45 +22,61 @@
 - pan은 [`clampViewportCenter()`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte:221)에서 중앙점 기준으로 제한되므로, 제스처 체감 개선은 단순히 이벤트를 더 받는 문제가 아니라 viewport 모델과 선택 포커스 복원 규칙을 함께 봐야 한다.
 - 현재 부스 클릭 억제는 시간 기반 `suppressPinClickUntil`만 사용하므로, 실제 이동량 기준 gesture intent 플래그로 바꾸지 않으면 pan 후 오탭이 계속 남을 수 있다.
 - 지도 탭 재진입과 층 복귀는 [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest/src/routes/+page.svelte)의 `selectItem()` 및 `mapFloorOverride` 흐름과 연결돼 있으므로, 확대/선택 상태 보강이 이 흐름을 깨지 않는지 같이 확인해야 한다.
+- `floorViewportStates`는 같은 날 [`docs/report/2026-04-17_root-route-button-freeze-fix.md`](D:/work/project/service/wtools/expo-harvest/docs/report/2026-04-17_root-route-button-freeze-fix.md)에서 `untrack` 회귀를 한 번 막은 영역이므로, 저장 viewport 읽기/병합 경로를 다시 건드릴 때는 `effect_update_depth_exceeded`가 재발하지 않게 같은 패턴을 유지해야 한다.
 
 ---
 
 ## TODO
 
-### Phase 1: 제스처 체감 문제를 상태 모델 기준으로 다시 정의한다
+### Phase 1: viewport 배율과 복원 규칙을 함수 단위로 재정리한다
 
-1. - [ ] **약한 zoom/pan 체감의 원인을 현재 viewport 모델 기준으로 고정한다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `DEFAULT_SINGLE_FLOOR_SCALE`, `MIN_SINGLE_FLOOR_SCALE`, `MAX_SINGLE_FLOOR_SCALE`와 `getRenderedViewBox()`의 현재 관계를 정리하고, 왜 기본 상태에서 pinch headroom과 pan 여유가 작게 느껴지는지 코드 기준으로 메모한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `clampViewportCenter()`와 `focusViewportOnItem()`의 상호작용을 점검해, 선택 부스 포커스가 수동 pan/zoom 체감을 덮어쓰는 조건을 정리한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `suppressPinClickUntil` 기반 오탭 방지 방식이 느린 드래그 후 탭 오인식을 얼마나 남기는지 판단하고, 이동량 기반 intent로 교체할지 결정한다.
+1. - [x] **기본 zoom 계산 경로를 helper 단위로 분리한다**
+   - [x] `src/lib/components/ExhibitionMap.svelte`: 단일층 기본 배율 결정을 상수 직접 참조 대신 `getDefaultFloorScale(floor: FloorMap) -> number` helper로 분리한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: viewport 가로/세로 계산을 `getViewportMetrics(floor: FloorMap, scale = zoomScale) -> { width: number; height: number }` helper로 분리한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `resetViewport(nextFloor)`가 기본 center 계산은 그대로 두되, scale 선택은 `getDefaultFloorScale()`를 사용하도록 수정한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `getViewportWidth()`, `getViewportHeight()`, `getRenderedViewBox()`가 같은 viewport size helper를 공유하도록 중복 계산을 정리한다.
 
-### Phase 2: zoom/pan 입력을 실제 탐색 가능한 수준으로 재튜닝한다
+2. - [x] **선택 포커스와 saved viewport 복원 규칙을 덮어쓰기 단위로 나눈다**
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `focusViewportOnItem(item, preserveZoom = false)`가 `DEFAULT_SINGLE_FLOOR_SCALE` 직접 참조 대신 `getDefaultFloorScale(floor)` 기준으로 preserve zoom을 계산하도록 바꾼다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `selectedItem` 기반 `$effect`가 동일 `lastFocusedSelectionKey`에서는 재센터링하지 않는 현재 가드를 유지하면서, 새 선택에서만 `focusViewportOnItem()`을 호출하는 조건을 함수명 기준으로 다시 명시한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `resetViewport()`와 `setViewportCenter()`의 `untrack(() => floorViewportStates...)` 읽기 패턴을 유지하는 작업을 별도 체크포인트로 고정해 reactive loop 회귀를 막는다.
 
-2. - [ ] **단일층 zoom 범위와 기본 배율을 다시 조율한다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 단일층 기본 배율을 현재 1.55 고정값에서 재검토하고, 초기 가독성과 추가 확대 여유를 함께 만족하는 새 기본값과 최대값 범위를 정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 휠 확대와 pinch 확대가 같은 scale clamp를 쓰더라도 모바일에서 체감이 둔하지 않도록 delta/ratio 반응을 조정할지 결정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: floor별 저장 viewport(`floorViewportStates`)를 유지하되, 사용자가 수동으로 조정한 zoom 상태를 선택 포커스나 floor 전환이 과하게 덮어쓰지 않도록 보정 규칙을 정한다.
+### Phase 2: drag/pinch intent를 시간 기반이 아니라 이동 기반으로 바꾼다
 
-3. - [ ] **pan과 booth tap 충돌을 이동량 기준으로 분리한다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: pointer down/move/up에서 실제 이동량을 누적해 drag intent와 tap intent를 분리하는 상태를 추가한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: pan 직후 `onclick`을 시간으로만 막는 현재 방식 대신, 이번 제스처가 drag/pinch였는지 여부로 booth click 허용을 판단하도록 이벤트 흐름을 정리한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 두 손가락 pinch가 끝난 뒤 한 손가락 pan으로 자연스럽게 이어질 때 gesture 상태가 끊기지 않도록 `activePointers`, `dragGesture`, `pinchGesture` 전환 규칙을 다듬는다.
+3. - [x] **gesture intent 상태를 클릭 억제 전용으로 분리한다**
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `let suppressPinClickUntil = 0`를 제거하고, drag/pinch 제스처 여부만 저장하는 `gestureIntent` 상태로 대체한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `markPanIntent()`를 제거하고 `markGestureIntent(kind: 'drag' | 'pinch') -> void` helper로 교체한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `clearGestures()`가 `activePointers`, `dragGesture`, `pinchGesture`와 함께 `gestureIntent`도 항상 초기화하도록 맞춘다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: floor/exhibition 전환 `$effect`에서 `clearGestures()` 이후 이전 gesture intent가 남지 않도록 reset 순서를 점검한다.
 
-4. - [ ] **명시적 확대/축소 컨트롤을 새 UX 보강으로 추가한다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 기존 계획에서 제외했던 확대/축소 버튼을 단일층 전용 UI로 다시 도입하고, `+`, `-`, `reset` 또는 동등한 2~3버튼 조합 중 어떤 형태가 가장 작은 공간으로 동작하는지 결정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 버튼 동작이 wheel/pinch와 동일한 clamp 및 viewport center 규칙을 공유하도록 공통 zoom 업데이트 경로를 정리한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: coarse pointer와 desktop 모두에서 접근 가능하도록 `aria-label`, 비활성 조건, 배치 위치를 설계하고 층 토글/선택 배지와 시각적으로 충돌하지 않게 정리한다.
+4. - [x] **drag threshold와 포인터 전환을 move/up 블록별로 나눈다**
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `DragGesture` 타입에 실제 pan threshold 통과 여부를 저장할 필드를 추가한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `handleViewportPointerMove(event)`의 drag 분기에서 threshold 전에는 click 가능한 상태를 유지하고, threshold 초과 시점에만 `markGestureIntent('drag')`를 호출하도록 바꾼다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `handleViewportPointerUp(event)`가 pinch 종료 후 포인터 1개가 남을 때 현재 남은 포인터 좌표로 새 `dragGesture`를 다시 심도록 유지/보정한다.
 
-### Phase 3: 지도 재진입 흐름과 수동 검증 기준을 함께 보강한다
+5. - [x] **pinch 종료와 booth click 억제를 각각 한 지점씩 고친다**
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `handleViewportPointerDown(event)`의 2포인터 분기에서 midpoint와 distance가 유효할 때만 `pinchGesture`를 시작하도록 guard를 고정한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `handleViewportPointerMove(event)`의 pinch 분기에서 실제 scale 변화가 발생한 경우에만 `markGestureIntent('pinch')`가 기록되도록 조건을 좁힌다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: booth `<g role="button">`의 `onclick` guard가 `Date.now() < suppressPinClickUntil` 대신 `gestureIntent !== null` 기준으로 클릭 차단을 판정하도록 바꾼다.
 
-5. - [ ] **선택/재진입 흐름이 새 제스처 모델과 충돌하지 않게 유지한다**
-   - [ ] `src/routes/+page.svelte`, `src/lib/components/ExhibitionMap.svelte`: 리스트/상세 시트에서 지도로 돌아왔을 때 `selectItem()`, `mapFloorOverride`, `selectedItemId` 흐름이 새 zoom 상태와 충돌하지 않는지 점검하고 필요한 동기화 규칙을 반영한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 부스를 다시 탭해 상세 시트를 여는 현재 계약은 유지하되, pan 후 즉시 상세 시트가 튀지 않는지 확인할 수 있는 가드 조건을 명시한다.
+### Phase 3: zoom update 경로와 명시적 controls를 같은 helper로 묶는다
 
-6. - [ ] **정적/수동 검증 항목을 이번 제스처 회귀 기준에 맞게 갱신한다**
-   - [ ] `MANUAL_TASKS.md`: 모바일 실기 또는 브라우저 디바이스 모드에서 확인할 `pinch 확대`, `drag pan`, `zoom 버튼`, `pan 후 부스 탭`, `층 전환 후 viewport 복원` 체크리스트를 추가한다.
-   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: `npm run check` 기준으로 타입/이벤트 경고 회귀가 없는지 확인하는 검증 단계를 계획에 포함한다.
+6. - [x] **wheel, pinch, button이 같은 zoom helper를 타도록 공통화한다**
+   - [x] `src/lib/components/ExhibitionMap.svelte`: scale clamp와 center 반영을 한 번에 처리하는 `applyZoomScale(nextScale: number, floor: FloorMap, centerX = viewCenterX, centerY = viewCenterY) -> void` helper를 추가한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `handleViewportWheel(event)`가 `nextScale` 계산 뒤 직접 `zoomScale`를 쓰지 않고 `applyZoomScale()`를 호출하도록 바꾼다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: `handleViewportPointerMove(event)`의 pinch 분기도 `zoomScale` 직접 대입 대신 `applyZoomScale()`를 호출하도록 맞춘다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: 단일층 확대 버튼이 재사용할 `handleZoomStep(delta: number) -> void` helper를 추가한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: 기본 viewport로 복귀하는 `handleZoomReset() -> void` helper를 추가해 현재 active floor의 기본 center/scale을 복원하게 한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: floor 카드 헤더 또는 viewport 상단에 단일층 전용 `+ / - / reset` control group을 렌더하고, `aria-label`과 min/max/default 비활성 조건을 각각 연결한다.
+
+### Phase 4: 재진입 흐름과 검증 기준을 구현 직후 확인 가능한 수준으로 낮춘다
+
+7. - [ ] **지도 재진입과 검증 항목을 구현 후 바로 확인 가능한 수준으로 쪼갠다**
+   - [x] `src/routes/+page.svelte`, `src/lib/components/ExhibitionMap.svelte`: `selectItem(id, focusMap = false, openDetail = false)`가 갱신하는 `mapFloorOverride`, `selectedId`, `selectedItemId` 흐름에 새 prop 없이 유지 가능한지 확인하고, 충돌이 있으면 동기화 지점을 한 곳으로만 제한한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: coarse pointer 안내 문구를 현재 제스처 계약에 맞춰 `핀치 확대 + 드래그 이동 + 버튼 확대/축소`를 함께 설명하는 문구로 갱신한다.
+   - [x] `MANUAL_TASKS.md`: 모바일 또는 디바이스 모드에서 확인할 `pinch 확대/축소`, `drag pan`, `zoom 버튼`, `pan 후 부스 탭`, `층 전환 후 viewport 복원` 체크리스트를 추가한다.
+   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 구현 후 `npm run check`를 실행해 `svelte-check` 기준 0 errors / 0 warnings를 확인하는 검증 항목을 유지한다.
 
 ---
 
-*상태: 초안 | 진행률: 0/22 (0%)*
+*상태: 구현중 | 진행률: 32/34 (94%)*
