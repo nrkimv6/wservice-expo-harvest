@@ -84,7 +84,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 		'부스배치도를 기준으로 빠르게 돌 수 있게 브랜드 부스와 미션을 정리한 파밍 트래커입니다.',
 	mapTitle: 'Mega Beauty Booth Guide',
 	mapNote:
-		'현재 지도는 2026-04-17 기준 부스배치도 이미지입니다. 운영 전 변경 가능성은 있습니다.',
+		'이 사진은 부스배치도가 아닌 임시사진입니다(변경예정).',
 	mapAspectRatio: '11 / 12',
 	mapBackgroundImage: '/images/exhibitions/coupang-mega-beauty-show-2026-layout.png',
 	items: stripBoothMeta(
