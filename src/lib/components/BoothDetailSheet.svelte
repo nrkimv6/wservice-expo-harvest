@@ -27,6 +27,7 @@
 	let { item, onClose, onToggleBookmark, onToggleComplete, onMemoChange }: Props = $props();
 	let closeButton = $state<HTMLButtonElement | null>(null);
 	let copyState = $state<'idle' | 'done' | 'error'>('idle');
+	let includeInstagramAccounts = $state(false);
 
 	function formatHashtagCopyText(tags: string[]): string {
 		return tags
@@ -36,16 +37,50 @@
 			.trim();
 	}
 
-	const instagramAccountTags = $derived(item?.hashtagAccountTags ?? []);
-	const hashtagTags = $derived(item ? [...item.hashtags, ...instagramAccountTags] : []);
-	const hashtagBlock = $derived(
-		hashtagTags.length > 0 ? hashtagTags.join('\n') : ''
+	function getInstagramAccountId(url: string): string | null {
+		try {
+			const [accountId] = new URL(url).pathname.split('/').filter(Boolean);
+			return accountId ? accountId.replace(/^@/, '') : null;
+		} catch {
+			return null;
+		}
+	}
+
+	const fixedInstagramAccountTags = $derived(item?.hashtagAccountTags ?? []);
+	const availableInstagramAccountTags = $derived(
+		item
+			? Array.from(
+					new Set(
+						item.socialLinks
+							.filter((link) => link.platform === 'instagram')
+							.map((link) => link.accountId ?? getInstagramAccountId(link.url))
+							.filter((accountId): accountId is string => Boolean(accountId))
+							.map((accountId) => `@${accountId}`)
+					)
+				)
+			: []
 	);
+	const hasFixedInstagramAccountTags = $derived(fixedInstagramAccountTags.length > 0);
+	const toggleableInstagramAccountTags = $derived(
+		hasFixedInstagramAccountTags ? [] : availableInstagramAccountTags
+	);
+	const hashtagTags = $derived(
+		item
+			? [
+					...item.hashtags,
+					...fixedInstagramAccountTags,
+					...(includeInstagramAccounts ? toggleableInstagramAccountTags : [])
+				]
+			: []
+	);
+	const hashtagBlock = $derived(hashtagTags.length > 0 ? hashtagTags.join('\n') : '');
 	const hashtagCopyText = $derived(
 		hashtagTags.length > 0 ? formatHashtagCopyText(hashtagTags) : ''
 	);
 	const hasHashtags = $derived(hashtagTags.length > 0);
-	const hasInstagramAccountTags = $derived(instagramAccountTags.length > 0);
+	const hasInstagramAccountOption = $derived(
+		hasFixedInstagramAccountTags || toggleableInstagramAccountTags.length > 0
+	);
 	const hasFirstComeEvent = $derived((item?.firstComeEvent.trim().length ?? 0) > 0);
 	const firstComeMessage = $derived(
 		item?.firstComeEvent === '선착순 이벤트 있음'
@@ -66,6 +101,7 @@
 	$effect(() => {
 		item?.id;
 		copyState = 'idle';
+		includeInstagramAccounts = (item?.hashtagAccountTags?.length ?? 0) > 0;
 	});
 
 	$effect(() => {
@@ -223,15 +259,18 @@
 							</button>
 						</div>
 
-						{#if hasInstagramAccountTags}
+						{#if hasInstagramAccountOption}
 							<label
-								class="mt-2 inline-flex items-center gap-2 text-[11px] text-muted-foreground/85"
+								class={[
+									'mt-2 inline-flex items-center gap-2 text-[11px] text-muted-foreground/85',
+									!hasFixedInstagramAccountTags && 'cursor-pointer'
+								]}
 							>
 								<input
 									type="checkbox"
 									class="h-3.5 w-3.5 rounded border-border bg-navy-surface text-gold accent-gold"
-									checked
-									disabled
+									bind:checked={includeInstagramAccounts}
+									disabled={hasFixedInstagramAccountTags}
 								/>
 								<span>인스타그램 계정 포함</span>
 							</label>

@@ -70,6 +70,68 @@ function createSocialLink(
 	return { id, label, url, platform, accountId };
 }
 
+type HashtagBlockPreset = {
+	hashtags: string[];
+	hashtagAccountTags?: string[];
+};
+
+const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
+	'cmbs-2026-drg': {
+		hashtags: ['#닥터지', '#쿠팡뷰티', '#메가뷰티쇼'],
+		hashtagAccountTags: ['@dr.g_official']
+	},
+	'cmbs-2026-innisfree': {
+		hashtags: ['#이니스프리', '#쿠팡뷰티', '#메가뷰티쇼']
+	},
+	'cmbs-2026-thefaceshop': {
+		hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#페이스샵', '#파워롱래스팅선크림'],
+		hashtagAccountTags: ['@thefaceshop.official']
+	},
+	'cmbs-2026-banilaco': {
+		hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#바닐라코']
+	},
+	'cmbs-2026-tonymoly': {
+		hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#토니모리', '#쇼킹립'],
+		hashtagAccountTags: ['@tonymory']
+	},
+	'cmbs-2026-romand': {
+		hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#롬앤', '#누즈'],
+		hashtagAccountTags: ['@romandyou', '@nuse.official']
+	},
+	'cmbs-2026-espoir': {
+		hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에스뿌아']
+	},
+	'cmbs-2026-ariul': {
+		hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#아리얼'],
+		hashtagAccountTags: ['@ariul_official']
+	},
+	'cmbs-2026-naturerepublic': {
+		hashtags: ['#네이처리퍼블릭', '#쿠팡뷰티', '#메가뷰티쇼'],
+		hashtagAccountTags: ['@naturerepublic_kr']
+	},
+	'cmbs-2026-dewytree': {
+		hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#듀이트리']
+	},
+	'cmbs-2026-forencos': {
+		hashtags: ['#포렌코즈', '#트리플쉴드', '#선세럼', '#쿠팡뷰티', '#메가뷰티쇼']
+	}
+};
+
+function getCoupangMegaBeautyHashtagBlock(itemId: string): HashtagBlockPreset {
+	const preset = COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS[itemId];
+
+	if (!preset) {
+		return { hashtags: [] };
+	}
+
+	return {
+		hashtags: [...preset.hashtags],
+		...(preset.hashtagAccountTags
+			? { hashtagAccountTags: [...preset.hashtagAccountTags] }
+			: {})
+	};
+}
+
 function stripBoothMeta(items: LootItem[]): LootItem[] {
 	return items.map((item) => ({
 		...item,
@@ -106,8 +168,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#닥터지', '#쿠팡뷰티', '#메가뷰티쇼'],
-			hashtagAccountTags: ['@dr.g_official'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-drg'),
 			socialLinks: [
 				createSocialLink(
 					'drg-instagram',
@@ -139,7 +200,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#이니스프리', '#쿠팡뷰티', '#메가뷰티쇼'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-innisfree'),
 			socialLinks: [
 				createSocialLink(
 					'innisfree-instagram',
@@ -267,8 +328,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#페이스샵', '#파워롱래스팅선크림'],
-			hashtagAccountTags: ['@thefaceshop.official'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-thefaceshop'),
 			socialLinks: [
 				createSocialLink(
 					'thefaceshop-instagram',
@@ -300,7 +360,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#바닐라코'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-banilaco'),
 			socialLinks: [
 				createSocialLink(
 					'banilaco-instagram',
@@ -396,8 +456,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#토니모리', '#쇼킹립'],
-			hashtagAccountTags: ['@tonymory'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-tonymoly'),
 			socialLinks: [
 				createSocialLink(
 					'tonymoly-instagram',
@@ -429,8 +488,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#롬앤', '#누즈'],
-			hashtagAccountTags: ['@romandyou', '@nuse.official'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-romand'),
 			socialLinks: [
 				createSocialLink(
 					'romand-instagram',
@@ -501,7 +559,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에스뿌아'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-espoir'),
 			socialLinks: [
 				createSocialLink(
 					'espoir-instagram',
@@ -533,8 +591,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#아리얼'],
-			hashtagAccountTags: ['@ariul_official'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-ariul'),
 			socialLinks: [
 				createSocialLink(
 					'ariul-instagram',
@@ -566,8 +623,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#네이처리퍼블릭', '#쿠팡뷰티', '#메가뷰티쇼'],
-			hashtagAccountTags: ['@naturerepublic_kr'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-naturerepublic'),
 			socialLinks: [
 				createSocialLink(
 					'naturerepublic-instagram',
@@ -631,7 +687,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#듀이트리'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-dewytree'),
 			socialLinks: [
 				createSocialLink(
 					'dewytree-instagram',
@@ -695,8 +751,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: ['#포렌코즈', '#트리플쉴드', '#선세럼', '#쿠팡뷰티', '#메가뷰티쇼'],
-			hashtagAccountTags: ['@forencos_official'],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-forencos'),
 			socialLinks: [
 				createSocialLink(
 					'forencos-instagram',
