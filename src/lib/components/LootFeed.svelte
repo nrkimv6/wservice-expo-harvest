@@ -28,6 +28,7 @@
 
 	let search = $state('');
 	let activeFilters = $state<LootCategory[]>([]);
+	const showCategoryFilters = false;
 
 	function parseTimeValue(time: string) {
 		if (time === 'Always') return Number.POSITIVE_INFINITY;
@@ -119,9 +120,11 @@
 		/>
 	</label>
 
-	<div class="mt-4">
-		<FilterChips active={activeFilters} onToggle={toggleFilter} />
-	</div>
+	{#if showCategoryFilters}
+		<div class="mt-4">
+			<FilterChips active={activeFilters} onToggle={toggleFilter} />
+		</div>
+	{/if}
 
 	<div class="mt-4 space-y-3">
 		{#if sortedItems.length > 0}
