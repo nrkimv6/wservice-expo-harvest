@@ -3,6 +3,7 @@ import type { LootItem } from '$lib/data/lootItems';
 
 const STORAGE_KEY = 'expo-harvest:loot-state:v2';
 const SELECTED_EXHIBITION_KEY = 'expo-harvest:selected-exhibition';
+const ONBOARDING_DISMISSED_KEY = 'expo-harvest:onboarding-dismissed';
 
 type PersistedLootItem = Pick<LootItem, 'isBookmarked' | 'isCompleted' | 'memo'>;
 type PersistedLootState = Record<string, PersistedLootItem>;
@@ -79,6 +80,26 @@ export function persistSelectedExhibitionId(exhibitionId: string) {
 
 	try {
 		window.localStorage.setItem(SELECTED_EXHIBITION_KEY, exhibitionId);
+	} catch {
+		// localStorage quota or private mode failure is non-blocking for the UI
+	}
+}
+
+export function hydrateOnboardingDismissed() {
+	if (!browser) return false;
+
+	try {
+		return window.localStorage.getItem(ONBOARDING_DISMISSED_KEY) === 'true';
+	} catch {
+		return false;
+	}
+}
+
+export function persistOnboardingDismissed(dismissed: boolean) {
+	if (!browser) return;
+
+	try {
+		window.localStorage.setItem(ONBOARDING_DISMISSED_KEY, dismissed ? 'true' : 'false');
 	} catch {
 		// localStorage quota or private mode failure is non-blocking for the UI
 	}

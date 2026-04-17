@@ -93,7 +93,7 @@
 
 		<div class="absolute inset-x-0 bottom-0 mx-auto w-full max-w-lg">
 			<div
-				class="animate-sheet-in max-h-[85vh] overflow-y-auto rounded-t-[30px] border border-border bg-navy-surface px-5 pb-8 pt-4 shadow-[0_-20px_60px_rgba(0,0,0,0.45)]"
+				class="safe-bottom animate-sheet-in max-h-[85vh] overflow-y-auto rounded-t-[30px] border border-border bg-navy-surface px-5 pb-10 pt-4 shadow-[0_-20px_60px_rgba(0,0,0,0.45)]"
 				role="dialog"
 				aria-modal="true"
 				aria-labelledby={`sheet-title-${item.id}`}

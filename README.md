@@ -2,7 +2,7 @@
 
 전시회/박람회 현장에서 부스 이벤트를 빠르게 훑고, 시간 제한 이벤트를 놓치지 않도록 돕는 모바일 우선 웹앱입니다.
 
-현재 상태는 MVP UI 골격 단계입니다. `/app` 라우트에 지도/리스트/상세/메모 흐름을 붙였고, 상단 배너는 일정 기반 fallback 위에 Supabase Realtime broadcast 메시지를 우선 노출하도록 연결했습니다.
+현재 상태는 MVP UI 골격 단계입니다. `/` 루트에서 바로 앱을 시작하고, 홈/지도/리스트/저장됨 하단 네비게이션으로 화면을 나눠 사용합니다. 상단 배너는 일정 기반 fallback 위에 Supabase Realtime broadcast 메시지를 우선 노출하도록 연결했습니다.
 
 ## 문서
 
@@ -20,8 +20,9 @@
 
 ## 현재 포함 범위
 
-- 앱 기본 브랜딩과 랜딩 페이지
-- `/app` 실제 파밍 화면 라우트와 모바일 우선 UI
+- `/` 루트 실제 파밍 화면과 모바일 우선 UI
+- 홈/지도/리스트/저장됨 하단 네비게이션 구조
+- 첫 실행 1회 온보딩 모달 + 수동 재오픈 흐름
 - Supabase Realtime broadcast 기반 상단 알림 배너 연결
 - 서비스워커 + manifest 기반 PWA 앱 셸 캐시
 - 프로젝트별 `.env.example`, `wrangler.toml`, `package.json` 정리
@@ -90,5 +91,5 @@ npm run dev
 ## PWA / Offline
 
 - `src/service-worker.ts`가 앱 셸(`/`, `/app`, build/static asset)을 캐시합니다.
-- 첫 방문 후에는 네트워크가 불안정해도 `/app` 진입과 기존 로컬 메모 확인이 가능합니다.
+- 첫 방문 후에는 네트워크가 불안정해도 `/` 루트 진입과 기존 로컬 메모 확인이 가능합니다.
 - `static/manifest.webmanifest`가 설치 메타데이터를 제공합니다.

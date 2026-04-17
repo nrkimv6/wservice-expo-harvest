@@ -50,7 +50,7 @@ async function networkFirst(request: Request) {
 	} catch {
 		const cached = await caches.match(request);
 		if (cached) return cached;
-		return caches.match('/app') || caches.match('/');
+		return caches.match('/') || caches.match('/app');
 	}
 }
 

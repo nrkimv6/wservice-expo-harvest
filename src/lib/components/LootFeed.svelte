@@ -8,9 +8,23 @@
 		items: LootItem[];
 		onToggleComplete: (id: string) => void;
 		onSelectItem: (id: string) => void;
+		eyebrow?: string;
+		title?: string;
+		summaryLabel?: string;
+		emptyTitle?: string;
+		emptyBody?: string;
 	};
 
-	let { items, onToggleComplete, onSelectItem }: Props = $props();
+	let {
+		items,
+		onToggleComplete,
+		onSelectItem,
+		eyebrow = 'Loot Feed',
+		title = '이벤트 리스트',
+		summaryLabel = 'Farmed',
+		emptyTitle = '조건에 맞는 부스가 없습니다',
+		emptyBody = '검색어를 줄이거나 필터를 해제해서 다시 확인하세요.'
+	}: Props = $props();
 
 	let search = $state('');
 	let activeFilters = $state<LootCategory[]>([]);
@@ -76,13 +90,13 @@
 	<div class="flex items-center justify-between gap-3">
 		<div>
 			<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-				Loot Feed
+				{eyebrow}
 			</p>
-			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">이벤트 리스트</h2>
+			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">{title}</h2>
 		</div>
 
 		<div class="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-xs font-semibold text-mint">
-			Farmed {doneCount}/{items.length}
+			{summaryLabel} {doneCount}/{items.length}
 		</div>
 	</div>
 
@@ -109,10 +123,8 @@
 			{/each}
 		{:else}
 			<div class="rounded-[26px] border border-dashed border-border bg-navy-surface/60 px-5 py-8 text-center">
-				<p class="font-heading text-lg font-semibold text-foreground">조건에 맞는 부스가 없습니다</p>
-				<p class="mt-2 text-sm text-muted-foreground">
-					검색어를 줄이거나 필터를 해제해서 다시 확인하세요.
-				</p>
+				<p class="font-heading text-lg font-semibold text-foreground">{emptyTitle}</p>
+				<p class="mt-2 text-sm text-muted-foreground">{emptyBody}</p>
 			</div>
 		{/if}
 	</div>
