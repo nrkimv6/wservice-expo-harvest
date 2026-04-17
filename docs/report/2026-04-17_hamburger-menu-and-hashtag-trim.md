@@ -76,3 +76,4 @@ Close the terminal running `npm run dev` and rerun `npm run build`.
 
 - 현재 `쿠팡메가뷰티쇼 2026` 참여 브랜드 목록은 유지하되, 해시태그와 위치 표시는 최소화한 상태입니다.
 - 이후 실제 운영안이 정리되면 특정 브랜드만 다시 선택적으로 위치/해시태그를 복원하는 방식으로 확장하면 됩니다.
+- 후속 build wrapper 보강에서는 `scripts/run-build.mjs`가 `Win32_Process.CommandLine` 외에 repo-local dev runtime marker까지 읽도록 바뀌어, 이번 세션처럼 preflight를 통과한 뒤 adapter 단계에서만 `EPERM`이 나는 경로를 먼저 차단합니다.

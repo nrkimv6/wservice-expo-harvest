@@ -1,6 +1,7 @@
 # TODO
 
 ## In Progress
+- [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (12/12, 100%)
 
 ## Pending
 - [ ] **fix: map booth detail sheet regression** — [plan](docs/plan/2026-04-17_fix-map-booth-detail-sheet-regression.md) (6/8, 75%)
