@@ -1,12 +1,14 @@
 # refine: coupang map booth packing and copy cleanup
 
+> 완료일: 2026-04-18
+> 아카이브됨
+> 진행률: 93/93 (100%)
 > 작성일시: 2026-04-17 23:15
 > 기준커밋: 61d3d82
 > 대상 프로젝트: expo-harvest
-> branch: impl/refine-coupang-map-booth-packing-and-copy-cleanup
-> worktree: .worktrees/impl-refine-coupang-map-booth-packing-and-copy-cleanup
-> worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md
-> 상태: 구현중
+> 상태: 구현완료
+> 반영일시: 2026-04-18 00:20
+> 머지커밋: 309a34c
 > 진행률: 93/93 (100%)
 > 요약: 쿠팡 메가뷰티쇼 지도는 section split 회귀를 복구한 뒤에도 여백이 많은 박스, 벽에서 뜬 배치, 긴 안내 문구가 남아 있다. 이번 후속 변경은 1F/2F/외부 수령존의 부스를 벽과 행 기준으로 다시 붙이고, 표기와 타이포를 짧고 조밀하게 정리해 지도 자체가 표처럼 읽히도록 만드는 데 목적이 있다.
 
@@ -170,4 +172,4 @@
 
 ---
 
-_상태: 구현중 | 진행률: 93/93 (100%)_
+_상태: 구현완료 | 진행률: 93/93 (100%)_

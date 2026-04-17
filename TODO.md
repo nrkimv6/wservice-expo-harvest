@@ -4,8 +4,6 @@
 
 ## In Progress
 
-- [ ] **refine: coupang map booth packing and copy cleanup** — [plan](docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md) (93/93, 100%)
-
 ## Pending
 - [ ] **fix: hamburger menu and cache regression** — [plan](docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md) (2/8, 25%)
 - [ ] **test: map booth interaction regression coverage** — [plan](docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md) (0/8, 0%)

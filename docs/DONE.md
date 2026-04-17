@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-18: 쿠팡 메가뷰티쇼 맵 부스 패킹/카피 정리
+  - `src/lib/data/lootItems.ts`에서 1F/2F/뷰티박스 수령존 배치를 벽·행 기준 무간격 packing으로 다시 맞추고 2F 우측 lane 계단/포토존/포렌코즈/홍보부스를 한 column 계약으로 고정
+  - `src/lib/components/ExhibitionMap.svelte`, `AGENTS.md`에서 지도 제목·helper copy를 짧게 줄이고 booth/event zone 텍스트 충전도와 라벨 분할 규칙을 조정
+  - `npm run check`, `npm run build` 통과 후 plan archive, TODO 정리, 수동 배치 확인 항목은 `MANUAL_TASKS.md`로 이관
+
 - [x] 2026-04-18: 맵 부스 상세 시트 탭 회귀 복구
   - `src/routes/+page.svelte`에서 지도 탭도 리스트/즐겨찾기와 같은 첫 선택 즉시 상세 시트 오픈 계약으로 되돌림
   - `src/lib/components/ExhibitionMap.svelte`, `src/app.css`에서 `map-booth-target` 포커스 하이라이트 억제와 `pointerdown` 기반 부스 클릭 처리로 데스크톱 클릭 손실 경로를 줄임
