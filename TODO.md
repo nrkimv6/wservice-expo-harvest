@@ -3,6 +3,7 @@
 > 마지막 업데이트: 2026-04-18
 
 ## In Progress
+- [ ] **fix: implement merge-test status gate mismatch** — [plan](docs/plan/2026-04-17_fix-implement-merge-test-status-gate.md) (14/14, 100%, merge-test 대기)
 
 ## Pending
 - [ ] **fix: map booth viewport normalization** — [plan](docs/plan/2026-04-18_fix-map-booth-viewport-normalization.md) (0/7, 0%)

@@ -107,6 +107,7 @@ AGENTS.md 문서 위치 규칙의 plan 경로/*.md
    ```
    ⚠️ plan에 활성 branch/worktree가 있습니다: {branch}
    먼저 /merge-test를 실행하여 머지 + 통합테스트를 완료하세요.
+   (plan 상태가 구현중이든 머지대기이든 활성 worktree가 남아 있으면 /merge-test가 선행입니다.)
    (_todo-N.md라면 같은 `> 계획서:` parent를 가진 항목을 배치로 함께 처리)
    done 처리 중단.
    ```
@@ -315,6 +316,7 @@ wtools/TODO.md를 열어 해당 프로젝트 섹션을 갱신합니다:
 
 - plan 상태가 `구현완료`가 아니면 → 경고 출력:
   - 상태가 `구현중`이고 `> branch:` 없으면 → 계속 진행 (worktree 미사용 직접 구현)
+  - 상태가 `구현중`, `머지대기`, `통합테스트중` 중 하나이고 `> branch:` 있으면 → "현재 상태: {상태}. 활성 worktree가 있으므로 `/merge-test`를 먼저 완료하세요." + 중단
   - 그 외 상태 → "현재 상태: {상태}. `/merge-test` 또는 `/implement` 먼저 완료하세요." + 중단
 
 커밋 전 실제로 정리가 되었는지 확인합니다:
