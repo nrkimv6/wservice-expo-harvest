@@ -4,6 +4,8 @@
 
 ## Pending
 
+- [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
+
 ## Done
 
 - [x] **fix: dev 서버 실행 중 build 잠금 충돌 방지** — [plan](docs/plan/2026-04-16_fix-build-lock-while-dev-server-running.md) (31/31, 100%)
