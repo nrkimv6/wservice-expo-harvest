@@ -210,7 +210,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			location: '',
 			time: 'Always',
 			category: '단순 팔로우',
-			mission: '브랜드 계정 팔로우 후 부스 스태프 확인',
+			mission: '',
 			mapX: 49,
 			mapY: 27,
 			isBookmarked: true,
