@@ -55,6 +55,8 @@
 	);
 	const hasHashtags = $derived((item?.hashtags.length ?? 0) > 0);
 	const hasInstagramAccountTags = $derived(instagramAccountTags.length > 0);
+	const hasPrize = $derived((item?.prize.trim().length ?? 0) > 0);
+	const hasMission = $derived((item?.mission.trim().length ?? 0) > 0);
 
 	$effect(() => {
 		if (!item || !browser) return;
@@ -163,18 +165,22 @@
 					</button>
 				</div>
 
-				<div class="mt-5 rounded-[24px] border border-gold/20 bg-gold/10 p-4">
-					<div class="flex items-center gap-2 text-gold">
-						<Gift size={16} />
-						<p class="text-sm font-semibold">Prize</p>
+				{#if hasPrize}
+					<div class="mt-5 rounded-[24px] border border-gold/20 bg-gold/10 p-4">
+						<div class="flex items-center gap-2 text-gold">
+							<Gift size={16} />
+							<p class="text-sm font-semibold">Prize</p>
+						</div>
+						<p class="mt-2 text-sm text-foreground">{item.prize}</p>
 					</div>
-					<p class="mt-2 text-sm text-foreground">{item.prize}</p>
-				</div>
+				{/if}
 
-				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
-					<p class="text-sm font-semibold text-foreground">Mission</p>
-					<p class="mt-2 text-sm leading-6 text-muted-foreground">{item.mission}</p>
-				</div>
+				{#if hasMission}
+					<div class={hasPrize ? 'mt-4 rounded-[24px] border border-border bg-navy-elevated p-4' : 'mt-5 rounded-[24px] border border-border bg-navy-elevated p-4'}>
+						<p class="text-sm font-semibold text-foreground">Mission</p>
+						<p class="mt-2 text-sm leading-6 text-muted-foreground">{item.mission}</p>
+					</div>
+				{/if}
 
 				{#if hasHashtags}
 					<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
@@ -208,11 +214,11 @@
 
 						{#if hasInstagramAccountTags}
 							<label
-								class="mt-3 flex cursor-pointer items-center gap-3 rounded-2xl border border-white/8 bg-black/20 px-3 py-2 text-sm text-muted-foreground"
+								class="mt-2 inline-flex cursor-pointer items-center gap-2 text-[11px] text-muted-foreground/85"
 							>
 								<input
 									type="checkbox"
-									class="h-4 w-4 rounded border-border bg-navy-surface text-gold accent-gold"
+									class="h-3.5 w-3.5 rounded border-border bg-navy-surface text-gold accent-gold"
 									bind:checked={includeInstagramAccounts}
 								/>
 								<span>인스타그램 계정 추가 (@계정id)</span>

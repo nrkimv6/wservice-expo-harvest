@@ -11,6 +11,7 @@
 	let { item, onToggleComplete, onSelect }: Props = $props();
 
 	const isTimeLimited = $derived(item.time !== 'Always');
+	const hasPrize = $derived(item.prize.trim().length > 0);
 </script>
 
 <article
@@ -74,10 +75,12 @@
 				{item.title}
 			</h3>
 
-			<div class="mt-3 flex items-center gap-2 text-sm text-gold">
-				<Gift size={16} />
-				<span>{item.prize}</span>
-			</div>
+			{#if hasPrize}
+				<div class="mt-3 flex items-center gap-2 text-sm text-gold">
+					<Gift size={16} />
+					<span>{item.prize}</span>
+				</div>
+			{/if}
 
 			{#if item.location}
 				<div class="mt-2 flex items-center gap-2 text-xs text-muted-foreground">

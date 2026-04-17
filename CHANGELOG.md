@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-04-17
+
+### Fixed
+
+- 저장됨 리스트 카드에서 `prize`가 비어 있으면 선물 아이콘과 경품 행을 숨기도록 정리
+- 부스 상세 시트에서 `Prize`, `Mission` 값이 없으면 해당 섹션 자체를 렌더링하지 않도록 변경
+
 ## [0.2.0] - 2026-04-17
 
 ### Added
