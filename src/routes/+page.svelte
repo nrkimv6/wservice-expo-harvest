@@ -1,177 +1,542 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 	import {
 		AlarmClockCheck,
-		ChartNoAxesCombined,
+		Bookmark,
 		MapPinned,
-		Search,
 		NotebookPen,
-		Radio
+		Route,
+		Search
 	} from 'lucide-svelte';
+	import AlertBanner from '$lib/components/AlertBanner.svelte';
+	import BoothDetailSheet from '$lib/components/BoothDetailSheet.svelte';
+	import ExhibitionMap from '$lib/components/ExhibitionMap.svelte';
+	import LootFeed from '$lib/components/LootFeed.svelte';
+	import {
+		DEFAULT_EXHIBITION_ID,
+		EXHIBITIONS,
+		type Exhibition,
+		type LootItem
+	} from '$lib/data/lootItems';
+	import { subscribeToAlertFeed, type AlertChannelStatus } from '$lib/realtime/alertFeed';
+	import {
+		hydrateLootItems,
+		hydrateOnboardingDismissed,
+		hydrateSelectedExhibitionId,
+		persistLootItems,
+		persistOnboardingDismissed,
+		persistSelectedExhibitionId
+	} from '$lib/stores/farmState';
 
-	const alertItems = [
-		'13:40 A-102 룰렛 10분 전',
-		'14:00 C-221 선착순 키트 오픈',
-		'14:20 B-118 인스타 업로드 인증 마감'
-	];
+	type AppTab = 'home' | 'map' | 'list' | 'saved';
 
-	const featureCards = [
-		{
-			icon: AlarmClockCheck,
-			title: '실시간 파밍 알림',
-			body: '상단 티커로 임박 이벤트를 빠르게 훑고, 타임어택 순서를 먼저 잡습니다.'
-		},
+	const onboardingCards = [
 		{
 			icon: MapPinned,
-			title: '지도 기반 동선 확인',
-			body: '전시장 이미지 맵 위에서 이벤트 부스만 먼저 강조하고, 바텀 시트로 핵심 보상을 바로 확인합니다.'
+			title: 'Map First',
+			body: '선택한 박람회 지도 위에서 바로 부스를 집고 현재 위치 기준으로 동선을 줄입니다.'
 		},
 		{
 			icon: Search,
-			title: '허들 기준 필터링',
-			body: '시간제한, SNS 업로드, 앱 설치, 회원가입 같은 미션 허들로 탐색 밀도를 줄입니다.'
+			title: 'Search + Filter',
+			body: '브랜드명, 경품명, SNS 미션 기준으로 밀도를 낮춘 뒤 필요한 부스만 다시 압축합니다.'
 		},
 		{
-			icon: NotebookPen,
-			title: '로컬 메모와 완료 관리',
-			body: '해시태그, 현장 팁, 지급 위치 메모를 남기고 완료 부스를 흐리게 분리합니다.'
+			icon: Route,
+			title: 'Local State',
+			body: '박람회별로 찜, 완료, 메모를 따로 저장해 다음 방문이나 재입장 때도 상태가 유지됩니다.'
 		}
 	];
 
-	const valueProps = [
-		'한 손 조작을 전제로 한 모바일 우선 레이아웃',
-		'Deep Navy + Gold 톤으로 시간 임박 감각 강조',
-		'오프라인 진입을 고려한 캐시 우선 구조'
+	const tabs: { id: AppTab; label: string; icon: typeof AlarmClockCheck }[] = [
+		{ id: 'home', label: '홈', icon: AlarmClockCheck },
+		{ id: 'map', label: '지도', icon: MapPinned },
+		{ id: 'list', label: '리스트', icon: Search },
+		{ id: 'saved', label: '저장됨', icon: Bookmark }
 	];
+
+	function createInitialItemMap() {
+		return Object.fromEntries(EXHIBITIONS.map((exhibition) => [exhibition.id, exhibition.items])) as Record<
+			string,
+			LootItem[]
+		>;
+	}
+
+	function parseTimeValue(time: string) {
+		if (time === 'Always') return Number.POSITIVE_INFINITY;
+		const [hours, minutes] = time.split(':').map(Number);
+		return hours * 60 + minutes;
+	}
+
+	let itemsByExhibition = $state<Record<string, LootItem[]>>(createInitialItemMap());
+	let selectedExhibitionId = $state(DEFAULT_EXHIBITION_ID);
+	let selectedId = $state<string | null>(null);
+	let activeTab = $state<AppTab>('home');
+	let showOnboarding = $state(false);
+	let liveAlertMessage = $state<string | null>(null);
+	let alertChannelStatus = $state<AlertChannelStatus>('connecting');
+
+	let clearLiveAlertTimer: ReturnType<typeof setTimeout> | null = null;
+
+	const exhibitionIds = EXHIBITIONS.map((exhibition) => exhibition.id);
+	const selectedExhibition = $derived(
+		EXHIBITIONS.find((exhibition) => exhibition.id === selectedExhibitionId) ?? EXHIBITIONS[0]
+	);
+	const items = $derived(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items);
+	const selectedItem = $derived(items.find((item) => item.id === selectedId) ?? null);
+	const bookmarkedItems = $derived(items.filter((item) => item.isBookmarked));
+	const completedItems = $derived(items.filter((item) => item.isCompleted));
+	const savedItems = $derived(items.filter((item) => item.isBookmarked || item.isCompleted));
+
+	const nextHotItem = $derived.by(() => {
+		return [...items]
+			.filter((item) => !item.isCompleted && item.time !== 'Always')
+			.sort((left, right) => parseTimeValue(left.time) - parseTimeValue(right.time))[0];
+	});
+
+	const fallbackAlertMessage = $derived.by(() => {
+		if (!nextHotItem) {
+			return `${selectedExhibition.name}에서 바로 파밍 가능한 상시 부스를 확인하세요`;
+		}
+
+		return `${selectedExhibition.name} · ${nextHotItem.time} ${nextHotItem.title} 임박 → ${nextHotItem.location}`;
+	});
+
+	const alertMessage = $derived(liveAlertMessage || fallbackAlertMessage);
+	const alertMode = $derived(liveAlertMessage ? 'live' : 'fallback');
+	const doneCount = $derived(completedItems.length);
+	const bookmarkedCount = $derived(bookmarkedItems.length);
+	const savedCount = $derived(savedItems.length);
+
+	onMount(() => {
+		itemsByExhibition = Object.fromEntries(
+			EXHIBITIONS.map((exhibition) => [exhibition.id, hydrateLootItems(exhibition.id, exhibition.items)])
+		) as Record<string, LootItem[]>;
+		selectedExhibitionId = hydrateSelectedExhibitionId(exhibitionIds, DEFAULT_EXHIBITION_ID);
+		showOnboarding = !hydrateOnboardingDismissed();
+
+		const unsubscribe = subscribeToAlertFeed({
+			onAlert(message, expiresAt) {
+				liveAlertMessage = message;
+
+				if (clearLiveAlertTimer) {
+					clearTimeout(clearLiveAlertTimer);
+				}
+
+				const timeoutMs = Math.max(expiresAt - Date.now(), 5_000);
+				clearLiveAlertTimer = setTimeout(() => {
+					liveAlertMessage = null;
+					clearLiveAlertTimer = null;
+				}, timeoutMs);
+			},
+			onStatusChange(status) {
+				alertChannelStatus = status;
+			}
+		});
+
+		return () => {
+			if (clearLiveAlertTimer) {
+				clearTimeout(clearLiveAlertTimer);
+			}
+			unsubscribe();
+		};
+	});
+
+	$effect(() => {
+		for (const exhibition of EXHIBITIONS) {
+			persistLootItems(exhibition.id, itemsByExhibition[exhibition.id] ?? exhibition.items);
+		}
+		persistSelectedExhibitionId(selectedExhibitionId);
+	});
+
+	$effect(() => {
+		if (!browser || !showOnboarding) return;
+
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+
+		return () => {
+			document.body.style.overflow = previousOverflow;
+		};
+	});
+
+	function updateSelectedItems(updater: (currentItems: LootItem[]) => LootItem[]) {
+		itemsByExhibition = {
+			...itemsByExhibition,
+			[selectedExhibitionId]: updater(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items)
+		};
+	}
+
+	function selectItem(id: string) {
+		selectedId = id;
+	}
+
+	function closeSheet() {
+		selectedId = null;
+	}
+
+	function selectExhibition(exhibition: Exhibition) {
+		selectedExhibitionId = exhibition.id;
+		selectedId = null;
+	}
+
+	function toggleComplete(id: string) {
+		updateSelectedItems((currentItems) =>
+			currentItems.map((item) => (item.id === id ? { ...item, isCompleted: !item.isCompleted } : item))
+		);
+	}
+
+	function toggleBookmark(id: string) {
+		updateSelectedItems((currentItems) =>
+			currentItems.map((item) => (item.id === id ? { ...item, isBookmarked: !item.isBookmarked } : item))
+		);
+	}
+
+	function updateMemo(id: string, memo: string) {
+		updateSelectedItems((currentItems) =>
+			currentItems.map((item) => (item.id === id ? { ...item, memo } : item))
+		);
+	}
+
+	function setActiveTab(tab: AppTab) {
+		activeTab = tab;
+	}
+
+	function dismissOnboarding(nextTab?: AppTab) {
+		showOnboarding = false;
+		persistOnboardingDismissed(true);
+
+		if (nextTab) {
+			activeTab = nextTab;
+		}
+	}
+
+	function reopenOnboarding() {
+		showOnboarding = true;
+	}
 </script>
 
 <svelte:head>
-	<title>expo-harvest | 박람회 이벤트 파밍</title>
+	<title>{selectedExhibition.name} | expo-harvest</title>
 	<meta
 		name="description"
-		content="박람회 부스 이벤트를 시간순으로 탐색하고, 지도 기반 동선과 메모로 파밍 효율을 높이는 모바일 우선 웹앱"
+		content={`${selectedExhibition.name}의 이벤트 파밍 동선을 홈, 지도, 리스트, 저장됨 탭으로 빠르게 전환하는 모바일 우선 웹앱`}
 	/>
 </svelte:head>
 
-<div class="mx-auto flex min-h-dvh w-full max-w-6xl flex-col px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-	<div class="mb-6 overflow-hidden rounded-full border border-gold/35 bg-navy-surface py-2">
-		<div class="ticker-track flex min-w-max gap-8 px-4 text-[11px] font-medium uppercase tracking-[0.22em] text-gold-glow">
-			{#each [...alertItems, ...alertItems] as item}
-				<span class="whitespace-nowrap">{item}</span>
-			{/each}
-		</div>
-	</div>
+<div class="safe-top safe-bottom min-h-dvh bg-navy-deep">
+	<div class="bottom-nav-offset mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pt-5 sm:px-5">
+		<AlertBanner message={alertMessage} mode={alertMode} />
 
-	<section class="grid gap-6 lg:grid-cols-[1.25fr_0.9fr]">
-		<div class="rounded-[32px] border border-border bg-navy-surface p-6 shadow-[0_0_0_1px_rgba(255,255,255,0.02),0_24px_60px_rgba(0,0,0,0.45)] sm:p-8">
-			<div class="mb-5 inline-flex items-center gap-2 rounded-full border border-gold/35 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-gold-glow">
-				<Radio size={14} />
-				Offline-Ready MVP
+		<section class="rounded-[32px] border border-border bg-navy-surface p-5 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
+			<div class="flex items-start justify-between gap-4">
+				<div>
+					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+						Expo Harvest
+					</p>
+					<h1 class="mt-2 font-heading text-3xl font-bold text-foreground">박람회 파밍 트래커</h1>
+					<p class="mt-2 text-sm font-semibold text-gold">{selectedExhibition.name}</p>
+					<p class="mt-3 text-sm leading-6 text-muted-foreground">{selectedExhibition.description}</p>
+				</div>
+
+				<div class="flex flex-col items-end gap-2">
+					<div class="rounded-2xl border border-gold/20 bg-gold/10 px-3 py-2 text-right">
+						<p class="text-[10px] uppercase tracking-[0.18em] text-gold">Live Queue</p>
+						<p class="mt-1 text-sm font-semibold text-foreground">{items.length} booths</p>
+						<p class="mt-1 text-[10px] text-white/55">
+							{#if liveAlertMessage}
+								Realtime override
+							{:else if alertChannelStatus === 'connected'}
+								Realtime standby
+							{:else if alertChannelStatus === 'connecting'}
+								Realtime connecting
+							{:else}
+								Fallback schedule
+							{/if}
+						</p>
+					</div>
+
+					<button
+						type="button"
+						class="inline-flex items-center gap-2 rounded-full border border-border bg-navy-elevated px-3 py-2 text-xs font-semibold text-foreground"
+						onclick={reopenOnboarding}
+					>
+						<NotebookPen size={14} />
+						<span>가이드 다시 보기</span>
+					</button>
+				</div>
+			</div>
+		</section>
+
+		<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
+			<div class="flex items-center justify-between gap-3">
+				<div>
+					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+						Exhibition Menu
+					</p>
+					<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">박람회 선택</h2>
+				</div>
+
+				<div class="rounded-full border border-border bg-navy-surface px-3 py-1 text-xs text-muted-foreground">
+					{EXHIBITIONS.length} versions
+				</div>
 			</div>
 
-			<h1 class="max-w-3xl font-['Space_Grotesk'] text-4xl font-bold leading-none text-white sm:text-5xl">
-				박람회 현장에서
-				<span class="block text-gold">이벤트 파밍 효율을 극대화하는 화면</span>
-			</h1>
+			<div class="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-1">
+				{#each EXHIBITIONS as exhibition (exhibition.id)}
+					<button
+						type="button"
+						class={[
+							'min-w-[220px] rounded-[24px] border px-4 py-4 text-left transition',
+							exhibition.id === selectedExhibitionId
+								? 'border-gold/40 bg-gold/10 shadow-[0_18px_40px_rgba(255,199,94,0.12)]'
+								: 'border-border bg-navy-surface hover:border-gold/25'
+						]}
+						aria-pressed={exhibition.id === selectedExhibitionId}
+						onclick={() => selectExhibition(exhibition)}
+					>
+						<div class="flex items-start justify-between gap-3">
+							<div>
+								<p class="text-sm font-semibold text-foreground">{exhibition.name}</p>
+								<p class="mt-1 text-xs text-muted-foreground">{exhibition.subtitle}</p>
+							</div>
 
-			<p class="mt-5 max-w-2xl text-sm leading-7 text-white/70 sm:text-base">
-				`expo-harvest`는 선착순 이벤트, SNS 인증 미션, 사은품 수령 동선을 한 화면에서 빠르게
-				정리하기 위한 모바일 우선 웹앱입니다. 지금 단계에서는 제품 톤과 정보 구조를 먼저 고정하고,
-				다음 단계에서 지도, 리스트, 메모, 실시간 배너를 연결합니다.
-			</p>
+							<span
+								class={[
+									'rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]',
+									exhibition.id === selectedExhibitionId
+										? 'bg-gold text-black'
+										: 'bg-black/25 text-muted-foreground'
+								]}
+							>
+								{exhibition.id === selectedExhibitionId ? 'Selected' : 'Open'}
+							</span>
+						</div>
 
-			<div class="mt-8 grid gap-3 sm:grid-cols-3">
-				{#each valueProps as item}
-					<div class="rounded-2xl border border-white/8 bg-black/35 px-4 py-4 text-sm text-white/75">
-						{item}
+						<p class="mt-3 text-xs leading-5 text-muted-foreground">{exhibition.venue}</p>
+					</button>
+				{/each}
+			</div>
+		</section>
+
+		{#if activeTab === 'home'}
+			<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
+				<div class="grid gap-3 sm:grid-cols-3">
+					<div class="rounded-2xl border border-border bg-navy-surface p-4">
+						<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Current Expo</p>
+						<p class="mt-2 text-base font-semibold text-foreground">{selectedExhibition.name}</p>
+						<p class="mt-1 text-xs text-muted-foreground">{selectedExhibition.venue}</p>
 					</div>
+					<div class="rounded-2xl border border-border bg-navy-surface p-4">
+						<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Saved</p>
+						<p class="mt-2 text-2xl font-heading font-semibold text-gold">{savedCount}</p>
+						<p class="mt-1 text-xs text-muted-foreground">관심/완료로 저장한 부스</p>
+					</div>
+					<div class="rounded-2xl border border-border bg-navy-surface p-4">
+						<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Farmed</p>
+						<p class="mt-2 text-2xl font-heading font-semibold text-mint">{doneCount}</p>
+						<p class="mt-1 text-xs text-muted-foreground">완료 처리한 부스</p>
+					</div>
+				</div>
+			</section>
+
+			<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
+				<div class="flex items-start justify-between gap-4">
+					<div>
+						<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+							Quick Focus
+						</p>
+						<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">다음 타깃</h2>
+					</div>
+					<div class="rounded-full border border-border bg-navy-surface px-3 py-1 text-xs text-muted-foreground">
+						북마크 {bookmarkedCount}
+					</div>
+				</div>
+
+				<div class="mt-4 rounded-[26px] border border-gold/20 bg-gold/10 p-4">
+					{#if nextHotItem}
+						<p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">Next hot drop</p>
+						<h3 class="mt-2 font-heading text-xl font-semibold text-foreground">{nextHotItem.title}</h3>
+						<p class="mt-2 text-sm text-foreground">
+							{nextHotItem.time} · {nextHotItem.location}
+						</p>
+						<p class="mt-3 text-sm leading-6 text-muted-foreground">{nextHotItem.mission}</p>
+						<div class="mt-4 flex flex-wrap gap-2">
+							<button
+								type="button"
+								class="rounded-full bg-gold px-4 py-2 text-sm font-semibold text-black"
+								onclick={() => {
+									setActiveTab('map');
+									selectItem(nextHotItem.id);
+								}}
+							>
+								지도에서 보기
+							</button>
+							<button
+								type="button"
+								class="rounded-full border border-border bg-navy-surface px-4 py-2 text-sm font-semibold text-foreground"
+								onclick={() => {
+									setActiveTab('list');
+									selectItem(nextHotItem.id);
+								}}
+							>
+								리스트에서 보기
+							</button>
+						</div>
+					{:else}
+						<p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">Always-on booths</p>
+						<h3 class="mt-2 font-heading text-xl font-semibold text-foreground">임박 이벤트가 없습니다</h3>
+						<p class="mt-3 text-sm leading-6 text-muted-foreground">
+							지금은 상시 참여 가능한 부스 위주로 움직이면 됩니다. 저장됨 탭에서 관심 부스를 다시 확인하세요.
+						</p>
+					{/if}
+				</div>
+
+				<div class="mt-4 grid gap-3 sm:grid-cols-3">
+					<button
+						type="button"
+						class="rounded-2xl border border-border bg-navy-surface px-4 py-4 text-left"
+						onclick={() => setActiveTab('map')}
+					>
+						<p class="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Map</p>
+						<p class="mt-2 text-base font-semibold text-foreground">부스 지도로 이동</p>
+					</button>
+					<button
+						type="button"
+						class="rounded-2xl border border-border bg-navy-surface px-4 py-4 text-left"
+						onclick={() => setActiveTab('list')}
+					>
+						<p class="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">List</p>
+						<p class="mt-2 text-base font-semibold text-foreground">전체 이벤트 훑기</p>
+					</button>
+					<button
+						type="button"
+						class="rounded-2xl border border-border bg-navy-surface px-4 py-4 text-left"
+						onclick={() => setActiveTab('saved')}
+					>
+						<p class="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Saved</p>
+						<p class="mt-2 text-base font-semibold text-foreground">관심/완료 부스 보기</p>
+					</button>
+				</div>
+			</section>
+		{:else if activeTab === 'map'}
+			<ExhibitionMap exhibition={selectedExhibition} items={items} onPinClick={selectItem} />
+		{:else if activeTab === 'list'}
+			<LootFeed
+				items={items}
+				onToggleComplete={toggleComplete}
+				onSelectItem={selectItem}
+				eyebrow="All Booths"
+				title="전체 이벤트 리스트"
+				summaryLabel="Farmed"
+			/>
+		{:else}
+			<LootFeed
+				items={savedItems}
+				onToggleComplete={toggleComplete}
+				onSelectItem={selectItem}
+				eyebrow="Saved Booths"
+				title="저장된 부스"
+				summaryLabel="Tracked"
+				emptyTitle="저장된 부스가 없습니다"
+				emptyBody="관심 등록이나 완료 처리를 하면 이 탭에서 다시 빠르게 모아볼 수 있습니다."
+			/>
+		{/if}
+	</div>
+
+	<nav class="bottom-nav-shell safe-left safe-right fixed bottom-0 left-0 right-0 z-40">
+		<div class="mx-auto w-full max-w-lg px-4 sm:px-5">
+			<div class="grid grid-cols-4 gap-2 rounded-[28px] border border-border bg-navy-surface/95 p-2 shadow-[0_-12px_40px_rgba(0,0,0,0.35)] backdrop-blur">
+				{#each tabs as tab}
+					<button
+						type="button"
+						class={[
+							'flex min-h-16 flex-col items-center justify-center gap-1 rounded-[22px] px-2 py-2 text-[11px] font-semibold transition',
+							activeTab === tab.id
+								? 'bg-gold text-black'
+								: 'text-muted-foreground hover:bg-white/5 hover:text-foreground'
+						]}
+						aria-pressed={activeTab === tab.id}
+						onclick={() => setActiveTab(tab.id)}
+					>
+						<tab.icon size={18} />
+						<span>{tab.label}</span>
+					</button>
 				{/each}
 			</div>
 		</div>
-
-		<div class="rounded-[32px] border border-gold/20 bg-navy-surface p-6 shadow-[0_18px_48px_rgba(0,0,0,0.4)]">
-			<div class="flex items-center justify-between">
-				<div>
-					<p class="text-xs uppercase tracking-[0.28em] text-white/45">Preview Stack</p>
-					<h2 class="mt-2 font-['Space_Grotesk'] text-2xl font-semibold text-white">Core Loop</h2>
-				</div>
-				<div class="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold-glow">
-					MVP
-				</div>
-			</div>
-
-			<div class="mt-6 space-y-3">
-				<div class="rounded-2xl border border-white/8 bg-black/30 p-4">
-					<div class="flex items-center gap-3">
-						<AlarmClockCheck class="text-gold" size={20} />
-						<div>
-							<p class="text-sm font-semibold text-white">시간 임박 이벤트 먼저 확인</p>
-							<p class="text-xs text-white/55">선착순, 룰렛, 타임세일형 이벤트 우선 노출</p>
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-2xl border border-white/8 bg-black/30 p-4">
-					<div class="flex items-center gap-3">
-						<MapPinned class="text-gold" size={20} />
-						<div>
-							<p class="text-sm font-semibold text-white">지도와 리스트를 교차 탐색</p>
-							<p class="text-xs text-white/55">부스 위치, 경품, 미션 허들을 한 번에 확인</p>
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-2xl border border-white/8 bg-black/30 p-4">
-					<div class="flex items-center gap-3">
-						<ChartNoAxesCombined class="text-gold" size={20} />
-						<div>
-							<p class="text-sm font-semibold text-white">완료/관심 상태로 파밍 밀도 제어</p>
-							<p class="text-xs text-white/55">완료 부스 흐림 처리, 관심 부스 재집중</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<section class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-		{#each featureCards as feature}
-			<div class="rounded-[28px] border border-white/8 bg-white/[0.035] p-5">
-				<feature.icon class="text-gold" size={22} />
-				<h3 class="mt-5 font-['Space_Grotesk'] text-xl font-semibold text-white">{feature.title}</h3>
-				<p class="mt-3 text-sm leading-6 text-white/65">{feature.body}</p>
-			</div>
-		{/each}
-	</section>
-
-	<section class="mt-8 rounded-[32px] border border-white/8 bg-black/25 p-6 sm:p-8">
-		<p class="text-xs uppercase tracking-[0.28em] text-white/45">Current Build Scope</p>
-		<div class="mt-4 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-			<div>
-				<h2 class="font-['Space_Grotesk'] text-2xl font-semibold text-white">이번 구현에서 끝내는 것</h2>
-				<ul class="mt-4 space-y-3 text-sm leading-7 text-white/70">
-					<li>`/app` 실제 파밍 화면 라우트 추가</li>
-					<li>부스 데이터 모델, 지도 핀, 리스트/검색/필터 연결</li>
-					<li>관심/완료/메모 상태를 localStorage에 저장</li>
-					<li>상세 바텀시트와 현장용 모바일 레이아웃 정리</li>
-				</ul>
-			</div>
-
-			<div class="rounded-3xl border border-gold/15 bg-gold/10 p-5">
-				<p class="text-sm font-semibold text-gold-glow">다음 단계 후보</p>
-				<ul class="mt-4 space-y-3 text-sm text-white/72">
-					<li>Supabase 실데이터와 Realtime 배너 연결</li>
-					<li>전시장 이미지 맵 + 핀치줌 교체</li>
-					<li>PWA 캐시와 오프라인 진입 정리</li>
-					<li>auth-worker 등록 및 운영 origin 반영</li>
-				</ul>
-
-				<a
-					href="/app"
-					class="mt-5 inline-flex items-center justify-center rounded-2xl bg-gold px-4 py-3 text-sm font-semibold text-black transition hover:bg-gold-glow"
-				>
-					파밍 화면 열기
-				</a>
-			</div>
-		</div>
-	</section>
+	</nav>
 </div>
+
+<BoothDetailSheet
+	item={selectedItem}
+	onClose={closeSheet}
+	onToggleBookmark={toggleBookmark}
+	onToggleComplete={toggleComplete}
+	onMemoChange={updateMemo}
+/>
+
+{#if showOnboarding}
+	<div class="fixed inset-0 z-[60]">
+		<button
+			type="button"
+			class="modal-backdrop absolute inset-0"
+			aria-label="가이드 닫기"
+			onclick={() => dismissOnboarding()}
+		></button>
+
+		<div class="absolute inset-x-0 bottom-0 mx-auto w-full max-w-lg">
+			<div class="safe-bottom rounded-t-[32px] border border-border bg-navy-surface px-5 pb-8 pt-5 shadow-[0_-24px_60px_rgba(0,0,0,0.5)]">
+				<div class="mx-auto h-1.5 w-14 rounded-full bg-white/15"></div>
+
+				<div class="mt-4 flex items-start justify-between gap-3">
+					<div>
+						<p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-gold">First Run Guide</p>
+						<h2 class="mt-2 font-heading text-2xl font-semibold text-foreground">처음엔 홈에서 시작하세요</h2>
+						<p class="mt-3 text-sm leading-6 text-muted-foreground">
+							중요한 정보만 먼저 보고, 지도와 리스트는 하단 네비에서 상황에 맞게 꺼내 쓰는 구조입니다.
+						</p>
+					</div>
+
+					<div class="rounded-full border border-gold/20 bg-gold/10 px-3 py-1 text-xs font-semibold text-gold">
+						1회 노출
+					</div>
+				</div>
+
+				<div class="mt-5 grid gap-3">
+					{#each onboardingCards as card}
+						<div class="rounded-[24px] border border-border bg-navy-elevated p-4">
+							<div class="flex items-start gap-3">
+								<div class="rounded-2xl border border-gold/20 bg-gold/10 p-2 text-gold">
+									<card.icon size={18} />
+								</div>
+								<div>
+									<p class="text-sm font-semibold text-foreground">{card.title}</p>
+									<p class="mt-2 text-sm leading-6 text-muted-foreground">{card.body}</p>
+								</div>
+							</div>
+						</div>
+					{/each}
+				</div>
+
+				<div class="mt-5 grid gap-3 sm:grid-cols-2">
+					<button
+						type="button"
+						class="rounded-2xl bg-gold px-4 py-3 text-sm font-semibold text-black"
+						onclick={() => dismissOnboarding('map')}
+					>
+						지도부터 보기
+					</button>
+					<button
+						type="button"
+						class="rounded-2xl border border-border bg-navy-elevated px-4 py-3 text-sm font-semibold text-foreground"
+						onclick={() => dismissOnboarding()}
+					>
+						닫고 홈으로
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}

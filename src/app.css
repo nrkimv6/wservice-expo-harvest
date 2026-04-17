@@ -137,4 +137,17 @@
 	.no-scrollbar::-webkit-scrollbar {
 		display: none;
 	}
+
+	.bottom-nav-offset {
+		padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
+	}
+
+	.bottom-nav-shell {
+		padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+	}
+
+	.modal-backdrop {
+		background: hsl(222 55% 5% / 0.82);
+		backdrop-filter: blur(18px);
+	}
 }
