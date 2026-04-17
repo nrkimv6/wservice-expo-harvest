@@ -16,6 +16,7 @@
 		X
 	} from 'lucide-svelte';
 	import {
+		getPhysicalFloorLabel,
 		getInstagramUploadTypeLabel,
 		getVisibleSocialLinks,
 		type LootItem
@@ -100,7 +101,8 @@
 	const hasDetailImage = $derived(Boolean(item?.detailImage?.src));
 	const hasMemoContent = $derived((item?.memo.trim().length ?? 0) > 0);
 	const hasCategory = $derived((item?.category.trim().length ?? 0) > 0);
-	const hasDetailedLocation = $derived(Boolean(item && item.location.trim().length > 0 && item.location !== item.floorId));
+	const floorBadge = $derived(item ? getPhysicalFloorLabel(item.floorId) : '');
+	const hasDetailedLocation = $derived(Boolean(item && item.location.trim().length > 0 && item.location !== floorBadge));
 	const detailTitle = $derived(
 		item ? (item.englishTitle ? `${item.title} (${item.englishTitle})` : item.title) : ''
 	);
@@ -186,7 +188,7 @@
 								{item.time}
 							</span>
 							<span class="rounded-full bg-black/20 px-2.5 py-1 text-[10px] font-semibold text-gold">
-								{item.floorId}
+								{floorBadge}
 							</span>
 							{#if hasCategory}
 								<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] text-muted-foreground">

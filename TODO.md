@@ -1,9 +1,9 @@
 # TODO
 
 ## In Progress
+- [ ] **refine: coupang map segmentation and booth normalization** — [plan](docs/plan/2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md) (40/43, 93%)
 
 ## Pending
-- [ ] **refine: coupang map segmentation and booth normalization** — [plan](docs/plan/2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md) (0/41, 0%)
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
 

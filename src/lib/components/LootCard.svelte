@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { CheckCircle2, Circle, Gift, MapPin } from 'lucide-svelte';
-	import { getVisibleSocialLinks, type LootItem } from '$lib/data/lootItems';
+	import {
+		getPhysicalFloorLabel,
+		getVisibleSocialLinks,
+		type LootItem
+	} from '$lib/data/lootItems';
 
 	type Props = {
 		item: LootItem;
@@ -15,7 +19,8 @@
 	const hasPrize = $derived(item.prize.trim().length > 0);
 	const visibleSocialLinks = $derived(getVisibleSocialLinks(item));
 	const hasCategory = $derived(item.category.trim().length > 0);
-	const hasDetailedLocation = $derived(item.location.trim().length > 0 && item.location !== item.floorId);
+	const floorBadge = $derived(getPhysicalFloorLabel(item.floorId));
+	const hasDetailedLocation = $derived(item.location.trim().length > 0 && item.location !== floorBadge);
 </script>
 
 <article
@@ -71,7 +76,7 @@
 					</span>
 				{/if}
 				<span class="rounded-full bg-black/20 px-2.5 py-1 text-[10px] font-semibold text-gold">
-					{item.floorId}
+					{floorBadge}
 				</span>
 				{#if hasCategory}
 					<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
@@ -107,7 +112,7 @@
 				</div>
 			{/if}
 
-			<p class="mt-2 text-xs text-muted-foreground">선택 시 지도 탭으로 이동해 해당 부스를 바로 강조합니다.</p>
+			<p class="mt-2 text-xs text-muted-foreground">선택 시 해당 전시 구역 지도로 이동해 부스를 바로 강조합니다.</p>
 
 			<div class="mt-3 flex flex-wrap gap-2 text-[11px]">
 				{#if item.hashtags.length > 0}
