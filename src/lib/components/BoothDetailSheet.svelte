@@ -29,7 +29,7 @@
 	let copyState = $state<'idle' | 'done' | 'error'>('idle');
 	let includeInstagramAccounts = $state(false);
 
-	function formatHashtagCopyText(tags: string[]): string {
+	function formatHashtagText(tags: string[]): string {
 		return tags
 			.join(' ')
 			.replace(/\s+/g, ' ')
@@ -73,10 +73,7 @@
 				]
 			: []
 	);
-	const hashtagBlock = $derived(hashtagTags.length > 0 ? hashtagTags.join('\n') : '');
-	const hashtagCopyText = $derived(
-		hashtagTags.length > 0 ? formatHashtagCopyText(hashtagTags) : ''
-	);
+	const hashtagText = $derived(hashtagTags.length > 0 ? formatHashtagText(hashtagTags) : '');
 	const hasHashtags = $derived(hashtagTags.length > 0);
 	const hasInstagramAccountOption = $derived(
 		hasFixedInstagramAccountTags || toggleableInstagramAccountTags.length > 0
@@ -128,10 +125,10 @@
 	});
 
 	async function copyHashtags() {
-		if (!item || !browser || !hashtagCopyText) return;
+		if (!item || !browser || !hashtagText) return;
 
 		try {
-			await navigator.clipboard.writeText(hashtagCopyText);
+			await navigator.clipboard.writeText(hashtagText);
 			copyState = 'done';
 		} catch {
 			copyState = 'error';
@@ -276,7 +273,9 @@
 							</label>
 						{/if}
 
-						<pre class="mt-3 overflow-x-auto rounded-2xl border border-white/6 bg-black/35 px-4 py-3 text-xs leading-6 text-gold"><code>{hashtagBlock}</code></pre>
+						<div class="mt-3 rounded-2xl border border-white/6 bg-black/35 px-4 py-3 text-xs leading-6 text-gold break-words">
+							{hashtagText}
+						</div>
 					</div>
 				{/if}
 
