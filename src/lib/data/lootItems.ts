@@ -675,7 +675,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 					'Instagram',
 					'https://www.instagram.com/forencos_official/',
 					'instagram',
-					''
+					'forencos_official'
 				),
 				createSocialLink(
 					'forencos-kakao',
