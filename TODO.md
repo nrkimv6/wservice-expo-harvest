@@ -6,6 +6,7 @@
 - [ ] **refine: coupang map booth packing and copy cleanup** — [plan](docs/plan/2026-04-17_refine-coupang-map-booth-packing-and-copy-cleanup.md) (0/93, 0%)
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
+- [ ] **refine: adopt plans worktree for doc isolation** — [plan](docs/plan/2026-04-17_refine-adopt-plans-worktree-for-doc-isolation.md) (0/20, 0%)
 
 ## Merged
 - [x] **refine: map pin hover UX** — [plan](docs/plan/2026-04-17_refine-map-pin-hover-ux.md) (0/9, 0%, superseded by readability/mobile plan)
