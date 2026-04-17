@@ -1,13 +1,15 @@
 # TODO
 
 ## In Progress
+- [ ] **refine: coupang floor map readability and mobile flow** — [plan](docs/plan/2026-04-17_refine-coupang-floor-map-readability-mobile.md) (72/72, 100%)
 
 ## Pending
 - [ ] **fix: align coupang mega beauty hardcoded review data** — [plan](docs/plan/2026-04-17_fix-coupang-mega-beauty-hardcoded-review-data.md) (0/30, 0%)
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
-- [ ] **refine: map pin hover UX** — [plan](docs/plan/2026-04-17_refine-map-pin-hover-ux.md) (0/9, 0%, merged into readability/mobile plan)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
-- [ ] **refine: coupang floor map readability and mobile flow** — [plan](docs/plan/2026-04-17_refine-coupang-floor-map-readability-mobile.md) (0/98, 0%)
+
+## Merged
+- [x] **refine: map pin hover UX** — [plan](docs/plan/2026-04-17_refine-map-pin-hover-ux.md) (0/9, 0%, superseded by readability/mobile plan)
 
 ## Done
 

@@ -107,6 +107,8 @@
 				</div>
 			{/if}
 
+			<p class="mt-2 text-xs text-muted-foreground">선택 시 지도 탭으로 이동해 해당 부스를 바로 강조합니다.</p>
+
 			<div class="mt-3 flex flex-wrap gap-2 text-[11px]">
 				{#if item.hashtags.length > 0}
 					<span class="rounded-full border border-border bg-black/20 px-2.5 py-1 text-muted-foreground">

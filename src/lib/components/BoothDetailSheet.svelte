@@ -20,12 +20,13 @@
 	type Props = {
 		item: LootItem | null;
 		onClose: () => void;
+		onViewOnMap: (id: string) => void;
 		onToggleBookmark: (id: string) => void;
 		onToggleComplete: (id: string) => void;
 		onMemoChange: (id: string, memo: string) => void;
 	};
 
-	let { item, onClose, onToggleBookmark, onToggleComplete, onMemoChange }: Props = $props();
+	let { item, onClose, onViewOnMap, onToggleBookmark, onToggleComplete, onMemoChange }: Props = $props();
 	let closeButton = $state<HTMLButtonElement | null>(null);
 	let copyState = $state<'idle' | 'done' | 'error'>('idle');
 	let includeInstagramAccounts = $state(false);
@@ -380,7 +381,16 @@
 					</div>
 				{/if}
 
-				<div class="mt-5 grid gap-3 sm:grid-cols-2">
+				<div class="mt-5 grid gap-3 sm:grid-cols-3">
+					<button
+						type="button"
+						class="flex items-center justify-center gap-2 rounded-2xl border border-border bg-navy-elevated px-4 py-3 text-sm font-semibold text-foreground transition hover:border-gold/35 hover:text-gold"
+						onclick={() => onViewOnMap(item.id)}
+					>
+						<MapPin size={16} />
+						<span>지도에서 보기</span>
+					</button>
+
 					<button
 						type="button"
 						class={[
