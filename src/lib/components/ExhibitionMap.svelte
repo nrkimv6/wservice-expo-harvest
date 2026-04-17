@@ -12,6 +12,8 @@
 
 	const rows = Array.from({ length: 8 });
 	const columns = Array.from({ length: 12 });
+	let hoveredItemId = $state<string | null>(null);
+	const hoveredItem = $derived(items.find((item) => item.id === hoveredItemId) ?? null);
 </script>
 
 <section class="rounded-[32px] border border-border bg-navy-surface p-4 shadow-[0_24px_50px_rgba(0,0,0,0.35)]">
@@ -27,6 +29,23 @@
 		<div class="rounded-full border border-border bg-navy-elevated px-3 py-1 text-xs text-muted-foreground">
 			{items.length} pins
 		</div>
+	</div>
+
+	<div class="mb-4 min-h-[68px] rounded-[24px] border border-border bg-black/25 px-4 py-3">
+		{#if hoveredItem}
+			<p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Hover Booth</p>
+			<p class="mt-1 text-sm font-semibold text-foreground">{hoveredItem.title}</p>
+			<div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+				{#if hoveredItem.firstComeEvent}
+					<span class="text-rose-200">{hoveredItem.firstComeEvent}</span>
+				{/if}
+				{#if hoveredItem.location}
+					<span>{hoveredItem.location}</span>
+				{/if}
+			</div>
+		{:else}
+			<p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Hover Booth</p>
+		{/if}
 	</div>
 
 	<div
@@ -85,6 +104,22 @@
 				]}
 				aria-label={`${item.title} 상세 보기 - ${item.isCompleted ? '완료' : item.firstComeEvent.trim().length > 0 ? '선착순 이벤트' : item.isBookmarked ? '찜' : '기본'}`}
 				style={`left:${item.mapX}%; top:${item.mapY}%`}
+				onmouseenter={() => {
+					hoveredItemId = item.id;
+				}}
+				onmouseleave={() => {
+					if (hoveredItemId === item.id) {
+						hoveredItemId = null;
+					}
+				}}
+				onfocus={() => {
+					hoveredItemId = item.id;
+				}}
+				onblur={() => {
+					if (hoveredItemId === item.id) {
+						hoveredItemId = null;
+					}
+				}}
 				onclick={() => onPinClick(item.id)}
 			>
 				{#if item.firstComeEvent.trim().length > 0 && !item.isCompleted}
@@ -101,16 +136,6 @@
 				{:else}
 					<MapPin size={16} />
 				{/if}
-
-				<div class="pointer-events-none absolute left-1/2 top-[calc(100%+10px)] hidden -translate-x-1/2 rounded-xl border border-border bg-black/90 px-3 py-2 text-left shadow-lg group-hover:block">
-					<p class="whitespace-nowrap text-xs font-semibold text-foreground">{item.title}</p>
-					{#if item.firstComeEvent}
-						<p class="mt-1 whitespace-nowrap text-[10px] font-semibold text-rose-200">{item.firstComeEvent}</p>
-					{/if}
-					{#if item.location}
-						<p class="mt-1 whitespace-nowrap text-[10px] text-muted-foreground">{item.location}</p>
-					{/if}
-				</div>
 			</button>
 		{/each}
 	</div>
