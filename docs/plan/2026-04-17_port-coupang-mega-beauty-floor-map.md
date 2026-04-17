@@ -1,75 +1,137 @@
 # port: coupang mega beauty floor map
 
-> 작성일시: 2026-04-17 14:52
+> 작성일시: 2026-04-17 14:52 (2026-04-17 15:38 개정)
 > 기준커밋: 273a5ae
 > 대상 프로젝트: expo-harvest
 > 상태: 초안
-> 진행률: 0/18 (0%)
-> 요약: 전달된 React 원본은 `1F`, `2F`, `all` 토글과 층별 도형 오버레이를 함께 갖고 있지만, 현재 expo-harvest의 `쿠팡메가뷰티쇼 2026` 데이터는 배경 이미지 1장과 `mapX/mapY` 단일 좌표만 지원한다. 이번 계획은 단일층 임시 배치를 층 분리 가능한 구조로 바꾸고, 쿠팡 메가뷰티쇼 데이터를 실제 층 기준으로 다시 이식하는 데 목적이 있다.
+> 진행률: 0/22 (0%)
+> 원본 자료: `C:/Users/Narang/Downloads/b_FU8ddfFKm4k.zip` (압축 내부 `app/page.tsx` — 1F/2F/all 토글, 순수 SVG 도형, 배경 이미지 없음)
+> 요약: 원본은 1F(viewBox 700×400)와 2F(viewBox 700×320) 두 SVG를 세로로 스택하여 배경 이미지 없이 브랜드 박스·이벤트존·계단·화살표만 그린다. 현재 expo-harvest는 `mapBackgroundImage` 1장과 퍼센트 `mapX/mapY` 단일 좌표만 지원하므로, 층·viewBox·오버레이 엔터티를 보존하는 데이터 모델로 재설계하고, 데이터를 이 모델 위에 재이식한다.
 
 ---
 
 ## 개요
 
-사용자가 제공한 React ZIP의 [`app/page.tsx`](D:/work/project/service/wtools/expo-harvest/codex-temp/zip-inspect/app/page.tsx)는 `activeFloor` 상태로 `1F`, `2F`, `all`을 전환하며, 브랜드 부스와 이벤트존을 층별 SVG로 각각 렌더링한다. 반면 현재 expo-harvest는 [`src/lib/data/lootItems.ts`](D:/work/project/service/wtools/expo-harvest/src/lib/data/lootItems.ts)에서 행사당 `mapBackgroundImage` 1장과 아이템별 `mapX`, `mapY`만 저장하고, [`src/lib/components/ExhibitionMap.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte)는 그 단일 캔버스 위에 모든 핀을 한꺼번에 올리는 구조다.
+원본 `app/page.tsx`는 `activeFloor: "1F" | "2F" | "all"` 토글로 두 SVG를 분기 렌더링한다. 두 층은 **서로 다른 viewBox**(1F 700×400, 2F 700×320)를 쓰며 배경 이미지 없이 `Booth`, `EventZone`, `Arrow`, `Stairs`, 그리고 의미 불명의 파란 세로 `rect`(1F) 같은 순수 SVG 도형만으로 구성된다. 반면 현재 [`src/lib/data/lootItems.ts`](../../src/lib/data/lootItems.ts)는 행사당 배경 이미지 1장과 퍼센트 `mapX/mapY` 단일 좌표만 저장하고, [`src/lib/components/ExhibitionMap.svelte`](../../src/lib/components/ExhibitionMap.svelte)는 그 위에 원형 핀을 얹는 구조다.
 
-이 상태로는 React 원본이 가진 1층/2층 분리 정보가 납작하게 합쳐지고, 사용자가 언급한 "1층과 1층이 모두 포함" 문제도 결국 층 구분이 데이터 모델에서 사라진 결과로 해석된다. ZIP 원본 기준으로는 실제 이슈가 `1F`와 `2F`를 모두 담아야 한다는 뜻이므로, 계획은 "층 정보 보존"을 우선으로 잡는다.
+이 계획의 목표는 (1) 원본의 층 + viewBox + 오버레이 정보를 손실 없이 담을 데이터 모델 재설계, (2) 쿠팡 메가뷰티쇼 2026 데이터의 층별 재이식, (3) 1F/2F/전체 토글 UI 이식, (4) 회귀 검증이다.
 
-## 기술적 고려사항
+## 선행 조건 및 주요 설계 결정
 
-- 현재 `LootItem`은 `mapX`, `mapY`, `location`만 가져서 층, 영역 유형(브랜드 부스/이벤트존/동선), SVG 도형 크기 같은 정보를 표현할 수 없다. React 원본의 `Booth`, `EventZone`, `Arrow`, `Stairs`처럼 층별 오버레이 엔터티가 필요하다.
-- [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest/src/routes/+page.svelte)는 `selectedExhibition`을 기준으로 지도 탭 하나만 렌더링하므로, 층 전환 상태는 `ExhibitionMap` 내부에서 관리하거나 상위 페이지로 끌어올리는 선택이 필요하다.
-- 현재 `쿠팡메가뷰티쇼 2026`의 부스 데이터는 일부 브랜드만 테스트용으로 배치되어 있고 위치 텍스트는 비워 둔 상태다. 층 분리 이식 시에는 좌표만 옮기는 것이 아니라 각 브랜드가 어느 층에 속하는지와 이벤트존을 목록 UX에 어떻게 연결할지도 같이 정해야 한다.
-- 현재 워크트리에는 [`src/lib/components/ExhibitionMap.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte) 미커밋 수정이 있으므로, 구현 단계에서는 기존 hover UX 수정과 충돌하지 않도록 지도 구조 변경 범위를 분리해서 다뤄야 한다.
+### 선행 조건 (Phase 1 착수 전)
+
+1. **hover UX 선행 분리 커밋 완료**: `src/lib/components/ExhibitionMap.svelte`의 hover 패널 변경은 2026-04-17 커밋 `e121f47`(`refactor: move map hover details to summary panel`)로 이미 분리됐다. 본 plan은 그 이후 상태를 기준으로 진행한다.
+2. **zip 재해석 안 하도록 매핑 표 박제**(아래 §브랜드 매핑 표).
+
+### 설계 결정 (이 plan 내에서 확정)
+
+| 결정 항목 | 선택 | 근거 |
+|---|---|---|
+| 좌표 단위 | **픽셀 보존 (viewBox 기반)** | 층마다 viewBox가 달라 단일 퍼센트 변환 시 가로세로 왜곡. 원본과 동일한 픽셀 좌표 + 층별 viewBox 저장이 단순·무손실 |
+| 배경 이미지 | **제거 확정** | 원본엔 배경 이미지가 없음. SVG 오버레이만으로 완전 재현 가능하며 이중 좌표계를 방지 |
+| `all` 뷰 레이아웃 | **1F/2F 세로 스택** | 원본 그대로. 단일 캔버스 합성은 층별 viewBox 차이로 불가 |
+| 부스 UI | **박스 라벨 기본, 클릭 시 상세 시트** | 원본의 박스 라벨을 유지하되 브랜드 박스만 클릭 가능. 기존 원형 핀 렌더러는 `mapBackgroundImage`를 쓰는 다른 전시가 없으므로 이 전시 한정 대체 가능 |
+| 이벤트존/계단/화살표/파란 세로줄 | **비선택 장식 오버레이** | 클릭 비활성, 목록/검색에서도 제외 |
+| 이벤트존 검색성 | **이번 범위에서 제외** | 비브랜드 지점 검색은 별도 요구사항. 제외임을 문서화 |
+| 브랜드 `fontSize` | **데이터 필드로 저장** | 원본이 라벨 길이에 따라 8/9/10 혼재. 자동 계산 대신 데이터 보존이 단순·충실 |
+| AGE20'S 항목 누락 지적 | **반박** | 현 데이터에 이미 `cmbs-2026-age20s` item, hashtag preset, social link가 존재한다. 추가가 아니라 `floorId`/픽셀 좌표 재이식 대상이다 |
+
+### 브랜드 매핑 표 (원본 → 현 데이터)
+
+**1F (10개)**
+
+| 원본 라벨 | 현 id | 비고 |
+|---|---|---|
+| rom&nd | cmbs-2026-romand | |
+| DEWYTREE | cmbs-2026-dewytree | |
+| NATURE REPUBLIC | cmbs-2026-naturerepublic | |
+| AESTURA | cmbs-2026-aestura | |
+| BANILA CO | cmbs-2026-banilaco | |
+| Dr.G | cmbs-2026-drg | |
+| AHC | cmbs-2026-ahc | |
+| THE FACE SHOP | cmbs-2026-thefaceshop | |
+| espoir | cmbs-2026-espoir | |
+| TONYMOLY | cmbs-2026-tonymoly | |
+
+**2F (9개)**
+
+| 원본 라벨 | 현 id | 비고 |
+|---|---|---|
+| Avène | cmbs-2026-avene | |
+| ETUDE | cmbs-2026-etude | |
+| easydew | cmbs-2026-easydew | |
+| MEDIHEAL | cmbs-2026-mediheal | |
+| innisfree | cmbs-2026-innisfree | |
+| PHYSIOGEL | cmbs-2026-physiogel | |
+| AGE20'S | cmbs-2026-age20s | 현 데이터에 이미 존재. 2F `floorId`와 픽셀 박스 좌표만 재설정 |
+| Ariul | cmbs-2026-ariul | |
+| FORENCOS | cmbs-2026-forencos | |
+
+**이벤트존 (참고용, 이번 범위 브랜드만 이식)**
+- 1F: 쿠팡 어워즈 체험존, 피부측정 이벤트, 뷰티 디바이스 체험존, 쿠팡 뉴존 체험존, 뉴존 선물 수령존, 뷰티박스 수령존
+- 2F: 인생네컷 포토존, 파페치/TW 홍보 부스, 헤어쇼 이벤트(4/18), 쿠팡 메가뷰티쇼 스토리, 쿠팡 와우회원 인증존
 
 ---
 
 ## TODO
 
-### Phase 1: 층 분리 가능한 지도 데이터 모델을 정의한다
+### Phase 1: 층 + viewBox + 오버레이를 수용하는 데이터 모델을 정의한다
 
-1. - [ ] **단일 배경 이미지 모델을 층별 지도 모델로 확장한다**
-   - [ ] `src/lib/data/lootItems.ts`: `Exhibition`에 층별 지도 배열(예: `floorMaps`)과 기본 층, 층 라벨을 담을 수 있는 타입을 추가하고 기존 `mapBackgroundImage`, `mapAspectRatio`, `hallLabels` 의존 구간을 정리한다.
-   - [ ] `src/lib/data/lootItems.ts`: `LootItem`에 `floorId` 같은 층 식별자를 추가해 브랜드 핀이 어느 층에 속하는지 분리 저장할 수 있게 만든다.
+1. - [ ] **층별 지도 모델을 도입한다**
+   - [ ] `src/lib/data/lootItems.ts`: `Exhibition`에 `floors: FloorMap[]`과 `defaultFloorId`를 추가한다. `FloorMap`은 `id`, `label`, `viewBox`(예: `"0 0 700 400"`), `overlays: MapOverlay[]`를 갖는다.
+   - [ ] `src/lib/data/lootItems.ts`: 기존 `mapBackgroundImage`, `mapAspectRatio`, `hallLabels` 필드를 제거하거나 deprecated로 표시한다(쿠팡 메가뷰티쇼 외 전시가 없으므로 제거 가능).
 
-2. - [ ] **브랜드 핀 외 오버레이 엔터티를 수용한다**
-   - [ ] `src/lib/data/lootItems.ts`: React 원본의 `Booth`, `EventZone`, `Arrow`, `Stairs`를 표현할 별도 지도 오버레이 타입을 정의하고, 아이템 리스트와 독립적으로 관리할 구조를 설계한다.
-   - [ ] `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`: 브랜드 부스는 상세 시트와 연결되는 인터랙티브 핀으로, 이벤트존/계단/IN·OUT은 비선택형 안내 오버레이로 구분하는 렌더링 계약을 문서화한다.
+2. - [ ] **LootItem에 층·박스 렌더링 정보를 추가한다**
+   - [ ] `src/lib/data/lootItems.ts`: `LootItem`에 `floorId: string`, `boxWidth: number`, `boxHeight: number`, `fontSize?: number`를 추가한다. `mapX`, `mapY`는 픽셀 좌표로 의미를 바꾼다(기존 퍼센트 0–100 해석 폐기).
+   - [ ] `src/lib/data/lootItems.ts`: 좌표 단위 변경이 타 전시에 미치는 영향을 확인한다(현재 `EXHIBITIONS`엔 쿠팡 메가뷰티쇼만 있음 — 영향 없음 확인 후 주석으로 명시).
 
-### Phase 2: 쿠팡 메가뷰티쇼 데이터를 1F/2F 기준으로 재배치한다
+3. - [ ] **비선택 오버레이 타입을 정의한다**
+   - [ ] `src/lib/data/lootItems.ts`: `MapOverlay`를 `EventZoneOverlay | StairsOverlay | ArrowOverlay | DecorRectOverlay` 유니온으로 정의한다. 파란 세로 `rect`는 `DecorRectOverlay`로 포용(의미 불명 주석 포함).
+   - [ ] `src/lib/data/lootItems.ts`: 각 오버레이는 `floorId`, 픽셀 좌표(`x, y, width, height` 또는 `x, y, direction`), `label`/`color` 등 렌더링 필수 속성만 갖는다. 상세 시트와 연결되지 않음을 타입 레벨(또는 주석)에서 명시한다.
 
-3. - [ ] **React 원본 좌표를 현재 전시 데이터로 옮길 기준표를 만든다**
-   - [ ] `codex-temp/zip-inspect/app/page.tsx`, `src/lib/data/lootItems.ts`: React 원본에 있는 브랜드/이벤트존 명칭을 현재 `쿠팡메가뷰티쇼 2026` 아이템 ID와 매핑해 누락/추가 브랜드를 표로 정리한다.
-   - [ ] `docs/report/2026-04-17_multi-exhibition-booths.md`, `src/lib/data/lootItems.ts`: 기존 테스트 데이터에만 있는 브랜드와 React 원본에만 있는 이벤트존을 구분해, 이번 이식 범위가 "브랜드만 우선"인지 "이벤트존 포함"인지 결정 근거를 남긴다.
+### Phase 2: 쿠팡 메가뷰티쇼 2026 데이터를 층·픽셀 기준으로 재이식한다
 
-4. - [ ] **`쿠팡메가뷰티쇼 2026` 전시 데이터를 층별로 재구성한다**
-   - [ ] `src/lib/data/lootItems.ts`: 현재 단일 `coupangMegaBeautyShow2026` 정의를 `1F`, `2F` 층 데이터와 오버레이 정의로 재작성한다.
-   - [ ] `static/images/exhibitions`, `src/lib/data/lootItems.ts`: 필요하면 층별 배경 이미지 자산을 추가하거나, SVG 오버레이만으로 충분하면 기존 임시 이미지 의존을 제거하는 방향을 결정한다.
+4. - [ ] **AGE20'S 기존 데이터 정합성을 확인한다**
+   - [ ] `src/lib/data/lootItems.ts`: 이미 존재하는 `cmbs-2026-age20s` 항목의 `floorId`, 픽셀 좌표, 박스 크기, `fontSize`, 해시태그/소셜링크 연결이 원본 2F 박스와 일치하는지 검증한다.
 
-5. - [ ] **목록/상세 정보도 층 정보를 잃지 않게 맞춘다**
-   - [ ] `src/lib/components/LootCard.svelte`, `src/lib/components/BoothDetailSheet.svelte`: 부스 카드와 상세 시트에 층 또는 구역 표기가 필요한지 검토하고, 지도에서 선택한 층과 정보 문맥이 이어지도록 표시 규칙을 정한다.
-   - [ ] `src/lib/data/lootItems.ts`, `src/routes/+page.svelte`: 층별 필터 없이 전체 리스트를 유지하더라도 선택된 부스가 어느 층인지 찾을 수 있는 최소 텍스트 정보(`location` 또는 별도 floor label)를 복구한다.
+5. - [ ] **19개 브랜드 좌표를 원본 픽셀로 이식한다**
+   - [ ] `src/lib/data/lootItems.ts`: `§브랜드 매핑 표`를 따라 각 브랜드의 `floorId`, `mapX`, `mapY`, `boxWidth`, `boxHeight`, `fontSize`를 원본 `app/page.tsx`의 `<Booth>` 호출과 일치하게 설정한다. 기존 퍼센트 좌표는 폐기한다.
 
-### Phase 3: 지도 UI를 층 전환형으로 바꾼다
+6. - [ ] **1F/2F 비브랜드 오버레이를 이식한다**
+   - [ ] `src/lib/data/lootItems.ts`: 1F EventZone 6개(쿠팡 어워즈 체험존, 피부측정 이벤트, 뷰티 디바이스 체험존, 쿠팡 뉴존 체험존, 뉴존 선물 수령존, 뷰티박스 수령존), 2F EventZone 5개(인생네컷 포토존, 파페치/TW 홍보 부스, 헤어쇼 이벤트(4/18), 쿠팡 메가뷰티쇼 스토리, 쿠팡 와우회원 인증존)를 `EventZoneOverlay`로 기록한다.
+   - [ ] `src/lib/data/lootItems.ts`: 1F 계단 2개, IN/OUT 화살표 4개, 파란 세로 `rect`를 해당 오버레이 타입으로 기록한다.
 
-6. - [ ] **React 원본의 `1F/2F/all` 전환을 Svelte 흐름에 맞게 이식한다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 층 전환 상태와 토글 UI를 추가하고, 선택된 층 또는 전체 보기 기준으로 배경/오버레이/핀을 분기 렌더링한다.
-   - [ ] `src/routes/+page.svelte`, `src/lib/components/ExhibitionMap.svelte`: 층 전환 상태를 지도 내부에 둘지 상위 페이지로 올릴지 결정하고, 탭 전환 후에도 UX가 흔들리지 않는 구조로 고정한다.
+7. - [ ] **목록/카드/시트에 층 정보를 노출한다**
+   - [ ] `src/lib/components/LootCard.svelte`, `src/lib/components/BoothDetailSheet.svelte`: `floorId` 또는 `floors[*].label`을 조회해 "1F"/"2F" 배지를 표시한다.
+   - [ ] `src/routes/+page.svelte`: 리스트에서 브랜드 선택 시 해당 브랜드의 층으로 지도 상태를 동기화할지, 선택한 층을 유지할지 결정 후 구현한다(기본: 해당 층으로 이동).
 
-7. - [ ] **층별 보기에서 핀 선택 계약을 다시 맞춘다**
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `all` 보기에서는 층이 다른 핀의 겹침과 시인성을 점검하고, 필요하면 `all`은 오버레이 요약만 보여주고 상세 선택은 층별 보기에서만 허용하는지 결정한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`, `src/lib/components/BoothDetailSheet.svelte`: 2층 부스를 탭했을 때 상세 시트에 현재 층 정보가 이어지고, 시트를 닫아도 사용자가 보던 층이 유지되도록 상태 흐름을 정리한다.
+### Phase 3: 1F/2F/전체 토글 지도를 구현한다
 
-### Phase 4: 회귀를 막는 검증과 문서 정리를 한다
+8. - [ ] **층 전환 상태와 토글 UI를 이식한다**
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: `activeFloor` 상태를 추가하고, 원본과 동일한 "전체/1F/2F" 토글 버튼을 렌더링한다. 기본값은 `defaultFloorId` 또는 `all` — 결정 후 주석으로 명시.
+   - [ ] `src/routes/+page.svelte`, `src/lib/components/ExhibitionMap.svelte`: 층 상태는 `ExhibitionMap` 내부 소유로 두되, 외부에서 특정 층으로 점프할 수 있는 props/이벤트 경로(리스트→층 이동용)를 하나 노출한다.
 
-8. - [ ] **정적 검증과 수동 체크 기준을 준비한다**
-   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/lib/data/lootItems.ts`: `npm run check` 기준으로 타입/템플릿 오류가 없는지 검증한다.
-   - [ ] `src/routes/+page.svelte`, `src/lib/components/ExhibitionMap.svelte`: 지도 탭에서 `1F`, `2F`, `전체` 전환, 브랜드 핀 선택, 상세 시트 열기/닫기, 리스트 선택 후 해당 층으로 복귀하는 수동 확인 시나리오를 체크한다.
+9. - [ ] **층별 SVG를 viewBox 단위로 렌더링한다**
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: 각 층을 독립 SVG(`viewBox={floor.viewBox}`)로 렌더링한다. `activeFloor === "all"`은 1F SVG와 2F SVG를 **세로 스택**으로 동시 렌더(원본 레이아웃 재현).
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: `mapBackgroundImage` 관련 렌더 경로를 제거한다.
 
-9. - [ ] **후속 좌표 보정 작업과 충돌 지점을 기록한다**
-   - [ ] `docs/plan/2026-04-17_port-coupang-mega-beauty-floor-map.md`: 실제 운영 배치도 확정 전까지 어떤 좌표와 텍스트가 임시값인지 명시해 다음 수정 때 다시 해석하지 않게 한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`, `TODO.md`: 진행 중인 hover UX 수정과 이번 층 분리 작업의 순서를 분리해, 두 변경이 한 파일에서 충돌하는 지점을 추적 가능하게 남긴다.
+10. - [ ] **브랜드 박스와 비선택 오버레이를 렌더링한다**
+    - [ ] `src/lib/components/ExhibitionMap.svelte`: 브랜드 `LootItem`은 `<rect>` + `<text>` 박스로 렌더하고 클릭 시 `BoothDetailSheet`를 연다. 포커스/호버 스타일은 기존 UX 결과물과 호환되게 유지한다.
+    - [ ] `src/lib/components/ExhibitionMap.svelte`: `EventZoneOverlay`/`StairsOverlay`/`ArrowOverlay`/`DecorRectOverlay`는 원본 `EventZone`/`Stairs`/`Arrow`/`rect fill="#1976d2"` 스타일로 렌더하고 pointer-events 비활성화한다.
+
+11. - [ ] **선택 컨텍스트와 층 상태의 일관성을 맞춘다**
+    - [ ] `src/lib/components/ExhibitionMap.svelte`, `src/lib/components/BoothDetailSheet.svelte`: 2F 브랜드 탭 시 상세 시트에 "2F" 배지가 나타나고, 시트 닫을 때 사용자가 보던 층이 유지되도록 상태를 분리한다.
+
+### Phase 4: 회귀 방지와 문서 정리
+
+12. - [ ] **정적·수동 검증**
+    - [ ] `npm run check` 기준 타입/템플릿 오류 없음을 확인한다.
+    - [ ] 수동 시나리오: 전체/1F/2F 전환, 1F·2F 브랜드 각각 1개 탭하여 시트 열고 닫기, 리스트에서 2F 브랜드 선택 시 지도가 2F로 전환되는지, 이벤트존/계단/화살표/파란 세로줄이 클릭되지 않는지 확인한다.
+
+13. - [ ] **후속 좌표 보정 기록과 파일 충돌 정리**
+    - [ ] `docs/plan/2026-04-17_port-coupang-mega-beauty-floor-map.md`: 이식 후 임시로 남겨둔 좌표/라벨/색상이 있다면 명시한다(없으면 "모두 원본 일치"로 기록).
+    - [ ] `src/lib/components/ExhibitionMap.svelte`, `TODO.md`(존재 시에만): 선행 hover UX 커밋(`e121f47`)과 층 분리 작업 사이의 충돌 흔적이 남아 있으면 정리한다.
 
 ---
 
-*상태: 초안 | 진행률: 0/18 (0%)*
+*상태: 초안 | 진행률: 0/22 (0%)*
