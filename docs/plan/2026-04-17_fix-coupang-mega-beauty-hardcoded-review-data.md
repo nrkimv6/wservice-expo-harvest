@@ -4,8 +4,8 @@
 > 기준커밋: 5853e1d
 > 대상 프로젝트: expo-harvest
 > 상태: 초안
-> 진행률: 0/36 (0%)
-> 요약: 실제 후기 원문과 `쿠팡메가뷰티쇼 2026` 하드코딩 데이터를 대조한 결과, 일부 부스의 해시태그 오탈자와 미션 설명 불일치, 잘못된 선착순 강조, preset 누락/미연결이 확인됐다. 이 계획의 목표는 후기 기준으로 명백한 오류(해시태그 오탈자, 존재하지 않는 선착순 강조, 프리셋 미연결, 오탈자 accountId)를 먼저 바로잡고, 후기 원문에 미션/경품이 명시된 19개 부스 전부를 동일 턴에 반영하는 것이다. 1차 검토에서 계획이 놓친 항목(더페이스샵 `#페이스샵` 오탈자, AHC `#SKINGAME_T_SHOT` 누락, 메디힐/아벤느 preset 부재, 토니모리 `accountId: tonymory` 오탈자, 더페이스샵 kakao URL 언더스코어 의심)을 Phase 2에 추가 반영한다.
+> 진행률: 0/50 (0%)
+> 요약: 실제 후기 원문과 `쿠팡메가뷰티쇼 2026` 하드코딩 데이터를 대조한 결과, 일부 부스의 해시태그 오탈자와 미션 설명 불일치, 잘못된 선착순 강조, preset 누락/미연결이 확인됐다. 이 계획의 목표는 후기 기준으로 명백한 오류(해시태그 오탈자, 존재하지 않는 선착순 강조, 프리셋 미연결, 오탈자 accountId)를 먼저 바로잡고, 후기 원문에 미션/경품이 명시된 19개 부스 전부를 동일 턴에 반영하는 것이다. 1차 검토에서 계획이 놓친 항목(더페이스샵 `#페이스샵` 오탈자, AHC `#SKINGAME_T_SHOT` 누락, 메디힐/아벤느 preset 부재, 토니모리 `accountId: tonymory` 오탈자, 더페이스샵 kakao URL 언더스코어 의심)과 2차 검토 요구사항(피드/스토리/피드 또는 스토리 업로드 구분, 추첨 후기 이벤트 분리 표기)을 함께 반영한다.
 
 ---
 
@@ -20,11 +20,19 @@
 - `src/lib/data/lootItems.ts`는 해시태그 프리셋과 실제 부스 아이템 데이터가 분리돼 있어, 프리셋이 정의돼 있어도 아이템에서 `hashtags: []`를 직접 넣으면 UI에는 반영되지 않는다.
 - `firstComeEvent`는 지도 hover, 리스트, 상세 시트에서 별도 강조 문구로 노출되므로, 근거가 약한 선착순 표시는 과장된 사용자 인상을 만들 수 있다.
 - `BoothDetailSheet.svelte`는 `prize`, `mission`, `category`, `hashtags`가 비어 있지 않으면 그대로 노출하므로, 후기 기준 문구 정합성이 중요하다.
+- 업로드 방식은 현재 `mission` 문자열 안에 묻혀 있어 `Hashtag Block`과 시각적으로 분리된다. `피드`, `스토리`, `피드 또는 스토리`는 별도 구조화 필드와 별도 라벨/칩으로 노출하는 편이 사용성이 낫다.
+- 에스트라처럼 현장 즉시 수령이 아닌 "추첨 후기 이벤트"는 `Prize`와 의미가 다르다. 즉시 보상과 추첨형 후속 이벤트를 같은 필드에 섞으면 현장 기대치가 왜곡될 수 있다.
 - 이번 계획은 코드 구현뿐 아니라, 후기 기준과 앱 반영 범위를 다시 설명하는 보고 문서 또는 변경 로그 갱신까지 포함해야 이후 재검토 시 기준이 흔들리지 않는다.
 
 ---
 
 ## TODO
+
+### Phase R: 재발 경로 분석
+
+0. [ ] **하드코딩 후기 데이터가 반복적으로 어긋난 원인을 고정한다** — 임시 문구 덮어쓰기 대신 데이터 구조 문제를 먼저 정리
+   - [ ] `src/lib/data/lootItems.ts`: 해시태그 preset과 item 본문 필드가 따로 관리되면서 일부 브랜드는 preset만 있고 item 연결이 빠진 경로(AHC, 메디힐, 아벤느 등)를 원인으로 문서화한다.
+   - [ ] `src/lib/data/lootItems.ts`, `src/lib/components/BoothDetailSheet.svelte`: 업로드 타입과 추첨형 이벤트를 `mission`/`prize` 자유문자열에만 넣어 둔 현재 구조가 왜 후기 정합성 저하를 반복시키는지 정리하고, 구조화 필드 추가를 재발방지책으로 명시한다.
 
 ### Phase 1: 후기 기준과 현재 데이터의 충돌 지점을 고정한다
 
@@ -75,14 +83,26 @@
 
 ### Phase 4: 화면 노출과 검색 영향 범위를 검증한다
 
-9. [ ] **상세 시트와 리스트에서 바뀐 데이터가 의도대로 보이는지 확인한다** — 텍스트 수정이 실제 노출과 일치하는지 검증
-   - [ ] `src/lib/components/BoothDetailSheet.svelte`: `firstComeEvent`, `prize`, `mission`, `hashtags`가 새 값으로 표시될 때 섹션 순서와 문구 흐름이 자연스러운지 확인 포인트를 정리한다.
-   - [ ] `src/lib/components/LootFeed.svelte`, `src/lib/components/ExhibitionMap.svelte`: 검색/정렬/hover 강조가 수정된 `firstComeEvent`와 텍스트에 맞게 달라지는지 검증 항목을 적는다.
+9. [ ] **인스타 업로드 타입을 별도 데이터로 구조화한다** — 해시태그와 분리된 업로드 조건을 명시적으로 표현
+   - [ ] `src/lib/data/lootItems.ts`: `LootItem`에 `instagramUploadType?: 'feed' | 'story' | 'feed_or_story'` 또는 동등 의미의 필드를 추가한다.
+   - [ ] `src/lib/data/lootItems.ts`: 후기 원문 기준으로 각 부스의 인스타 업로드 요구사항을 `피드`, `스토리`, `피드 또는 스토리`로 채우고, 업로드 요구가 없거나 불명확하면 비운다.
 
-10. [ ] **기본 검증 절차를 문서화한다** — 구현 직후 빠르게 회귀 확인 가능하게 유지
+10. [ ] **추첨 후기 이벤트를 즉시 보상과 분리해 구조화한다** — 현장 수령형과 추첨형을 혼동하지 않게 구분
+   - [ ] `src/lib/data/lootItems.ts`: `LootItem`에 `raffleEvent` 또는 동등 의미의 필드를 추가해 에스트라 같은 "업로드 후 추첨" 이벤트를 `prize`와 분리 저장한다.
+   - [ ] `src/lib/data/lootItems.ts`: 에스트라를 포함해 후기 원문에 추첨형 후속 이벤트가 있는 부스를 찾아 `raffleEvent`에 문구를 옮기고, 즉시 수령형 `prize`와 겹치지 않게 정리한다.
+
+11. [ ] **상세 시트에서 업로드 타입과 추첨 이벤트를 분리 노출한다** — 사용자에게 바로 행동 지침이 보이게 정리
+   - [ ] `src/lib/components/BoothDetailSheet.svelte`: `Hashtag Block` 상단에 단순 `피드` 한 단어 대신 `업로드 조건` 라벨과 `피드`, `스토리`, `피드 또는 스토리` 칩을 보여주고, 복사 텍스트에는 포함하지 않게 한다.
+   - [ ] `src/lib/components/BoothDetailSheet.svelte`: `Prize`와 별도로 `추첨 이벤트` 섹션을 추가해 "업로드 시 매일 3명 추첨" 같은 후기 이벤트를 분리 표기한다.
+
+12. [ ] **상세 시트와 리스트에서 바뀐 데이터가 의도대로 보이는지 확인한다** — 텍스트 수정이 실제 노출과 일치하는지 검증
+   - [ ] `src/lib/components/BoothDetailSheet.svelte`: `firstComeEvent`, `prize`, `mission`, `hashtags`가 새 값으로 표시될 때 섹션 순서와 문구 흐름이 자연스러운지 확인 포인트를 정리한다.
+   - [ ] `src/lib/components/LootFeed.svelte`, `src/lib/components/ExhibitionMap.svelte`: 검색/정렬/hover 강조가 수정된 `firstComeEvent`, `instagramUploadType`, `raffleEvent`에 맞게 달라지는지 검증 항목을 적는다.
+
+13. [ ] **기본 검증 절차를 문서화한다** — 구현 직후 빠르게 회귀 확인 가능하게 유지
    - [ ] `package.json`: 현재 사용 가능한 검증 명령(`npm run check`, 필요 시 `npm run build`)을 기준으로 문서형 검증 절차를 계획서에 반영한다.
-   - [ ] `docs/plan/2026-04-17_fix-coupang-mega-beauty-hardcoded-review-data.md`: 구현 완료 후 확인할 항목을 `해시태그 복사`, `SNS 핸들`, `선착순 강조`, `상세 시트 텍스트` 중심으로 요약한다.
+   - [ ] `docs/plan/2026-04-17_fix-coupang-mega-beauty-hardcoded-review-data.md`: 구현 완료 후 확인할 항목을 `해시태그 복사`, `업로드 타입 칩`, `추첨 이벤트 섹션`, `SNS 핸들`, `선착순 강조`, `상세 시트 텍스트` 중심으로 요약한다.
 
 ---
 
-*상태: 초안 | 진행률: 0/30 (0%)*
+*상태: 초안 | 진행률: 0/50 (0%)*
