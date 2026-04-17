@@ -4,6 +4,7 @@
 
 ## In Progress
 - [ ] **fix: hamburger menu and cache regression** — [plan](docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md) (21/44, 48%)
+- [ ] **fix: implement merge-test status gate mismatch** — [plan](docs/plan/2026-04-17_fix-implement-merge-test-status-gate.md) (14/14, 100%, merge-test 대기)
 
 ## Pending
 - [ ] **refine: booth view stair removal and 2f lane spacing** — [plan](docs/plan/2026-04-18_refine-booth-view-stair-removal-and-2f-lane-spacing.md) (0/8, 0%)

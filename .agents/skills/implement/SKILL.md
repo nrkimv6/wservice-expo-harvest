@@ -292,6 +292,7 @@ Codex가 구현 요청 받으면:
    - `_build_worktree.ps1` 같은 helper 예외는 setup 전용이며, implement 중 임의 probe의 근거로 쓰면 안 된다.
 
 5. **완료 처리**
+   - 워크트리 구현과 선행 검증(T1~T3, 필요한 로컬 검증)을 마치면 plan 상태를 `머지대기`로 올릴 수 있다. 이 상태는 `/merge-test`의 정상 진입 상태다.
    - 기본: `/merge-test` 스킬 호출 — 워크트리 머지 + T4/T5 통합테스트 + 완료 처리(archive, TODO→DONE, 커밋)까지 일괄 실행
    - `_todo-N.md` 작업이고 같은 `parent_plan_path`의 다른 `_todo-*`가 이미 구현완료(머지 대기) 상태면 `/merge-test`를 **부모 묶음 배치 모드**로 1회 실행해 같은 부모의 워크트리를 한 번에 정리한다.
    - 워크트리 미사용 시에도 `/merge-test` 호출 (머지 스킵하고 done 처리만 실행)
