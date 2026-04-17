@@ -4,6 +4,7 @@
 
 ## Pending
 
+- [ ] **refine: map pin hover UX** — [plan](docs/plan/2026-04-17_refine-map-pin-hover-ux.md) (0/9, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
 
 ## Done
