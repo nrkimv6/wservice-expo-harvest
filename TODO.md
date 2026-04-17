@@ -2,8 +2,9 @@
 
 ## In Progress
 
+- [ ] **fix: align coupang mega beauty hardcoded review data** — [plan](docs/plan/2026-04-17_fix-coupang-mega-beauty-hardcoded-review-data.md) (50/50, 100%)
+
 ## Pending
-- [ ] **fix: align coupang mega beauty hardcoded review data** — [plan](docs/plan/2026-04-17_fix-coupang-mega-beauty-hardcoded-review-data.md) (0/47, 0%)
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
 
