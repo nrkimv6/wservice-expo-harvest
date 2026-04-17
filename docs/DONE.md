@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-17: 쿠팡 메가뷰티쇼 지도 제스처 사용성 개선
+  - `ExhibitionMap.svelte`의 단일층 viewport에 scale helper, drag/pinch intent 분리, pan 후 오탭 차단 로직을 추가해 모바일 확대/이동 체감을 높임
+  - 단일층 헤더에 `+ / - / 리셋` 확대 컨트롤을 추가하고, 안내 문구와 `MANUAL_TASKS.md`를 새 제스처 계약 기준으로 갱신
+  - `npm run check`, `npm run build` 통과 후 plan archive 및 impl worktree 정리 완료
+
 - [x] 2026-04-17: 쿠팡 메가뷰티쇼 후기 데이터 정합성 보정
   - 실제 후기 기준으로 19개 부스의 해시태그, 미션, 경품, 선착순 문구를 다시 맞추고 AHC/에뛰드/아리얼 등 누락·오표기 데이터를 정리
   - 상세 시트에 `업로드 조건` 칩과 `추첨 이벤트` 섹션을 추가해 피드/스토리/후속 추첨을 분리 노출

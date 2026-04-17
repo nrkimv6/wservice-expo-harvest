@@ -1,13 +1,15 @@
 # refine: coupang floor map gesture usability
 
+> 완료일: 2026-04-17
+> 아카이브됨
+> 진행률: 34/34 (100%)
 > 작성일시: 2026-04-17 18:31
 > 기준커밋: f38947e
 > 대상 프로젝트: expo-harvest
-> branch: impl/refine-coupang-floor-map-gesture-usability
-> worktree: .worktrees/impl-refine-coupang-floor-map-gesture-usability
-> worktree-owner: D:/work/project/service/wtools/expo-harvest/.worktrees/impl-refine-coupang-floor-map-gesture-usability/docs/plan/2026-04-17_refine-coupang-floor-map-gesture-usability.md
-> 상태: 구현중
-> 진행률: 32/34 (94%)
+> 상태: 구현완료
+> 반영일시: 2026-04-17 18:50
+> 머지커밋: 46b4ded
+> 진행률: 34/34 (100%)
 > 요약: 현재 `ExhibitionMap`의 pinch/pan은 코드상 구현돼 있지만 확대 여유, pan 체감, tap 충돌 방지가 모두 보수적으로 잡혀 있어 모바일에서 거의 작동하지 않는 것처럼 느껴진다. 이번 계획은 제스처 체감을 실제 탐색 가능한 수준으로 끌어올리고, 이전 계획에서 제외했던 명시적 확대/축소 버튼을 별도 UX 보강 항목으로 재도입하는 데 목적이 있다.
 
 ---
@@ -71,12 +73,12 @@
 
 ### Phase 4: 재진입 흐름과 검증 기준을 구현 직후 확인 가능한 수준으로 낮춘다
 
-7. - [ ] **지도 재진입과 검증 항목을 구현 후 바로 확인 가능한 수준으로 쪼갠다**
+7. - [x] **지도 재진입과 검증 항목을 구현 후 바로 확인 가능한 수준으로 쪼갠다**
    - [x] `src/routes/+page.svelte`, `src/lib/components/ExhibitionMap.svelte`: `selectItem(id, focusMap = false, openDetail = false)`가 갱신하는 `mapFloorOverride`, `selectedId`, `selectedItemId` 흐름에 새 prop 없이 유지 가능한지 확인하고, 충돌이 있으면 동기화 지점을 한 곳으로만 제한한다.
    - [x] `src/lib/components/ExhibitionMap.svelte`: coarse pointer 안내 문구를 현재 제스처 계약에 맞춰 `핀치 확대 + 드래그 이동 + 버튼 확대/축소`를 함께 설명하는 문구로 갱신한다.
    - [x] `MANUAL_TASKS.md`: 모바일 또는 디바이스 모드에서 확인할 `pinch 확대/축소`, `drag pan`, `zoom 버튼`, `pan 후 부스 탭`, `층 전환 후 viewport 복원` 체크리스트를 추가한다.
-   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 구현 후 `npm run check`를 실행해 `svelte-check` 기준 0 errors / 0 warnings를 확인하는 검증 항목을 유지한다.
+   - [x] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 구현 후 `npm run check`를 실행해 `svelte-check` 기준 0 errors / 0 warnings를 확인하는 검증 항목을 유지한다.
 
 ---
 
-*상태: 구현중 | 진행률: 32/34 (94%)*
+*상태: 구현완료 | 진행률: 34/34 (100%)*

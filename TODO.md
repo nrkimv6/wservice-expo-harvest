@@ -1,7 +1,6 @@
 # TODO
 
 ## In Progress
-- [ ] **refine: coupang floor map gesture usability** — [plan](docs/plan/2026-04-17_refine-coupang-floor-map-gesture-usability.md) (32/34, 94%)
 
 ## Pending
 - [ ] **refine: coupang map segmentation and booth normalization** — [plan](docs/plan/2026-04-17_refine-coupang-map-segmentation-and-booth-normalization.md) (0/41, 0%)
