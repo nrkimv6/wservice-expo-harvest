@@ -3,13 +3,11 @@
 > 마지막 업데이트: 2026-04-18
 
 ## In Progress
-- [ ] **fix: hamburger menu and cache regression** — [plan](docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md) (31/44, 70%)
 - [ ] **fix: map booth viewport normalization** — [plan](docs/plan/2026-04-18_fix-map-booth-viewport-normalization.md) (0/8, 0%)
 
 ## Pending
 - [ ] **fix: preview process cleanup before raw build smoke** — [plan](docs/plan/2026-04-18_fix-preview-process-cleanup-before-raw-build-smoke.md) (0/8, 0%)
 - [ ] **refine: booth view stair removal and 2f lane spacing** — [plan](docs/plan/2026-04-18_refine-booth-view-stair-removal-and-2f-lane-spacing.md) (0/10, 0%)
-- [ ] **fix: hamburger menu and cache regression** — [plan](docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md) (2/8, 25%)
 - [ ] **test: map booth interaction regression coverage** — [plan](docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md) (0/8, 0%)
 - [ ] **refactor: dedup exhibition map render contract** — [plan](docs/plan/2026-04-18_refactor-dedup-exhibition-map-render-contract.md) (0/8, 0%)
 - [ ] **refine: adopt plans worktree for doc isolation** — [plan](docs/plan/2026-04-17_refine-adopt-plans-worktree-for-doc-isolation.md) (0/20, 0%)

@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-18: 햄버거 메뉴 무반응 및 stale route cache 회귀 복구
+  - `src/routes/+page.svelte`에서 단일 박람회 상태에서도 햄버거가 열리도록 guard를 제거하고 `현재 박람회` drawer copy로 정리
+  - `src/service-worker.ts`에서 route HTML precache를 제거하고 정적 asset-only cache + navigation network-first 전략으로 축소
+  - `npm run check`, `npm run build:raw`, `npm run preview`와 실제 브라우저 smoke 후 plan archive, TODO 정리까지 완료
+
 - [x] 2026-04-18: implement/merge-test/done 상태 게이트 정합성 복구
   - `.agents/skills/merge-test/SKILL.md`가 `머지대기` 상태에서도 정상 진입하도록 전제조건과 실패 안내를 확장
   - `.agents/skills/implement/SKILL.md`, `.agents/skills/done/SKILL.md`에서 구현 완료 후 `머지대기 -> /merge-test -> /done` 흐름이 끊기지 않도록 상태 용어와 차단 메시지를 통일

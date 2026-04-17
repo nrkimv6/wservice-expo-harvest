@@ -1,12 +1,13 @@
 # fix: hamburger menu and cache regression
 
+> 완료일: 2026-04-18
+> 아카이브됨
+> 진행률: 44/44 (100%)
 > 작성일시: 2026-04-18 00:14
 > 기준커밋: 43ef242
 > 대상 프로젝트: expo-harvest
-> branch: main
-> worktree: D:\work\project\service\wtools\expo-harvest
-> worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-18_fix-hamburger-menu-cache-regression.md
 > 상태: 구현완료
+> 반영일시: 2026-04-18 01:08
 > 진행률: 44/44 (100%)
 > 요약: 현재 햄버거 무반응 증상은 코드상 두 축으로 정리됐다. 첫째, 단일 박람회 데이터 상태에서 `src/routes/+page.svelte`의 가드가 햄버거 클릭을 100% 막고 있었다. 둘째, `src/service-worker.ts`가 라우트 HTML까지 앱 셸로 캐시해 오래된 HTML과 새 JS가 섞일 수 있었다. 두 원인은 수정됐고, main 기준 `check/build/preview`와 실제 브라우저 클릭 검증까지 끝냈다.
 
