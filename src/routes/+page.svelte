@@ -5,9 +5,11 @@
 		AlarmClockCheck,
 		Bookmark,
 		MapPinned,
+		Menu,
 		NotebookPen,
 		Route,
-		Search
+		Search,
+		X
 	} from 'lucide-svelte';
 	import AlertBanner from '$lib/components/AlertBanner.svelte';
 	import BoothDetailSheet from '$lib/components/BoothDetailSheet.svelte';
@@ -74,6 +76,7 @@
 	let selectedId = $state<string | null>(null);
 	let activeTab = $state<AppTab>('home');
 	let showOnboarding = $state(false);
+	let isExhibitionMenuOpen = $state(false);
 	let liveAlertMessage = $state<string | null>(null);
 	let alertChannelStatus = $state<AlertChannelStatus>('connecting');
 
@@ -161,6 +164,17 @@
 		};
 	});
 
+	$effect(() => {
+		if (!browser || !isExhibitionMenuOpen) return;
+
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+
+		return () => {
+			document.body.style.overflow = previousOverflow;
+		};
+	});
+
 	function updateSelectedItems(updater: (currentItems: LootItem[]) => LootItem[]) {
 		itemsByExhibition = {
 			...itemsByExhibition,
@@ -179,6 +193,7 @@
 	function selectExhibition(exhibition: Exhibition) {
 		selectedExhibitionId = exhibition.id;
 		selectedId = null;
+		isExhibitionMenuOpen = false;
 	}
 
 	function toggleComplete(id: string) {
@@ -215,7 +230,24 @@
 	function reopenOnboarding() {
 		showOnboarding = true;
 	}
+
+	function toggleExhibitionMenu() {
+		if (EXHIBITIONS.length < 2) return;
+		isExhibitionMenuOpen = !isExhibitionMenuOpen;
+	}
+
+	function closeExhibitionMenu() {
+		isExhibitionMenuOpen = false;
+	}
 </script>
+
+<svelte:window
+	onkeydown={(event) => {
+		if (isExhibitionMenuOpen && event.key === 'Escape') {
+			closeExhibitionMenu();
+		}
+	}}
+/>
 
 <svelte:head>
 	<title>{selectedExhibition.name} | expo-harvest</title>
@@ -226,6 +258,20 @@
 </svelte:head>
 
 <div class="safe-top safe-bottom min-h-dvh bg-navy-deep">
+	<div class="safe-right fixed right-4 top-4 z-30 sm:right-5 sm:top-5">
+		<button
+			type="button"
+			class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-gold/25 bg-navy-surface/95 text-foreground shadow-[0_14px_30px_rgba(0,0,0,0.35)] backdrop-blur transition hover:border-gold/40 hover:text-gold"
+			aria-controls="exhibition-menu-drawer"
+			aria-expanded={isExhibitionMenuOpen}
+			aria-haspopup="dialog"
+			aria-label="박람회 메뉴 열기"
+			onclick={toggleExhibitionMenu}
+		>
+			<Menu size={18} />
+		</button>
+	</div>
+
 	<div class="bottom-nav-offset mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pt-5 sm:px-5">
 		<AlertBanner message={alertMessage} mode={alertMode} />
 
@@ -269,57 +315,6 @@
 			</div>
 		</section>
 
-		<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
-			<div class="flex items-center justify-between gap-3">
-				<div>
-					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-						Exhibition Menu
-					</p>
-					<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">박람회 선택</h2>
-				</div>
-
-				<div class="rounded-full border border-border bg-navy-surface px-3 py-1 text-xs text-muted-foreground">
-					{EXHIBITIONS.length} versions
-				</div>
-			</div>
-
-			<div class="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-1">
-				{#each EXHIBITIONS as exhibition (exhibition.id)}
-					<button
-						type="button"
-						class={[
-							'min-w-[220px] rounded-[24px] border px-4 py-4 text-left transition',
-							exhibition.id === selectedExhibitionId
-								? 'border-gold/40 bg-gold/10 shadow-[0_18px_40px_rgba(255,199,94,0.12)]'
-								: 'border-border bg-navy-surface hover:border-gold/25'
-						]}
-						aria-pressed={exhibition.id === selectedExhibitionId}
-						onclick={() => selectExhibition(exhibition)}
-					>
-						<div class="flex items-start justify-between gap-3">
-							<div>
-								<p class="text-sm font-semibold text-foreground">{exhibition.name}</p>
-								<p class="mt-1 text-xs text-muted-foreground">{exhibition.subtitle}</p>
-							</div>
-
-							<span
-								class={[
-									'rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]',
-									exhibition.id === selectedExhibitionId
-										? 'bg-gold text-black'
-										: 'bg-black/25 text-muted-foreground'
-								]}
-							>
-								{exhibition.id === selectedExhibitionId ? 'Selected' : 'Open'}
-							</span>
-						</div>
-
-						<p class="mt-3 text-xs leading-5 text-muted-foreground">{exhibition.venue}</p>
-					</button>
-				{/each}
-			</div>
-		</section>
-
 		{#if activeTab === 'home'}
 			<section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
 				<div class="grid gap-3 sm:grid-cols-3">
@@ -327,6 +322,7 @@
 						<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Current Expo</p>
 						<p class="mt-2 text-base font-semibold text-foreground">{selectedExhibition.name}</p>
 						<p class="mt-1 text-xs text-muted-foreground">{selectedExhibition.venue}</p>
+						<p class="mt-2 text-[11px] text-muted-foreground">전환은 우측 상단 햄버거 메뉴에서 합니다</p>
 					</div>
 					<div class="rounded-2xl border border-border bg-navy-surface p-4">
 						<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Saved</p>
@@ -468,6 +464,84 @@
 		</div>
 	</nav>
 </div>
+
+{#if isExhibitionMenuOpen}
+	<div class="fixed inset-0 z-50">
+		<button
+			type="button"
+			class="absolute inset-0 bg-navy-deep/82 backdrop-blur-sm"
+			aria-label="박람회 메뉴 닫기"
+			onclick={closeExhibitionMenu}
+		></button>
+
+		<div
+			id="exhibition-menu-drawer"
+			class="absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-border bg-navy-surface shadow-[-18px_0_48px_rgba(0,0,0,0.45)]"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="exhibition-menu-title"
+		>
+			<div class="flex items-start justify-between gap-3 border-b border-white/6 px-5 pb-4 pt-5">
+				<div>
+					<p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+						Hamburger Menu
+					</p>
+					<h2 id="exhibition-menu-title" class="mt-1 font-heading text-2xl font-semibold text-foreground">
+						박람회 선택
+					</h2>
+					<p class="mt-2 text-sm leading-6 text-muted-foreground">
+						메인 홈에서는 숨기고 여기서만 박람회를 전환합니다.
+					</p>
+				</div>
+
+				<button
+					type="button"
+					class="rounded-full border border-border bg-navy-elevated p-2 text-muted-foreground transition hover:border-gold/30 hover:text-gold"
+					aria-label="박람회 메뉴 닫기"
+					onclick={closeExhibitionMenu}
+				>
+					<X size={16} />
+				</button>
+			</div>
+
+			<div class="no-scrollbar flex-1 space-y-3 overflow-y-auto px-5 py-5">
+				{#each EXHIBITIONS as exhibition (exhibition.id)}
+					<button
+						type="button"
+						class={[
+							'w-full rounded-[24px] border px-4 py-4 text-left transition',
+							exhibition.id === selectedExhibitionId
+								? 'border-gold/40 bg-gold/10 shadow-[0_18px_40px_rgba(255,199,94,0.12)]'
+								: 'border-border bg-navy-elevated hover:border-gold/25'
+						]}
+						aria-pressed={exhibition.id === selectedExhibitionId}
+						onclick={() => selectExhibition(exhibition)}
+					>
+						<div class="flex items-start justify-between gap-3">
+							<div>
+								<p class="text-sm font-semibold text-foreground">{exhibition.name}</p>
+								<p class="mt-1 text-xs text-muted-foreground">{exhibition.subtitle}</p>
+							</div>
+
+							<span
+								class={[
+									'rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]',
+									exhibition.id === selectedExhibitionId
+										? 'bg-gold text-black'
+										: 'bg-black/25 text-muted-foreground'
+								]}
+							>
+								{exhibition.id === selectedExhibitionId ? 'Selected' : 'Open'}
+							</span>
+						</div>
+
+						<p class="mt-3 text-xs leading-5 text-muted-foreground">{exhibition.venue}</p>
+					</button>
+				{/each}
+			</div>
+		</div>
+	</div>
+{/if}
 
 <BoothDetailSheet
 	item={selectedItem}
