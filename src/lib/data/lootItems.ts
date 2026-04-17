@@ -214,6 +214,61 @@ type BaseLootItem = Omit<
 const NORMALIZED_BOOTH_RENDER_WIDTH = 72;
 const NORMALIZED_BOOTH_RENDER_HEIGHT = 54;
 const NORMALIZED_BOOTH_IDS = new Set<string>(['cmbs-2026-forencos']);
+const COUPANG_MEGA_BEAUTY_SOURCE_LAYOUT_COMMIT = '13f12bd';
+const BOOTH_SIZED_EVENT_ZONE_WIDTH = NORMALIZED_BOOTH_RENDER_WIDTH;
+const BOOTH_SIZED_EVENT_ZONE_HEIGHT = NORMALIZED_BOOTH_RENDER_HEIGHT;
+const HALL_2F_TOP_ROW_BOOTH_IDS = [
+	'cmbs-2026-avene',
+	'cmbs-2026-etude',
+	'cmbs-2026-easydew',
+	'cmbs-2026-mediheal',
+	'cmbs-2026-innisfree',
+	'cmbs-2026-physiogel',
+	'cmbs-2026-age20s',
+	'cmbs-2026-ariul'
+] as const;
+const HALL_2F_LEFT_COLUMN_EVENT_ZONE_LABELS = [
+	'헤어쇼 이벤트(4/18)',
+	'쿠팡 메가뷰티쇼 스토리',
+	'쿠팡 와우회원 인증존'
+] as const;
+const HALL_2F_RIGHT_COLUMN_LABELS = ['인생네컷 포토존', '포렌코즈', '파페치 / TW 홍보 부스'] as const;
+const BOOTH_SIZED_EVENT_ZONE_LABELS = new Set<string>([
+	'쿠팡 어워즈 체험존',
+	'피부측정 이벤트',
+	'뷰티 디바이스 체험존',
+	'쿠팡 뉴존 체험존',
+	'뉴존 선물 수령존',
+	'뷰티박스 수령존',
+	...HALL_2F_LEFT_COLUMN_EVENT_ZONE_LABELS,
+	'인생네컷 포토존',
+	'파페치 / TW 홍보 부스'
+]);
+
+function createBoothSizedEventZoneAtCenter(
+	mapSectionId: MapSectionId,
+	label: string,
+	centerX: number,
+	centerY: number,
+	fontSize: number
+): EventZoneOverlay {
+	if (!BOOTH_SIZED_EVENT_ZONE_LABELS.has(label)) {
+		throw new Error(
+			`Unexpected booth-sized event zone label for source layout ${COUPANG_MEGA_BEAUTY_SOURCE_LAYOUT_COMMIT}: ${label}`
+		);
+	}
+
+	return {
+		kind: 'eventZone',
+		mapSectionId,
+		x: centerX - BOOTH_SIZED_EVENT_ZONE_WIDTH / 2,
+		y: centerY - BOOTH_SIZED_EVENT_ZONE_HEIGHT / 2,
+		width: BOOTH_SIZED_EVENT_ZONE_WIDTH,
+		height: BOOTH_SIZED_EVENT_ZONE_HEIGHT,
+		label,
+		fontSize
+	};
+}
 
 const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
 	'cmbs-2026-drg': {
@@ -282,6 +337,7 @@ const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
 	}
 };
 
+// Keep booth coordinates anchored to the section-split regression baseline from 13f12bd.
 const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 	'cmbs-2026-romand': {
 		floorId: '1F',
@@ -456,7 +512,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 60,
 		boxHeight: 35,
 		fontSize: 9,
-		renderX: 112,
+		renderX: 102,
 		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
@@ -471,7 +527,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 65,
 		boxHeight: 35,
 		fontSize: 9,
-		renderX: 200,
+		renderX: 180,
 		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
@@ -486,7 +542,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 70,
 		boxHeight: 35,
 		fontSize: 9,
-		renderX: 288,
+		renderX: 258,
 		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
@@ -501,8 +557,8 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 65,
 		boxHeight: 35,
 		fontSize: 9,
-		renderX: 24,
-		renderY: 86,
+		renderX: 336,
+		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '이니스프리',
@@ -516,8 +572,8 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 70,
 		boxHeight: 35,
 		fontSize: 9,
-		renderX: 112,
-		renderY: 86,
+		renderX: 414,
+		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '피지오겔',
@@ -531,8 +587,8 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 65,
 		boxHeight: 35,
 		fontSize: 9,
-		renderX: 200,
-		renderY: 86,
+		renderX: 492,
+		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabelLines: ["AGE20'S"],
@@ -546,8 +602,8 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 60,
 		boxHeight: 35,
 		fontSize: 9,
-		renderX: 288,
-		renderY: 86,
+		renderX: 570,
+		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '아리얼',
@@ -561,8 +617,8 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 130,
 		boxHeight: 80,
 		fontSize: 10,
-		renderX: 356,
-		renderY: 86,
+		renderX: 654,
+		renderY: 102,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '포렌코즈',
@@ -570,67 +626,17 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 	}
 };
 
+// Keep event-zone and stairs ownership explicit so section split cannot drop them again.
 const COUPANG_MEGA_BEAUTY_OVERLAYS: MapOverlay[] = [
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-1f',
-		x: 200,
-		y: 146,
-		width: 110,
-		height: 24,
-		label: '쿠팡 어워즈 체험존',
-		fontSize: 9
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-1f',
-		x: 24,
-		y: 210,
-		width: 84,
-		height: 22,
-		label: '피부측정 이벤트',
-		fontSize: 8
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-1f',
-		x: 114,
-		y: 210,
-		width: 84,
-		height: 22,
-		label: '뷰티 디바이스 체험존',
-		fontSize: 7
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-1f',
-		x: 204,
-		y: 210,
-		width: 84,
-		height: 22,
-		label: '쿠팡 뉴존 체험존',
-		fontSize: 8
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-1f',
-		x: 294,
-		y: 210,
-		width: 100,
-		height: 22,
-		label: '뉴존 선물 수령존',
-		fontSize: 8
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'beauty-box-pickup',
-		x: 442,
-		y: 314,
-		width: 110,
-		height: 54,
-		label: '뷰티박스 수령존',
-		fontSize: 10
-	},
+	createBoothSizedEventZoneAtCenter('hall-1f', '쿠팡 어워즈 체험존', 255, 158, 8),
+	createBoothSizedEventZoneAtCenter('hall-1f', '피부측정 이벤트', 66, 221, 8),
+	createBoothSizedEventZoneAtCenter('hall-1f', '뷰티 디바이스 체험존', 156, 221, 7),
+	createBoothSizedEventZoneAtCenter('hall-1f', '쿠팡 뉴존 체험존', 246, 221, 7.5),
+	createBoothSizedEventZoneAtCenter('hall-1f', '뉴존 선물 수령존', 344, 221, 7.2),
+	createBoothSizedEventZoneAtCenter('beauty-box-pickup', '뷰티박스 수령존', 497, 341, 8.5),
+	{ kind: 'stairs', mapSectionId: 'hall-1f', x: 620, y: 30, width: 50, height: 80, steps: 6 },
+	{ kind: 'stairs', mapSectionId: 'hall-1f', x: 620, y: 280, width: 50, height: 80, steps: 6 },
+	{ kind: 'decorRect', mapSectionId: 'hall-1f', x: 595, y: 280, width: 15, height: 100, fill: '#1976d2' },
 	{
 		kind: 'arrow',
 		mapSectionId: 'hall-1f',
@@ -667,57 +673,59 @@ const COUPANG_MEGA_BEAUTY_OVERLAYS: MapOverlay[] = [
 		label: 'IN',
 		color: '#c62828'
 	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-2f',
-		x: 356,
-		y: 24,
-		width: 72,
-		height: 54,
-		label: '인생네컷 포토존',
-		fontSize: 8
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-2f',
-		x: 24,
-		y: 154,
-		width: 148,
-		height: 24,
-		label: '헤어쇼 이벤트(4/18)',
-		fontSize: 9
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-2f',
-		x: 180,
-		y: 154,
-		width: 148,
-		height: 24,
-		label: '쿠팡 메가뷰티쇼 스토리',
-		fontSize: 8
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-2f',
-		x: 102,
-		y: 186,
-		width: 148,
-		height: 24,
-		label: '쿠팡 와우회원 인증존',
-		fontSize: 8
-	},
-	{
-		kind: 'eventZone',
-		mapSectionId: 'hall-2f',
-		x: 356,
-		y: 148,
-		width: 72,
-		height: 54,
-		label: '파페치 / TW 홍보 부스',
-		fontSize: 6.5
-	}
+	createBoothSizedEventZoneAtCenter('hall-2f', '인생네컷 포토존', 690, 51, 8),
+	createBoothSizedEventZoneAtCenter('hall-2f', '헤어쇼 이벤트(4/18)', 60, 129, 7.5),
+	createBoothSizedEventZoneAtCenter('hall-2f', '쿠팡 메가뷰티쇼 스토리', 60, 207, 6.6),
+	createBoothSizedEventZoneAtCenter('hall-2f', '쿠팡 와우회원 인증존', 60, 285, 6.8),
+	createBoothSizedEventZoneAtCenter('hall-2f', '파페치 / TW 홍보 부스', 690, 207, 6.4)
 ];
+
+function getCoupangMegaBeautyEventZone(mapSectionId: MapSectionId, label: string): EventZoneOverlay {
+	const overlay = COUPANG_MEGA_BEAUTY_OVERLAYS.find(
+		(candidate): candidate is EventZoneOverlay =>
+			candidate.kind === 'eventZone' &&
+			candidate.mapSectionId === mapSectionId &&
+			candidate.label === label
+	);
+
+	if (!overlay) {
+		throw new Error(`Missing event-zone overlay for ${mapSectionId}:${label}`);
+	}
+
+	return overlay;
+}
+
+function assertCoupangMegaBeautyLayoutContract() {
+	const topRowRenderY = new Set(
+		HALL_2F_TOP_ROW_BOOTH_IDS.map((itemId) => COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId].renderY)
+	);
+	const leftColumnX = new Set(
+		HALL_2F_LEFT_COLUMN_EVENT_ZONE_LABELS.map(
+			(label) => getCoupangMegaBeautyEventZone('hall-2f', label).x
+		)
+	);
+	const rightColumnX = new Set(
+		HALL_2F_RIGHT_COLUMN_LABELS.map((label) =>
+			label === '포렌코즈'
+				? COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS['cmbs-2026-forencos'].renderX
+				: getCoupangMegaBeautyEventZone('hall-2f', label).x
+		)
+	);
+
+	if (topRowRenderY.size !== 1) {
+		throw new Error('Hall 2F top-row booths must stay on a single renderY.');
+	}
+
+	if (leftColumnX.size !== 1) {
+		throw new Error('Hall 2F left event zones must stay on a single x column.');
+	}
+
+	if (rightColumnX.size !== 1) {
+		throw new Error('Hall 2F right column items must stay on a single x column.');
+	}
+}
+
+assertCoupangMegaBeautyLayoutContract();
 
 function getCoupangMegaBeautyHashtagBlock(itemId: string): HashtagBlockPreset {
 	const preset = COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS[itemId];
@@ -769,19 +777,21 @@ const coupangMegaBeautyShow2026MapSections: MapSection[] = [
 	{
 		id: 'hall-1f',
 		label: '1F 전시관',
-		viewBox: '12 16 540 224',
+		// Keep both restored stairs and the decor rect inside the hall viewport.
+		viewBox: '12 16 666 364',
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter((overlay) => overlay.mapSectionId === 'hall-1f')
 	},
 	{
 		id: 'hall-2f',
 		label: '2F 전시관',
-		viewBox: '12 16 428 206',
+		viewBox: '12 16 726 308',
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter((overlay) => overlay.mapSectionId === 'hall-2f')
 	},
 	{
 		id: 'beauty-box-pickup',
 		label: '뷰티박스 수령존 (1F 외부)',
-		viewBox: '416 300 152 82',
+		// This isolated section keeps the original pickup position but caps the zoom with extra padding.
+		viewBox: '418 296 144 96',
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter(
 			(overlay) => overlay.mapSectionId === 'beauty-box-pickup'
 		)

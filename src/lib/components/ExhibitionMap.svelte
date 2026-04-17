@@ -3,6 +3,7 @@
 	import { onMount, untrack } from 'svelte';
 	import type {
 		ArrowOverlay,
+		EventZoneOverlay,
 		Exhibition,
 		MapSection,
 		MapSectionId,
@@ -95,6 +96,16 @@
 	const OVERVIEW_OUTER_PADDING = 24;
 	const OVERVIEW_SECTION_GAP = 28;
 	const OVERVIEW_SECTION_TITLE_HEIGHT = 28;
+	const DEFAULT_MAP_SECTION_SCALES: Record<MapSectionId, number> = {
+		'hall-1f': 2.2,
+		'hall-2f': 2.2,
+		'beauty-box-pickup': 1.35
+	};
+	const EVENT_ZONE_FILL = '#dceede';
+	const EVENT_ZONE_STROKE = '#84b68a';
+	const EVENT_ZONE_TEXT = '#406347';
+	const EVENT_ZONE_RADIUS = 2;
+	const EVENT_ZONE_STROKE_WIDTH = 1;
 
 	let {
 		exhibition,
@@ -279,8 +290,7 @@
 	}
 
 	function getDefaultMapSectionScale(section: MapSection) {
-		const metrics = getMapSectionMetrics(section);
-		return metrics.height <= 220 ? 1.9 : 1.6;
+		return DEFAULT_MAP_SECTION_SCALES[section.id] ?? 1.9;
 	}
 
 	function getDefaultViewportCenter(metrics: ViewBoxMetrics) {
@@ -439,9 +449,31 @@
 			return normalized.split(' / ').slice(0, 2);
 		}
 		if (normalized.length > 12 && normalized.includes(' ')) {
-			return normalized.split(/\s+/).slice(0, 2);
+			const words = normalized.split(/\s+/);
+			return [words[0], words.slice(1).join(' ')];
 		}
 		return [normalized];
+	}
+
+	function isBoothSizedEventZone(overlay: EventZoneOverlay) {
+		return overlay.width <= 72 && overlay.height >= 54;
+	}
+
+	function getEventZoneFontSize(overlay: EventZoneOverlay) {
+		if (overlay.fontSize) {
+			return overlay.fontSize;
+		}
+
+		return isBoothSizedEventZone(overlay) ? 8 : 9;
+	}
+
+	function getEventZoneTextOffset(overlay: EventZoneOverlay, lineCount: number) {
+		if (lineCount <= 1) return 0;
+		return getEventZoneFontSize(overlay) * 0.34;
+	}
+
+	function getEventZoneLineGap(overlay: EventZoneOverlay) {
+		return getEventZoneFontSize(overlay) * 0.9;
 	}
 
 	function getBoothVisual(item: LootItem) {
@@ -952,30 +984,31 @@
 								{#each section.overlays as overlay, index (`overview-${section.id}-${overlay.kind}-${index}`)}
 									{#if overlay.kind === 'eventZone'}
 										{@const overlayLabelLines = getOverlayLabelLines(overlay.label)}
+										{@const overlayFontSize = getEventZoneFontSize(overlay)}
 										<g pointer-events="none" opacity="0.78">
 											<rect
 												x={overlay.x}
 												y={overlay.y}
 												width={overlay.width}
 												height={overlay.height}
-												fill="#dceede"
-												stroke="#84b68a"
-												stroke-width="1"
-												rx="2"
+												fill={EVENT_ZONE_FILL}
+												stroke={EVENT_ZONE_STROKE}
+												stroke-width={EVENT_ZONE_STROKE_WIDTH}
+												rx={EVENT_ZONE_RADIUS}
 											/>
 											<text
 												x={overlay.x + overlay.width / 2}
-												y={overlay.y + overlay.height / 2 - (overlayLabelLines.length > 1 ? (overlay.fontSize ?? 9) * 0.34 : 0)}
+												y={overlay.y + overlay.height / 2 - getEventZoneTextOffset(overlay, overlayLabelLines.length)}
 												text-anchor="middle"
 												dominant-baseline="middle"
-												fill="#406347"
-												font-size={overlay.fontSize ?? 9}
+												fill={EVENT_ZONE_TEXT}
+												font-size={overlayFontSize}
 												font-weight="600"
 											>
 												{#each overlayLabelLines as line, lineIndex (line)}
 													<tspan
 														x={overlay.x + overlay.width / 2}
-														dy={lineIndex === 0 ? 0 : (overlay.fontSize ?? 9) * 0.9}
+														dy={lineIndex === 0 ? 0 : getEventZoneLineGap(overlay)}
 													>
 														{line}
 													</tspan>
@@ -1200,11 +1233,9 @@
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
 						<h3 class="font-heading text-lg font-semibold text-foreground">{section.label}</h3>
-						{#if activeMapSection !== 'all'}
-							<p class="mt-1 text-[11px] text-muted-foreground">
-								지도 영역 안에서는 한 손가락 드래그가 지도 이동을 소유합니다. 핀치와 확대 버튼으로 배율을 바꿀 수 있고, 페이지 스크롤은 지도 밖에서 계속됩니다.
-							</p>
-						{/if}
+						<p class="mt-1 text-[11px] text-muted-foreground">
+							지도 영역 안에서는 한 손가락 드래그가 지도 이동을 소유합니다. 핀치와 확대 버튼으로 배율을 바꿀 수 있고, 페이지 스크롤은 지도 밖에서 계속됩니다.
+						</p>
 					</div>
 
 					<div class="flex items-center gap-2">
@@ -1252,10 +1283,7 @@
 				<div
 					role="group"
 					aria-label={`${section.label} 지도 viewport`}
-					class={[
-						'overflow-hidden rounded-[24px] border border-white/6 bg-[#0b1320]',
-						activeMapSection !== 'all' && 'touch-none'
-					]}
+					class={['overflow-hidden rounded-[24px] border border-white/6 bg-[#0b1320]', 'touch-none']}
 					style={`aspect-ratio: ${sectionMetrics.width} / ${sectionMetrics.height}; touch-action: ${activeMapSection === section.id ? 'none' : 'auto'};`}
 					bind:this={zoomViewport}
 					onwheel={activeMapSection === section.id ? handleViewportWheel : undefined}
@@ -1268,30 +1296,31 @@
 						{#each section.overlays as overlay, index (`${section.id}-${overlay.kind}-${index}`)}
 							{#if overlay.kind === 'eventZone'}
 								{@const overlayLabelLines = getOverlayLabelLines(overlay.label)}
+								{@const overlayFontSize = getEventZoneFontSize(overlay)}
 								<g pointer-events="none" opacity="0.78">
 									<rect
 										x={overlay.x}
 										y={overlay.y}
 										width={overlay.width}
 										height={overlay.height}
-										fill="#dceede"
-										stroke="#84b68a"
-										stroke-width="1"
-										rx="2"
+										fill={EVENT_ZONE_FILL}
+										stroke={EVENT_ZONE_STROKE}
+										stroke-width={EVENT_ZONE_STROKE_WIDTH}
+										rx={EVENT_ZONE_RADIUS}
 									/>
 									<text
 										x={overlay.x + overlay.width / 2}
-										y={overlay.y + overlay.height / 2 - (overlayLabelLines.length > 1 ? (overlay.fontSize ?? 9) * 0.34 : 0)}
+										y={overlay.y + overlay.height / 2 - getEventZoneTextOffset(overlay, overlayLabelLines.length)}
 										text-anchor="middle"
 										dominant-baseline="middle"
-										fill="#406347"
-										font-size={overlay.fontSize ?? 9}
+										fill={EVENT_ZONE_TEXT}
+										font-size={overlayFontSize}
 										font-weight="600"
 									>
 										{#each overlayLabelLines as line, lineIndex (line)}
 											<tspan
 												x={overlay.x + overlay.width / 2}
-												dy={lineIndex === 0 ? 0 : (overlay.fontSize ?? 9) * 0.9}
+												dy={lineIndex === 0 ? 0 : getEventZoneLineGap(overlay)}
 											>
 												{line}
 											</tspan>
