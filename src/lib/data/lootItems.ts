@@ -17,6 +17,12 @@ export interface BoothSocialLink {
 	accountId?: string;
 }
 
+export interface BoothDetailImage {
+	src: string;
+	alt: string;
+	caption?: string;
+}
+
 export interface LootItem {
 	id: string;
 	title: string;
@@ -34,6 +40,7 @@ export interface LootItem {
 	memo: string;
 	hashtags: string[];
 	hashtagAccountTags?: string[];
+	detailImage?: BoothDetailImage;
 	socialLinks: BoothSocialLink[];
 }
 
@@ -104,6 +111,9 @@ const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
 	'cmbs-2026-romand': {
 		hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#롬앤', '#누즈'],
 		hashtagAccountTags: ['@romandyou', '@nuse.official']
+	},
+	'cmbs-2026-etude': {
+		hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#에뛰드']
 	},
 	'cmbs-2026-espoir': {
 		hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#에스뿌아']
@@ -526,18 +536,24 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			id: 'cmbs-2026-etude',
 			title: '에뛰드',
 			englishTitle: 'ETUDE',
-			firstComeEvent: '',
-			prize: '',
+			firstComeEvent: '일 1회 참여 가능 · 증정품 수량 한정 · 소진 시 이벤트 조기 종료 가능',
+			prize: '미션 1, 2를 모두 완료하면 100% 본품 구성의 랜덤 기프트 뽑기 1회 참여',
 			location: '',
 			time: 'Always',
-			category: '',
-			mission: '',
+			category: 'SNS 업로드',
+			mission:
+				'Mission 1\n- 인스타 팔로우 + 스토리 업로드\n- 지정 해시태그: #쿠팡뷰티 #메가뷰티쇼 #에뛰드\n\nMission 2\n- 취향 맞춤 쿠션 TEST\n- 워터 드롭 필터 쿠션과 클라우드 필터 쿠션을 모두 테스트한 뒤, 내 취향 쿠션 품평지 작성',
 			mapX: 82,
 			mapY: 46,
 			isBookmarked: false,
 			isCompleted: false,
 			memo: '',
-			hashtags: [],
+			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-etude'),
+			detailImage: {
+				src: '/images/booths/etude-choice-event.jpg',
+				alt: '에뛰드 워터 드롭 필터 쿠션 또는 클라우드 필터 쿠션 랜덤 기프트 뽑기 이벤트 안내판',
+				caption: '현장 안내판 기준 이벤트 이미지'
+			},
 			socialLinks: [
 				createSocialLink(
 					'etude-instagram',

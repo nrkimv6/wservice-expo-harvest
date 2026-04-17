@@ -88,6 +88,7 @@
 	);
 	const hasPrize = $derived((item?.prize.trim().length ?? 0) > 0);
 	const hasMission = $derived((item?.mission.trim().length ?? 0) > 0);
+	const hasDetailImage = $derived(Boolean(item?.detailImage?.src));
 	const hasMemoContent = $derived((item?.memo.trim().length ?? 0) > 0);
 	const detailTitle = $derived(
 		item ? (item.englishTitle ? `${item.title} (${item.englishTitle})` : item.title) : ''
@@ -201,6 +202,22 @@
 					</button>
 				</div>
 
+				{#if hasDetailImage}
+					<div class="mt-5 overflow-hidden rounded-[24px] border border-border bg-navy-elevated">
+						<img
+							src={item.detailImage?.src}
+							alt={item.detailImage?.alt ?? `${item.title} 이벤트 이미지`}
+							class="block h-auto w-full object-cover"
+							loading="lazy"
+						/>
+						{#if item.detailImage?.caption}
+							<p class="border-t border-border px-4 py-3 text-xs text-muted-foreground">
+								{item.detailImage.caption}
+							</p>
+						{/if}
+					</div>
+				{/if}
+
 				{#if hasFirstComeEvent}
 					<div class="mt-5 rounded-[24px] border border-rose-300/35 bg-[linear-gradient(135deg,rgba(251,113,133,0.18),rgba(244,63,94,0.1))] p-4 shadow-[0_18px_44px_rgba(244,63,94,0.16)]">
 						<div class="flex items-center gap-2 text-rose-50">
@@ -208,7 +225,7 @@
 							<p class="text-sm font-semibold tracking-[0.08em]">선착순 이벤트 있음</p>
 						</div>
 						{#if firstComeMessage}
-							<p class="mt-2 text-sm leading-6 text-rose-50/92">{firstComeMessage}</p>
+							<p class="mt-2 whitespace-pre-line text-sm leading-6 text-rose-50/92">{firstComeMessage}</p>
 						{/if}
 					</div>
 				{/if}
@@ -219,14 +236,14 @@
 							<Gift size={16} />
 							<p class="text-sm font-semibold">Prize</p>
 						</div>
-						<p class="mt-2 text-sm text-foreground">{item.prize}</p>
+						<p class="mt-2 whitespace-pre-line text-sm text-foreground">{item.prize}</p>
 					</div>
 				{/if}
 
 				{#if hasMission}
 					<div class={hasPrize || hasFirstComeEvent ? 'mt-4 rounded-[24px] border border-border bg-navy-elevated p-4' : 'mt-5 rounded-[24px] border border-border bg-navy-elevated p-4'}>
 						<p class="text-sm font-semibold text-foreground">Mission</p>
-						<p class="mt-2 text-sm leading-6 text-muted-foreground">{item.mission}</p>
+						<p class="mt-2 whitespace-pre-line text-sm leading-6 text-muted-foreground">{item.mission}</p>
 					</div>
 				{/if}
 
