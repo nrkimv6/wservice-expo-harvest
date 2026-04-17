@@ -241,7 +241,7 @@
 									<span>복사됨</span>
 								{:else}
 									<Copy size={14} />
-									<span>{copyState === 'error' ? '다시 시도' : '코드블럭 복사'}</span>
+									<span>{copyState === 'error' ? '다시 시도' : '복사'}</span>
 								{/if}
 							</button>
 						</div>
@@ -287,7 +287,7 @@
 				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
 					<div class="flex items-center gap-2 text-foreground">
 						<MessageSquare size={16} />
-						<p class="text-sm font-semibold">Local Memo</p>
+						<p class="text-sm font-semibold">Local Memo : 개인메모(서버에 저장안됨)</p>
 					</div>
 					<textarea
 						class="mt-3 min-h-28 w-full resize-none rounded-2xl border border-border bg-black/20 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
