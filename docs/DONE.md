@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-17: 쿠팡 메가뷰티쇼 지도 가독성/모바일 탐색 리파인
+  - 브랜드 부스를 3:4 비율의 render box와 지도 전용 라벨로 재배치하고, `1F/2F` 단일층 기본 확대 viewport를 도입
+  - 모바일에서 첫 탭은 지도 포커스/선택 요약, 같은 부스 재탭은 상세 시트 오픈으로 분리하고 상세 시트에 `지도에서 보기` CTA 추가
+  - `npm run check`, `npm run build` 통과 후 plan archive 및 hover UX 병합 큐를 정리
+
 - [x] 2026-04-17: 쿠팡 메가뷰티쇼 1F/2F SVG 플로어맵 이식
   - `mapBackgroundImage + percent pin` 구조를 층별 `viewBox + SVG 박스/오버레이` 모델로 교체
   - 1F/2F/전체 토글, 리스트 선택 시 층 동기화, 카드/상세 층 배지, hover summary 패널을 연결

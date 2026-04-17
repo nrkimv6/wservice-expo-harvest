@@ -75,7 +75,7 @@
 	let lastFocusedSelectionKey = $state('');
 	let floorViewportStates = $state<Record<string, FloorViewportState>>({});
 
-	let zoomViewport: HTMLDivElement | null = null;
+	let zoomViewport = $state<HTMLDivElement | null>(null);
 	let activePointers = new Map<number, PointerSnapshot>();
 	let dragGesture: DragGesture | null = null;
 	let pinchGesture: PinchGesture | null = null;
@@ -631,6 +631,8 @@
 				</div>
 
 				<div
+					role="group"
+					aria-label={`${floor.label} 지도 viewport`}
 					class={[
 						'overflow-hidden rounded-[24px] border border-white/6 bg-[#0b1320]',
 						activeFloor !== 'all' && 'touch-none'

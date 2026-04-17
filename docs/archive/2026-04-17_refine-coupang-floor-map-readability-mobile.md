@@ -1,12 +1,14 @@
 # refine: coupang floor map readability and mobile flow
 
+> 완료일: 2026-04-17
+> 아카이브됨
+> 진행률: 72/72 (100%)
 > 작성일시: 2026-04-17 16:59
 > 기준커밋: 419b177
 > 대상 프로젝트: expo-harvest
-> 상태: 구현중
-> branch: impl/refine-coupang-floor-map-readability-mobile
-> worktree: .worktrees/impl-refine-coupang-floor-map-readability-mobile
-> worktree-owner: D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-17_refine-coupang-floor-map-readability-mobile.md
+> 상태: 구현완료
+> 반영일시: 2026-04-17 17:46
+> 머지커밋: 333d633
 > 진행률: 72/72 (100%)
 > 요약: 현재 쿠팡 메가뷰티쇼 지도는 원본 SVG 좌표를 충실히 옮겼지만, 실제 현장 탐색 기준으로는 부스가 작고 라벨이 약해 한눈에 들어오지 않는다. 이번 계획은 원본 좌표는 유지하되 화면 렌더 정책을 가독성 우선으로 재정의하고, hover 의존도를 줄인 모바일 터치 흐름까지 함께 정리하는 데 목적이 있다.
 
@@ -183,4 +185,4 @@
 
 ---
 
-*상태: 구현중 | 진행률: 72/72 (100%)*
+*상태: 구현완료 | 진행률: 72/72 (100%)*
