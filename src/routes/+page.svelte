@@ -32,7 +32,7 @@
 	const tabs: { id: Exclude<AppTab, 'home'>; label: string; icon: typeof AlarmClockCheck }[] = [
 		{ id: 'map', label: '지도', icon: MapPinned },
 		{ id: 'list', label: '리스트', icon: Search },
-		{ id: 'saved', label: '저장됨', icon: Bookmark }
+		{ id: 'saved', label: '즐겨찾기', icon: Bookmark }
 	];
 
 	function createInitialItemMap() {
@@ -64,9 +64,8 @@
 	);
 	const items = $derived(itemsByExhibition[selectedExhibitionId] ?? selectedExhibition.items);
 	const selectedItem = $derived(items.find((item) => item.id === selectedId) ?? null);
-	const bookmarkedItems = $derived(items.filter((item) => item.isBookmarked));
+	const favoriteItems = $derived(items.filter((item) => item.isBookmarked && !item.isCompleted));
 	const completedItems = $derived(items.filter((item) => item.isCompleted));
-	const savedItems = $derived(items.filter((item) => item.isBookmarked || item.isCompleted));
 
 	const nextHotItem = $derived.by(() => {
 		return [...items]
@@ -85,8 +84,7 @@
 	const alertMessage = $derived(liveAlertMessage || fallbackAlertMessage);
 	const alertMode = $derived(liveAlertMessage ? 'live' : 'fallback');
 	const doneCount = $derived(completedItems.length);
-	const bookmarkedCount = $derived(bookmarkedItems.length);
-	const savedCount = $derived(savedItems.length);
+	const favoriteCount = $derived(favoriteItems.length);
 
 	onMount(() => {
 		itemsByExhibition = Object.fromEntries(
@@ -204,7 +202,7 @@
 	<title>{selectedExhibition.name} | expo-harvest</title>
 	<meta
 		name="description"
-		content={`${selectedExhibition.name}의 이벤트 파밍 동선을 홈, 지도, 리스트, 저장됨 탭으로 빠르게 전환하는 모바일 우선 웹앱`}
+		content={`${selectedExhibition.name}의 이벤트 파밍 동선을 홈, 지도, 리스트, 즐겨찾기 탭으로 빠르게 전환하는 모바일 우선 웹앱`}
 	/>
 </svelte:head>
 
@@ -242,9 +240,9 @@
 						<p class="mt-2 text-[11px] text-muted-foreground">전환은 우측 상단 햄버거 메뉴에서 합니다</p>
 					</div>
 					<div class="rounded-2xl border border-border bg-navy-surface p-4">
-						<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Saved</p>
-						<p class="mt-2 text-2xl font-heading font-semibold text-gold">{savedCount}</p>
-						<p class="mt-1 text-xs text-muted-foreground">관심/완료로 저장한 부스</p>
+						<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Favorites</p>
+						<p class="mt-2 text-2xl font-heading font-semibold text-gold">{favoriteCount}</p>
+						<p class="mt-1 text-xs text-muted-foreground">즐겨찾기한 미완료 부스</p>
 					</div>
 					<div class="rounded-2xl border border-border bg-navy-surface p-4">
 						<p class="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Farmed</p>
@@ -263,7 +261,7 @@
 						<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">다음 타깃</h2>
 					</div>
 					<div class="rounded-full border border-border bg-navy-surface px-3 py-1 text-xs text-muted-foreground">
-						북마크 {bookmarkedCount}
+						즐겨찾기 {favoriteCount}
 					</div>
 				</div>
 
@@ -301,7 +299,7 @@
 						<p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">Always-on booths</p>
 						<h3 class="mt-2 font-heading text-xl font-semibold text-foreground">임박 이벤트가 없습니다</h3>
 						<p class="mt-3 text-sm leading-6 text-muted-foreground">
-							지금은 상시 참여 가능한 부스 위주로 움직이면 됩니다. 저장됨 탭에서 관심 부스를 다시 확인하세요.
+							지금은 상시 참여 가능한 부스 위주로 움직이면 됩니다. 즐겨찾기 탭에서 관심 부스를 다시 확인하세요.
 						</p>
 					{/if}
 				</div>
@@ -328,8 +326,8 @@
 						class="rounded-2xl border border-border bg-navy-surface px-4 py-4 text-left"
 						onclick={() => setActiveTab('saved')}
 					>
-						<p class="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Saved</p>
-						<p class="mt-2 text-base font-semibold text-foreground">관심/완료 부스 보기</p>
+						<p class="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Favorites</p>
+						<p class="mt-2 text-base font-semibold text-foreground">즐겨찾기 부스 보기</p>
 					</button>
 				</div>
 			</section>
@@ -346,14 +344,15 @@
 			/>
 		{:else}
 			<LootFeed
-				items={savedItems}
+				items={favoriteItems}
 				onToggleComplete={toggleComplete}
 				onSelectItem={selectItem}
-				eyebrow="Saved Booths"
-				title="저장된 부스"
-				summaryLabel="Tracked"
-				emptyTitle="저장된 부스가 없습니다"
-				emptyBody="관심 등록이나 완료 처리를 하면 이 탭에서 다시 빠르게 모아볼 수 있습니다."
+				eyebrow="Favorite Booths"
+				title="즐겨찾기"
+				summaryLabel="Favorites"
+				summaryCount={favoriteCount}
+				emptyTitle="즐겨찾기한 부스가 없습니다"
+				emptyBody="부스를 즐겨찾기하면 완료되지 않은 항목만 이 탭에서 빠르게 다시 볼 수 있습니다."
 			/>
 		{/if}
 	</div>

@@ -11,6 +11,7 @@
 		eyebrow?: string;
 		title?: string;
 		summaryLabel?: string;
+		summaryCount?: number;
 		emptyTitle?: string;
 		emptyBody?: string;
 	};
@@ -22,6 +23,7 @@
 		eyebrow = 'Loot Feed',
 		title = '이벤트 리스트',
 		summaryLabel = 'Farmed',
+		summaryCount = undefined,
 		emptyTitle = '조건에 맞는 부스가 없습니다',
 		emptyBody = '검색어를 줄이거나 필터를 해제해서 다시 확인하세요.'
 	}: Props = $props();
@@ -92,6 +94,7 @@
 	});
 
 	const doneCount = $derived(items.filter((item) => item.isCompleted).length);
+	const resolvedSummaryCount = $derived(summaryCount ?? doneCount);
 </script>
 
 <section class="rounded-[30px] border border-border bg-black/30 p-4 sm:p-5">
@@ -104,7 +107,7 @@
 		</div>
 
 		<div class="rounded-full border border-gold/25 bg-gold/10 px-3 py-1 text-xs font-semibold text-mint">
-			{summaryLabel} {doneCount}/{items.length}
+			{summaryLabel} {resolvedSummaryCount}/{items.length}
 		</div>
 	</div>
 
