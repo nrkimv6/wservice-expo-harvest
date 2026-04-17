@@ -3,6 +3,7 @@
 > 마지막 업데이트: 2026-04-18
 
 ## In Progress
+- [ ] **fix: hamburger menu and cache regression** — [plan](docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md) (21/44, 48%)
 
 ## Pending
 - [ ] **refine: booth view stair removal and 2f lane spacing** — [plan](docs/plan/2026-04-18_refine-booth-view-stair-removal-and-2f-lane-spacing.md) (0/8, 0%)
