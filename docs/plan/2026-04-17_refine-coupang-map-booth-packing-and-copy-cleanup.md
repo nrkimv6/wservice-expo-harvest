@@ -36,10 +36,10 @@
 ### Phase 1: 범위와 전파 경로를 다시 고정한다 (10 tasks)
 
 1. - [ ] **표기 변경이 퍼지는 surface를 코드 기준으로 고정한다** — section 탭만 바꾸고 다른 화면을 놓치지 않게 한다
-   - [ ] `src/lib/data/lootItems.ts`: `coupangMegaBeautyShow2026MapSections`의 `hall-1f`, `hall-2f`, `beauty-box-pickup` `label` 값을 `1F`, `2F`, `뷰티박스 수령존`으로 바꿀 지점을 확정한다.
-   - [ ] `src/lib/data/lootItems.ts`: `venue` 문자열을 `1F / 2F / 뷰티박스 수령존` 기준으로 축약하고, 기존 괄호 표기를 제거하는 변경 지점을 확정한다.
-   - [ ] `src/lib/data/lootItems.ts`: `description`과 `mapNote` 중 새 짧은 표기에 맞춰 같이 줄일 필드와 그대로 둘 필드를 분리해 기록한다.
-   - [ ] `src/routes/+page.svelte`: home 카드와 전시회 선택 목록에서 `exhibition.venue`가 노출되는 두 블록을 전파 확인 대상으로 묶는다.
+   - [ ] `src/lib/data/lootItems.ts`: `hall-1f`, `hall-2f`, `beauty-box-pickup`의 `label` → `1F`, `2F`, `뷰티박스 수령존`
+   - [ ] `src/lib/data/lootItems.ts`: `venue` 문자열을 `1F / 2F / 뷰티박스 수령존`으로 축약, 괄호 제거
+   - [ ] `src/lib/data/lootItems.ts`: `description`, `mapNote` 중 축약 대상 필드 분리
+   - [ ] `src/routes/+page.svelte`: `exhibition.venue` 노출 블록 확인 (home 카드, 전시회 목록)
 
 2. - [ ] **사용자 요구와 현재 데이터 키 차이를 구현 단위로 매핑한다** — id rename 없이 표시문구만 조정하게 만든다
    - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-mediheal`이 사용자 요구의 `메디필`이 아니라 현재 코드상 `메디힐`이라는 점을 기준 표기로 기록한다.
@@ -108,10 +108,10 @@
    - [ ] `src/routes/+page.svelte`: `exhibition.venue`가 짧아진 뒤 home 카드와 전시회 목록 줄바꿈이 어색하지 않은지 확인 대상으로 남긴다.
 
 12. - [ ] **장문 사용법/hover 문구를 짧은 상태 문구로 교체한다** — 지도 내부 정보 밀도를 올린다
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: coarse-pointer `focusItem` 블록의 `부스를 다시 탭하면... 핀치 확대...` 장문 안내를 제거하거나 한 문장으로 줄인다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: empty-state fine-pointer 문구 `브랜드 박스에 커서를 올리면...` 두 버전을 삭제하고 짧은 상태 문구로 바꾼다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: active section empty-state 문구 `이 구역은 브랜드 부스보다...`가 남더라도 두 줄 이하 short helper로 정리한다.
-   - [ ] `AGENTS.md` (new file): 지도 UI에서 장문 사용법/hover 설명을 금지하는 규칙과 짧은 상태 문구 우선 원칙을 추가한다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: coarse-pointer 장문 안내 제거 또는 한 문장으로 축약
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: empty-state fine-pointer 문구 삭제, 짧은 상태 문구로 교체
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: active section empty-state 문구를 두 줄 이하로 정리
+   - [ ] `AGENTS.md` (new file): "지도 UI에는 장문 설명/사용법을 넣지 않는다" 규칙 추가 (task 1.4와 통합)
 
 13. - [ ] **booth 타이포 기본값을 더 크게 잡는다** — 박스 내부 공백보다 글자 점유율을 우선한다
    - [ ] `src/lib/components/ExhibitionMap.svelte`: `getLabelFontSize(item)`의 기본 fallback 값을 현재 `11.5`보다 크게 조정한다.
