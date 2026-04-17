@@ -233,7 +233,7 @@
 									checked
 									disabled
 								/>
-								<span>인스타그램 계정 포함 (@계정id, 기준값 고정)</span>
+								<span>인스타그램 계정 포함</span>
 							</label>
 						{/if}
 
