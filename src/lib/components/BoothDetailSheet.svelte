@@ -49,7 +49,7 @@
 	const hasFirstComeEvent = $derived((item?.firstComeEvent.trim().length ?? 0) > 0);
 	const firstComeMessage = $derived(
 		item?.firstComeEvent === '선착순 이벤트 있음'
-			? '수량 소진 전에 먼저 들러 확인하세요.'
+			? ''
 			: (item?.firstComeEvent ?? '')
 	);
 	const hasPrize = $derived((item?.prize.trim().length ?? 0) > 0);
@@ -170,7 +170,9 @@
 							<BadgeAlert size={16} />
 							<p class="text-sm font-semibold tracking-[0.08em]">선착순 이벤트 있음</p>
 						</div>
-						<p class="mt-2 text-sm leading-6 text-rose-50/92">{firstComeMessage}</p>
+						{#if firstComeMessage}
+							<p class="mt-2 text-sm leading-6 text-rose-50/92">{firstComeMessage}</p>
+						{/if}
 					</div>
 				{/if}
 
