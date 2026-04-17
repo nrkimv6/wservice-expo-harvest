@@ -1,5 +1,8 @@
 # fix: map booth detail sheet regression
 
+> 완료일: 2026-04-18
+> 아카이브됨
+> 진행률: 8/8 (100%)
 > 작성일시: 2026-04-17 23:52
 > 기준커밋: da33518
 > 대상 프로젝트: expo-harvest
@@ -60,9 +63,11 @@
 
 ```powershell
 npm run check
+npm run build
 ```
 
 - 결과: `svelte-check found 0 errors and 0 warnings`
+- 결과: `@sveltejs/adapter-cloudflare ✔ done`
 - 미완료: 브라우저 자동화 환경에서 dev 서버 연결이 불안정해 데스크톱 실제 클릭 E2E를 일관되게 끝까지 고정하지 못함. 수동 PC 확인과 실기기(iOS/Android) 탭/핀치 스모크 테스트가 남아 있다.
 
 ---

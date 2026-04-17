@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-18: 맵 부스 상세 시트 탭 회귀 복구
+  - `src/routes/+page.svelte`에서 지도 탭도 리스트/즐겨찾기와 같은 첫 선택 즉시 상세 시트 오픈 계약으로 되돌림
+  - `src/lib/components/ExhibitionMap.svelte`, `src/app.css`에서 `map-booth-target` 포커스 하이라이트 억제와 `pointerdown` 기반 부스 클릭 처리로 데스크톱 클릭 손실 경로를 줄임
+  - `npm run check`, `npm run build` 통과 후 plan archive, TODO 정리, 수동 실기기 검증은 `MANUAL_TASKS.md`로 이관
+
 - [x] 2026-04-18: build wrapper dev-server blind spot 방어
   - `scripts/run-dev.mjs`가 `.svelte-kit/dev-runtime.json` marker를 기록하고 `scripts/run-build.mjs`가 marker + repo-specific HTTP probe로 blank `CommandLine` 경로를 preflight에서 감지
   - `node --test scripts/run-build.test.mjs`, `npm run check`, `npm run build` 통과 후 plan archive 및 impl worktree 정리 완료
