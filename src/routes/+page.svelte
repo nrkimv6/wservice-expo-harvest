@@ -39,8 +39,7 @@
 	const coupangMegaBeautyShowId = 'coupang-mega-beauty-show-2026';
 	const padoTips = [
 		'들어가자마자 쿠팡 2.4g 와이파이 연결하기',
-		'에스쁘아 선착순',
-		'피지오겔 사물함 기억하기 (금요일 - 2번 본품)'
+		'에스쁘아 선착순'
 	];
 
 	function createInitialItemMap() {
