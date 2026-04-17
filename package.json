@@ -1,10 +1,10 @@
 {
 	"name": "expo-harvest",
 	"private": true,
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "node ./scripts/run-dev.mjs",
 		"build": "node ./scripts/run-build.mjs",
 		"build:raw": "vite build",
 		"preview": "vite preview",

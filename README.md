@@ -43,6 +43,8 @@ npm install
 npm run dev
 ```
 
+`npm run dev`는 요청 포트에 먼저 검은 스플래시를 띄운 뒤, 실제 Vite 서버를 내부 포트에서 부팅하고 준비되면 자동으로 넘깁니다. 그래서 dev 부팅 초반에는 `ERR_CONNECTION_REFUSED` 대신 검은 배경만 보입니다.
+
 `npm run build`는 Windows에서 `.svelte-kit/cloudflare` 충돌을 먼저 점검하는 wrapper를 거칩니다. raw Vite 빌드가 필요하면 `npm run build:raw`를 사용하세요.
 
 ## 환경 변수

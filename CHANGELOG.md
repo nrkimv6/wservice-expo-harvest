@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.3] - 2026-04-17
+
+### Fixed
+
+- `npm run dev` 시작 직후 브라우저가 먼저 접속해도 `ERR_CONNECTION_REFUSED` 대신 검은 스플래시를 먼저 표시하도록 dev wrapper를 추가
+- README에 dev 부팅 중 임시 스플래시 동작을 문서화
+
 ## [0.2.2] - 2026-04-17
 
 ### Fixed
