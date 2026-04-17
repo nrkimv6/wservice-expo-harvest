@@ -93,6 +93,10 @@ const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
 	'cmbs-2026-age20s': {
 		hashtags: ['#AGE20S', '#에이지투웨니스', '#쿠팡뷰티', '#메가뷰티쇼']
 	},
+	'cmbs-2026-ahc': {
+		hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#AHC', '#AHC쿠팡메가뷰티쇼'],
+		hashtagAccountTags: ['@ahc.official']
+	},
 	'cmbs-2026-tonymoly': {
 		hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#토니모리', '#쇼킹립'],
 		hashtagAccountTags: ['@tonymory']
