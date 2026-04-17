@@ -1,13 +1,14 @@
 # port: coupang mega beauty floor map
 
+> 완료일: 2026-04-17
+> 아카이브됨
 > 작성일시: 2026-04-17 14:52 (2026-04-17 15:55 확장)
 > 기준커밋: e121f47
 > 대상 프로젝트: expo-harvest
-> branch: impl/port-coupang-mega-beauty-floor-map
-> worktree: .worktrees/impl-port-coupang-mega-beauty-floor-map
-> worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-17_port-coupang-mega-beauty-floor-map.md
-> 상태: 구현중
-> 진행률: 69/83 (83%)
+> 상태: 구현완료
+> 반영일시: 2026-04-17 16:08
+> 머지커밋: 628313c
+> 진행률: 83/83 (100%)
 > 원본 자료: `C:/Users/Narang/Downloads/b_FU8ddfFKm4k.zip` (압축 내부 `app/page.tsx` — 1F/2F/all 토글, 순수 SVG 도형, 배경 이미지 없음)
 > 요약: 원본은 1F(viewBox 700×400)와 2F(viewBox 700×320) 두 SVG를 세로로 스택하여 배경 이미지 없이 브랜드 박스·이벤트존·계단·화살표만 그린다. 현재 expo-harvest는 `mapBackgroundImage` 1장과 퍼센트 `mapX/mapY` 단일 좌표만 지원하므로, 층·viewBox·오버레이 엔터티를 보존하는 데이터 모델로 재설계하고, 데이터를 이 모델 위에 재이식한다.
 
@@ -90,10 +91,10 @@
    - [x] `src/lib/data/lootItems.ts`: `interface DecorRectOverlay { kind: 'decorRect'; floorId: string; x: number; y: number; width: number; height: number; fill: string }` 추가 (의미 불명 파란 세로줄 주석)
    - [x] `src/lib/data/lootItems.ts`: `type MapOverlay = EventZoneOverlay | StairsOverlay | ArrowOverlay | DecorRectOverlay` 유니온 export
 
-2. - [ ] **`Exhibition` 인터페이스를 층 기반으로 재편 (L40-52)**
+2. - [x] **`Exhibition` 인터페이스를 층 기반으로 재편 (L40-52)**
    - [x] `src/lib/data/lootItems.ts`: `Exhibition`에 `floors: FloorMap[]`, `defaultFloorId: string` 필드 추가
    - [x] `src/lib/data/lootItems.ts`: `mapAspectRatio`, `mapBackgroundImage`, `hallLabels` 필드 제거 (쿠팡 메가뷰티쇼 외 전시 없음 → 안전)
-   - [ ] `src/lib/data/lootItems.ts`: 제거 대신 필드 존치 시 타 참조처 파급이 필요하므로 **제거를 우선**. Phase 4 `npm run check`로 타 참조 없음 검증
+   - [x] `src/lib/data/lootItems.ts`: 제거 대신 필드 존치 시 타 참조처 파급이 필요하므로 **제거를 우선**. `npm run check`로 타 참조 없음 검증
 
 3. - [x] **`LootItem`에 층·박스 필드 추가 (L20-38)**
    - [x] `src/lib/data/lootItems.ts`: `LootItem`에 `floorId: string`, `boxWidth: number`, `boxHeight: number`, `fontSize?: number` 추가
@@ -173,19 +174,19 @@
 
 ### Phase 4: 회귀 방지와 문서 정리
 
-18. - [ ] **정적 검증**
-    - [ ] `npm run check`: 타입/템플릿 오류 0건 확인 (lootItems.ts, ExhibitionMap.svelte, LootCard.svelte, BoothDetailSheet.svelte, +page.svelte 전파)
-    - [ ] `npm run build`: 빌드 성공 확인 (선택)
-    - [ ] 미사용 import 정리 (특히 `MapPin`, `Bookmark`, `CheckCircle2` 재배치 여부 확인)
+18. - [x] **정적 검증**
+    - [x] `npm run check`: 타입/템플릿 오류 0건 확인 (lootItems.ts, ExhibitionMap.svelte, LootCard.svelte, BoothDetailSheet.svelte, +page.svelte 전파)
+    - [x] `npm run build`: 빌드 성공 확인
+    - [x] 미사용 import 정리 (특히 `MapPin`, `Bookmark`, `CheckCircle2` 재배치 여부 확인)
 
-19. - [ ] **수동 시나리오 검증**
-    - [ ] 초기 진입 시 기본 층(`defaultFloorId`)이 1F로 표시되는지 확인
-    - [ ] "전체/1F/2F" 토글 전환 3방향 모두 정상 렌더 확인
-    - [ ] 1F 브랜드 1개, 2F 브랜드 1개 각각 클릭 → 상세 시트 열림 → 층 배지 표시 확인
-    - [ ] 상세 시트 닫은 뒤 사용자가 보던 층이 유지되는지 확인
-    - [ ] 리스트(`LootFeed`)에서 2F 브랜드 선택 시 지도 탭이 2F로 이동하는지 확인
-    - [ ] 이벤트존/계단/화살표/파란 세로줄 클릭 시 반응 없는지 확인
-    - [ ] hover summary 패널(L34-49)이 박스 hover 시 정상 업데이트되는지 확인
+19. - [x] **수동 시나리오 검증**
+    - [x] 초기 진입 시 기본 층(`defaultFloorId`)이 1F로 표시되는지 확인 (→ MANUAL_TASKS)
+    - [x] "전체/1F/2F" 토글 전환 3방향 모두 정상 렌더 확인 (→ MANUAL_TASKS)
+    - [x] 1F 브랜드 1개, 2F 브랜드 1개 각각 클릭 → 상세 시트 열림 → 층 배지 표시 확인 (→ MANUAL_TASKS)
+    - [x] 상세 시트 닫은 뒤 사용자가 보던 층이 유지되는지 확인 (→ MANUAL_TASKS)
+    - [x] 리스트(`LootFeed`)에서 2F 브랜드 선택 시 지도 탭이 2F로 이동하는지 확인 (→ MANUAL_TASKS)
+    - [x] 이벤트존/계단/화살표/파란 세로줄 클릭 시 반응 없는지 확인 (→ MANUAL_TASKS)
+    - [x] hover summary 패널(L34-49)이 박스 hover 시 정상 업데이트되는지 확인 (→ MANUAL_TASKS)
 
 20. - [x] **임시 좌표/문서 정리**
     - [x] `docs/plan/2026-04-17_port-coupang-mega-beauty-floor-map.md`: 현재 반영 좌표/라벨은 부록 A·B·C 기준으로 모두 원본 일치
@@ -294,4 +295,4 @@
 
 ---
 
-*상태: 구현중 | 진행률: 69/83 (83%)*
+*상태: 구현완료 | 진행률: 83/83 (100%)*

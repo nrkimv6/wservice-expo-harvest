@@ -12,9 +12,10 @@
 
 	let { exhibition, items, onPinClick, activeFloorOverride = null }: Props = $props();
 
-	let activeFloor = $state<ActiveFloor>(exhibition.defaultFloorId);
+	let selectedFloor = $state<ActiveFloor | null>(null);
 	let hoveredItemId = $state<string | null>(null);
 
+	const activeFloor = $derived(selectedFloor ?? exhibition.defaultFloorId);
 	const hoveredItem = $derived(items.find((item) => item.id === hoveredItemId) ?? null);
 	const visibleFloors = $derived(
 		activeFloor === 'all'
@@ -24,13 +25,13 @@
 
 	$effect(() => {
 		exhibition.id;
-		activeFloor = exhibition.defaultFloorId;
+		selectedFloor = null;
 		hoveredItemId = null;
 	});
 
 	$effect(() => {
 		if (activeFloorOverride) {
-			activeFloor = activeFloorOverride as ActiveFloor;
+			selectedFloor = activeFloorOverride as ActiveFloor;
 		}
 	});
 
@@ -123,7 +124,7 @@
 					: 'border-border bg-navy-elevated text-muted-foreground'
 			]}
 			onclick={() => {
-				activeFloor = 'all';
+				selectedFloor = 'all';
 				hoveredItemId = null;
 			}}
 		>
@@ -140,7 +141,7 @@
 						: 'border-border bg-navy-elevated text-muted-foreground'
 				]}
 				onclick={() => {
-					activeFloor = floor.id;
+					selectedFloor = floor.id;
 					hoveredItemId = null;
 				}}
 			>

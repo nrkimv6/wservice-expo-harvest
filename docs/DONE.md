@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-17: 쿠팡 메가뷰티쇼 1F/2F SVG 플로어맵 이식
+  - `mapBackgroundImage + percent pin` 구조를 층별 `viewBox + SVG 박스/오버레이` 모델로 교체
+  - 1F/2F/전체 토글, 리스트 선택 시 층 동기화, 카드/상세 층 배지, hover summary 패널을 연결
+  - `npm run check`, `npm run build` 통과 후 plan archive 및 수동 검증 항목을 `MANUAL_TASKS.md`로 분리
+
 - [x] 2026-04-17: 루트 라우트 통합 + 하단 네비 + 첫 실행 모달
   - `/`를 실사용 앱 엔트리로 전환하고 `/app`은 루트 리다이렉트 호환 페이지로 정리
   - 하단 네비게이션, 저장됨 탭, 첫 실행 온보딩 모달, 홈/지도/리스트 분리 구조를 연결

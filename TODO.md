@@ -1,13 +1,14 @@
 # TODO
 
 ## In Progress
-- [ ] **port: coupang mega beauty floor map** — [plan](docs/plan/2026-04-17_port-coupang-mega-beauty-floor-map.md) (69/83, 83%)
 
 ## Pending
 - [ ] **refine: map pin hover UX** — [plan](docs/plan/2026-04-17_refine-map-pin-hover-ux.md) (0/9, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
 
 ## Done
+
+- [x] **port: coupang mega beauty floor map** — [plan](docs/archive/2026-04-17_port-coupang-mega-beauty-floor-map.md) (83/83, 100%)
 
 - [x] **restore: root home shell and clean dummy data** — [plan](docs/plan/2026-04-17_restore-root-home-shell-and-clean-dummy-data.md) (6/6, 100%)
 

@@ -297,6 +297,360 @@ const coupangMegaBeautyShow2026Floors: FloorMap[] = [
 	{ id: '2F', label: '2F', viewBox: '0 0 700 320', overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter((overlay) => overlay.floorId === '2F') }
 ];
 
+const coupangMegaBeautyShow2026Items = [
+	
+	{
+		id: 'cmbs-2026-drg',
+		title: '닥터지',
+		englishTitle: 'Dr.G',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-drg'),
+		socialLinks: [
+			createSocialLink('drg-instagram', 'Instagram', 'https://www.instagram.com/dr.g_official/', 'instagram', 'dr.g_official'),
+			createSocialLink('drg-kakao', '카카오톡 채널', 'https://pf.kakao.com/_HuEsE', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-innisfree',
+		title: '이니스프리',
+		englishTitle: 'innisfree',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-innisfree'),
+		socialLinks: [
+			createSocialLink('innisfree-instagram', 'Instagram', 'https://www.instagram.com/innisfreeofficial/', 'instagram', 'innisfreeofficial'),
+			createSocialLink('innisfree-kakao', '카카오톡 채널', 'https://pf.kakao.com/_xeMwLR', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-aestura',
+		title: '에스트라',
+		englishTitle: 'AESTURA',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		hashtags: [],
+		socialLinks: [
+			createSocialLink('aestura-instagram', 'Instagram', 'https://www.instagram.com/aestura.official/', 'instagram', 'aestura.official'),
+			createSocialLink('aestura-kakao', '카카오톡 채널', 'https://pf.kakao.com/_XRHcj', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-physiogel',
+		title: '피지오겔',
+		englishTitle: 'PHYSIOGEL',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		hashtags: [],
+		socialLinks: [
+			createSocialLink('physiogel-instagram', 'Instagram', 'https://www.instagram.com/physiogel_korea/', 'instagram', 'physiogel_korea'),
+			createSocialLink('physiogel-kakao', '카카오톡 채널', 'https://pf.kakao.com/_zxkxanK', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-ahc',
+		title: '에이에이치씨',
+		englishTitle: 'AHC',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '단순 팔로우',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		hashtags: [],
+		socialLinks: [
+			createSocialLink('ahc-instagram', 'Instagram', 'https://www.instagram.com/ahc.official/', 'instagram', 'ahc.official'),
+			createSocialLink('ahc-kakao', '카카오톡 채널', 'https://pf.kakao.com/_ermfl', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-thefaceshop',
+		title: '더페이스샵',
+		englishTitle: 'THE FACE SHOP',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-thefaceshop'),
+		socialLinks: [
+			createSocialLink('thefaceshop-instagram', 'Instagram', 'https://www.instagram.com/thefaceshop.official/', 'instagram', 'thefaceshop.official'),
+			createSocialLink('thefaceshop-kakao', '카카오톡 채널', 'https://pf.kakao.com/_xisxdGR', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-banilaco',
+		title: '바닐라코',
+		englishTitle: 'BANILA CO',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-banilaco'),
+		socialLinks: [
+			createSocialLink('banilaco-instagram', 'Instagram', 'https://www.instagram.com/banilaco_official/', 'instagram', 'banilaco_official'),
+			createSocialLink('banilaco-kakao', '카카오톡 채널', 'https://pf.kakao.com/_tsWfxd', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-age20s',
+		title: '에이지투웨니스',
+		englishTitle: "AGE20'S",
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-age20s'),
+		socialLinks: [
+			createSocialLink('age20s-instagram', 'Instagram', 'https://www.instagram.com/age20s_official/', 'instagram', 'age20s_official'),
+			createSocialLink('age20s-kakao', '카카오톡 채널', 'https://pf.kakao.com/_jbTXK', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-mediheal',
+		title: '메디힐',
+		englishTitle: 'MEDIHEAL',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		hashtags: [],
+		socialLinks: [
+			createSocialLink('mediheal-instagram', 'Instagram', 'https://www.instagram.com/mediheal_official/', 'instagram', 'mediheal_official'),
+			createSocialLink('mediheal-kakao', '카카오톡 채널', 'https://pf.kakao.com/_zueIxd', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-tonymoly',
+		title: '토니모리',
+		englishTitle: 'TONYMOLY',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-tonymoly'),
+		socialLinks: [
+			createSocialLink('tonymoly-instagram', 'Instagram', 'https://www.instagram.com/tonymoly/', 'instagram', 'tonymory'),
+			createSocialLink('tonymoly-kakao', '카카오톡 채널', 'https://pf.kakao.com/_AcKrI', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-romand',
+		title: '롬앤',
+		englishTitle: 'rom&nd',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-romand'),
+		socialLinks: [
+			createSocialLink('romand-instagram', 'Instagram', 'https://www.instagram.com/romandyou/', 'instagram', 'romandyou'),
+			createSocialLink('nuse-instagram', 'Instagram (nuse)', 'https://www.instagram.com/nuse.official/', 'instagram', 'nuse.official'),
+			createSocialLink('romand-kakao', '카카오톡 채널', 'https://pf.kakao.com/_RzWSu', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-etude',
+		title: '에뛰드',
+		englishTitle: 'ETUDE',
+		firstComeEvent: '',
+		prize: '미션 1, 2를 모두 완료하면 100% 본품 구성의 랜덤 기프트 뽑기 1회 참여',
+		time: 'Always',
+		category: 'SNS 업로드',
+		mission:
+			'Mission 1\n- 인스타 팔로우 + 스토리 업로드\n- 지정 해시태그: #쿠팡뷰티 #메가뷰티쇼 #에뛰드\n\nMission 2\n- 취향 맞춤 쿠션 TEST\n- 워터 드롭 필터 쿠션과 클라우드 필터 쿠션을 모두 테스트한 뒤, 내 취향 쿠션 품평지 작성',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-etude'),
+		detailImage: {
+			src: '/images/booths/etude-choice-event.jpg',
+			alt: '에뛰드 워터 드롭 필터 쿠션 또는 클라우드 필터 쿠션 랜덤 기프트 뽑기 이벤트 안내판',
+			caption: '현장 안내판 기준 이벤트 이미지'
+		},
+		hiddenSocialPlatforms: ['kakao'],
+		socialLinks: [
+			createSocialLink('etude-instagram', 'Instagram', 'https://www.instagram.com/etudeofficial/', 'instagram', 'etudeofficial'),
+			createSocialLink('etude-kakao', '카카오톡 채널', 'https://pf.kakao.com/_FRxjxfR', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-espoir',
+		title: '에스쁘아',
+		englishTitle: 'espoir',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-espoir'),
+		socialLinks: [
+			createSocialLink('espoir-instagram', 'Instagram', 'https://www.instagram.com/espoir_makeup/', 'instagram', 'espoir_makeup'),
+			createSocialLink('espoir-kakao', '카카오톡 채널', 'https://pf.kakao.com/_BEpRZ', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-ariul',
+		title: '아리얼',
+		englishTitle: 'Ariul',
+		firstComeEvent: '선착순 이벤트 있음',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '캡쳐 이벤트',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-ariul'),
+		socialLinks: [
+			createSocialLink('ariul-instagram', 'Instagram', 'https://www.instagram.com/ariul_official/', 'instagram', 'ariul_official'),
+			createSocialLink('ariul-kakao', '카카오톡 채널', 'https://pf.kakao.com/_KUsxjM', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-naturerepublic',
+		title: '네이처리퍼블릭',
+		englishTitle: 'NATURE REPUBLIC',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-naturerepublic'),
+		socialLinks: [
+			createSocialLink('naturerepublic-instagram', 'Instagram', 'https://www.instagram.com/naturerepublic_kr/', 'instagram', 'naturerepublic_kr'),
+			createSocialLink('naturerepublic-kakao', '카카오톡 채널', 'https://pf.kakao.com/_xbCEKz', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-easydew',
+		title: '이지듀',
+		englishTitle: 'easydew',
+		firstComeEvent: '선착순 이벤트 있음',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-easydew'),
+		socialLinks: [
+			createSocialLink('easydew-instagram', 'Instagram', 'https://www.instagram.com/easydew_official/', 'instagram', 'easydew_official'),
+			createSocialLink('easydew-kakao', '카카오톡 채널', 'https://pf.kakao.com/_VVvcj', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-dewytree',
+		title: '듀이트리',
+		englishTitle: 'DEWYTREE',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-dewytree'),
+		socialLinks: [
+			createSocialLink('dewytree-instagram', 'Instagram', 'https://www.instagram.com/dewytree_official/', 'instagram', 'dewytree_official'),
+			createSocialLink('dewytree-kakao', '카카오톡 채널', 'https://pf.kakao.com/_Anxhjl', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-avene',
+		title: '아벤느',
+		englishTitle: 'Avène',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		hashtags: [],
+		socialLinks: [
+			createSocialLink('avene-instagram', 'Instagram', 'https://www.instagram.com/avene/', 'instagram', 'avene'),
+			createSocialLink('avene-kakao', '카카오톡 채널', 'https://pf.kakao.com/_VGFXxl', 'kakao')
+		]
+	},
+	{
+		id: 'cmbs-2026-forencos',
+		title: '포렌코즈',
+		englishTitle: 'FORENCOS',
+		firstComeEvent: '',
+		prize: '',
+		time: 'Always',
+		category: '',
+		mission: '',
+		isBookmarked: false,
+		isCompleted: false,
+		memo: '',
+		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-forencos'),
+		socialLinks: [
+			createSocialLink('forencos-instagram', 'Instagram', 'https://www.instagram.com/forencos_official/', 'instagram', 'forencos_official'),
+			createSocialLink('forencos-kakao', '카카오톡 채널', 'https://pf.kakao.com/_CyVZV', 'kakao')
+		]
+	}
+] satisfies BaseLootItem[];
+
 const coupangMegaBeautyShow2026: Exhibition = {
 	id: 'coupang-mega-beauty-show-2026',
 	name: '쿠팡메가뷰티쇼 2026',
@@ -307,358 +661,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 	mapNote: '1F와 2F 레이아웃을 기준으로 브랜드 박스와 주요 체험존을 SVG로 다시 그렸습니다.',
 	floors: coupangMegaBeautyShow2026Floors,
 	defaultFloorId: '1F',
-	items: [
-		{
-			id: 'cmbs-2026-drg',
-			title: '닥터지',
-			englishTitle: 'Dr.G',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-drg'),
-			socialLinks: [
-				createSocialLink('drg-instagram', 'Instagram', 'https://www.instagram.com/dr.g_official/', 'instagram', 'dr.g_official'),
-				createSocialLink('drg-kakao', '카카오톡 채널', 'https://pf.kakao.com/_HuEsE', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-innisfree',
-			title: '이니스프리',
-			englishTitle: 'innisfree',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-innisfree'),
-			socialLinks: [
-				createSocialLink('innisfree-instagram', 'Instagram', 'https://www.instagram.com/innisfreeofficial/', 'instagram', 'innisfreeofficial'),
-				createSocialLink('innisfree-kakao', '카카오톡 채널', 'https://pf.kakao.com/_xeMwLR', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-aestura',
-			title: '에스트라',
-			englishTitle: 'AESTURA',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			hashtags: [],
-			socialLinks: [
-				createSocialLink('aestura-instagram', 'Instagram', 'https://www.instagram.com/aestura.official/', 'instagram', 'aestura.official'),
-				createSocialLink('aestura-kakao', '카카오톡 채널', 'https://pf.kakao.com/_XRHcj', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-physiogel',
-			title: '피지오겔',
-			englishTitle: 'PHYSIOGEL',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			hashtags: [],
-			socialLinks: [
-				createSocialLink('physiogel-instagram', 'Instagram', 'https://www.instagram.com/physiogel_korea/', 'instagram', 'physiogel_korea'),
-				createSocialLink('physiogel-kakao', '카카오톡 채널', 'https://pf.kakao.com/_zxkxanK', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-ahc',
-			title: '에이에이치씨',
-			englishTitle: 'AHC',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '단순 팔로우',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			hashtags: [],
-			socialLinks: [
-				createSocialLink('ahc-instagram', 'Instagram', 'https://www.instagram.com/ahc.official/', 'instagram', 'ahc.official'),
-				createSocialLink('ahc-kakao', '카카오톡 채널', 'https://pf.kakao.com/_ermfl', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-thefaceshop',
-			title: '더페이스샵',
-			englishTitle: 'THE FACE SHOP',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-thefaceshop'),
-			socialLinks: [
-				createSocialLink('thefaceshop-instagram', 'Instagram', 'https://www.instagram.com/thefaceshop.official/', 'instagram', 'thefaceshop.official'),
-				createSocialLink('thefaceshop-kakao', '카카오톡 채널', 'https://pf.kakao.com/_xisxdGR', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-banilaco',
-			title: '바닐라코',
-			englishTitle: 'BANILA CO',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-banilaco'),
-			socialLinks: [
-				createSocialLink('banilaco-instagram', 'Instagram', 'https://www.instagram.com/banilaco_official/', 'instagram', 'banilaco_official'),
-				createSocialLink('banilaco-kakao', '카카오톡 채널', 'https://pf.kakao.com/_tsWfxd', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-age20s',
-			title: '에이지투웨니스',
-			englishTitle: "AGE20'S",
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-age20s'),
-			socialLinks: [
-				createSocialLink('age20s-instagram', 'Instagram', 'https://www.instagram.com/age20s_official/', 'instagram', 'age20s_official'),
-				createSocialLink('age20s-kakao', '카카오톡 채널', 'https://pf.kakao.com/_jbTXK', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-mediheal',
-			title: '메디힐',
-			englishTitle: 'MEDIHEAL',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			hashtags: [],
-			socialLinks: [
-				createSocialLink('mediheal-instagram', 'Instagram', 'https://www.instagram.com/mediheal_official/', 'instagram', 'mediheal_official'),
-				createSocialLink('mediheal-kakao', '카카오톡 채널', 'https://pf.kakao.com/_zueIxd', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-tonymoly',
-			title: '토니모리',
-			englishTitle: 'TONYMOLY',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-tonymoly'),
-			socialLinks: [
-				createSocialLink('tonymoly-instagram', 'Instagram', 'https://www.instagram.com/tonymoly/', 'instagram', 'tonymory'),
-				createSocialLink('tonymoly-kakao', '카카오톡 채널', 'https://pf.kakao.com/_AcKrI', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-romand',
-			title: '롬앤',
-			englishTitle: 'rom&nd',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-romand'),
-			socialLinks: [
-				createSocialLink('romand-instagram', 'Instagram', 'https://www.instagram.com/romandyou/', 'instagram', 'romandyou'),
-				createSocialLink('nuse-instagram', 'Instagram (nuse)', 'https://www.instagram.com/nuse.official/', 'instagram', 'nuse.official'),
-				createSocialLink('romand-kakao', '카카오톡 채널', 'https://pf.kakao.com/_RzWSu', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-etude',
-			title: '에뛰드',
-			englishTitle: 'ETUDE',
-			firstComeEvent: '',
-			prize: '미션 1, 2를 모두 완료하면 100% 본품 구성의 랜덤 기프트 뽑기 1회 참여',
-			time: 'Always',
-			category: 'SNS 업로드',
-			mission:
-				'Mission 1\n- 인스타 팔로우 + 스토리 업로드\n- 지정 해시태그: #쿠팡뷰티 #메가뷰티쇼 #에뛰드\n\nMission 2\n- 취향 맞춤 쿠션 TEST\n- 워터 드롭 필터 쿠션과 클라우드 필터 쿠션을 모두 테스트한 뒤, 내 취향 쿠션 품평지 작성',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-etude'),
-			detailImage: {
-				src: '/images/booths/etude-choice-event.jpg',
-				alt: '에뛰드 워터 드롭 필터 쿠션 또는 클라우드 필터 쿠션 랜덤 기프트 뽑기 이벤트 안내판',
-				caption: '현장 안내판 기준 이벤트 이미지'
-			},
-			hiddenSocialPlatforms: ['kakao'],
-			socialLinks: [
-				createSocialLink('etude-instagram', 'Instagram', 'https://www.instagram.com/etudeofficial/', 'instagram', 'etudeofficial'),
-				createSocialLink('etude-kakao', '카카오톡 채널', 'https://pf.kakao.com/_FRxjxfR', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-espoir',
-			title: '에스쁘아',
-			englishTitle: 'espoir',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-espoir'),
-			socialLinks: [
-				createSocialLink('espoir-instagram', 'Instagram', 'https://www.instagram.com/espoir_makeup/', 'instagram', 'espoir_makeup'),
-				createSocialLink('espoir-kakao', '카카오톡 채널', 'https://pf.kakao.com/_BEpRZ', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-ariul',
-			title: '아리얼',
-			englishTitle: 'Ariul',
-			firstComeEvent: '선착순 이벤트 있음',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '캡쳐 이벤트',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-ariul'),
-			socialLinks: [
-				createSocialLink('ariul-instagram', 'Instagram', 'https://www.instagram.com/ariul_official/', 'instagram', 'ariul_official'),
-				createSocialLink('ariul-kakao', '카카오톡 채널', 'https://pf.kakao.com/_KUsxjM', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-naturerepublic',
-			title: '네이처리퍼블릭',
-			englishTitle: 'NATURE REPUBLIC',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-naturerepublic'),
-			socialLinks: [
-				createSocialLink('naturerepublic-instagram', 'Instagram', 'https://www.instagram.com/naturerepublic_kr/', 'instagram', 'naturerepublic_kr'),
-				createSocialLink('naturerepublic-kakao', '카카오톡 채널', 'https://pf.kakao.com/_xbCEKz', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-easydew',
-			title: '이지듀',
-			englishTitle: 'easydew',
-			firstComeEvent: '선착순 이벤트 있음',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-easydew'),
-			socialLinks: [
-				createSocialLink('easydew-instagram', 'Instagram', 'https://www.instagram.com/easydew_official/', 'instagram', 'easydew_official'),
-				createSocialLink('easydew-kakao', '카카오톡 채널', 'https://pf.kakao.com/_VVvcj', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-dewytree',
-			title: '듀이트리',
-			englishTitle: 'DEWYTREE',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-dewytree'),
-			socialLinks: [
-				createSocialLink('dewytree-instagram', 'Instagram', 'https://www.instagram.com/dewytree_official/', 'instagram', 'dewytree_official'),
-				createSocialLink('dewytree-kakao', '카카오톡 채널', 'https://pf.kakao.com/_Anxhjl', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-avene',
-			title: '아벤느',
-			englishTitle: 'Avène',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			hashtags: [],
-			socialLinks: [
-				createSocialLink('avene-instagram', 'Instagram', 'https://www.instagram.com/avene/', 'instagram', 'avene'),
-				createSocialLink('avene-kakao', '카카오톡 채널', 'https://pf.kakao.com/_VGFXxl', 'kakao')
-			]
-		},
-		{
-			id: 'cmbs-2026-forencos',
-			title: '포렌코즈',
-			englishTitle: 'FORENCOS',
-			firstComeEvent: '',
-			prize: '',
-			time: 'Always',
-			category: '',
-			mission: '',
-			isBookmarked: false,
-			isCompleted: false,
-			memo: '',
-			...getCoupangMegaBeautyHashtagBlock('cmbs-2026-forencos'),
-			socialLinks: [
-				createSocialLink('forencos-instagram', 'Instagram', 'https://www.instagram.com/forencos_official/', 'instagram', 'forencos_official'),
-				createSocialLink('forencos-kakao', '카카오톡 채널', 'https://pf.kakao.com/_CyVZV', 'kakao')
-			]
-		}
-	].map(applyCoupangMegaBeautyBoothLayout)
+	items: coupangMegaBeautyShow2026Items.map(applyCoupangMegaBeautyBoothLayout)
 };
 
 export const EXHIBITIONS: Exhibition[] = [coupangMegaBeautyShow2026];
