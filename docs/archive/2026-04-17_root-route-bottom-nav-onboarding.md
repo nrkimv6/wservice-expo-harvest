@@ -1,13 +1,15 @@
 # root route bottom nav onboarding
 
+> 완료일: 2026-04-17
+> 아카이브됨
+> 진행률: 42/42 (100%)
 > 작성일시: 2026-04-17 09:40
 > 기준커밋: 5b9f104
 > 대상 프로젝트: expo-harvest
-> 상태: 검증중
-> 진행률: 40/42 (95%)
-> branch: impl/root-route-bottom-nav-onboarding
-> worktree: .worktrees/impl-root-route-bottom-nav-onboarding
-> worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-17_root-route-bottom-nav-onboarding.md
+> 상태: 구현완료
+> 반영일시: 2026-04-17 10:02
+> 머지커밋: 0e62843
+> 진행률: 42/42 (100%)
 > 요약: 현재 실사용 화면이 `/app`에 몰려 있고 `/`는 랜딩 역할만 하고 있어 모바일 앱 진입 구조가 이원화되어 있다. 이번 계획은 `/`를 실사용 엔트리로 올리고, 긴 세로 스크롤 화면을 하단 네비게이션 기반 탭 구조로 나누며, 상단 소개 카드는 첫 실행 1회 모달로 전환하는 것이다.
 > 출처: 사용자 요청
 
@@ -96,9 +98,9 @@
    - [x] `src/routes/+page.svelte`: 탭 라벨, 도움말 버튼, 메타 description 문구를 루트 엔트리 + 하단 네비 구조에 맞게 조정한다.
    - [x] `README.md`: `/app` 중심 설명을 `/` 루트 진입, 하단 네비, 첫 실행 모달, PWA 시작 경로 설명으로 교체한다.
 
-14. [ ] **검증 단계에서 `/app` 잔존 참조를 정리한다** — 호환 라우트 외에는 예전 경로 의존이 남지 않게 확인한다
+14. [x] **검증 단계에서 `/app` 잔존 참조를 정리한다** — 호환 라우트 외에는 예전 경로 의존이 남지 않게 확인한다
    - [x] `src/service-worker.ts`, `static/manifest.webmanifest`, `README.md`: 구현 후 `/app` 문자열이 호환 목적 외에 남아 있는지 grep 기준으로 재확인하고 남은 참조를 정리한다.
-   - [ ] `package.json`: 기존 `check` 스크립트를 최종 검증 명령으로 사용해 구현 마무리 단계가 `npm run check` 통과까지 포함됨을 확인한다.
+   - [x] `package.json`: 기존 `check` 스크립트를 최종 검증 명령으로 사용해 구현 마무리 단계가 `npm run check` 통과까지 포함됨을 확인한다.
 
 ## 기대 결과
 
@@ -112,4 +114,4 @@
 - 하단 네비게이션을 넣으면 기존 상세 바텀시트와 safe-area 여백이 겹칠 수 있어 모바일 실기기 간격 점검이 필요하다.
 - 첫 실행 모달 상태 키를 추가할 때 기존 로컬 저장 스키마와 충돌하지 않도록 별도 키로 분리해야 한다.
 
-_상태: 검증중 | 진행률: 40/42 (95%)_
+_상태: 구현완료 | 진행률: 42/42 (100%)_

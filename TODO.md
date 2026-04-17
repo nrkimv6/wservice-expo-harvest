@@ -2,8 +2,6 @@
 
 ## In Progress
 
-- [ ] 루트 라우트 통합 + 하단 네비 + 첫 실행 모달 — [plan](docs/plan/2026-04-17_root-route-bottom-nav-onboarding.md) (40/42, 95%)
-
 ## Pending
 
 ## Done
