@@ -6,6 +6,14 @@ declare const self: ServiceWorkerGlobalScope;
 
 const CACHE_NAME = `expo-harvest-${version}`;
 const APP_SHELL = ['/', '/app', ...build, ...files, ...prerendered];
+const DEV_ONLY_PATH_PREFIXES = ['/.svelte-kit/', '/@'];
+
+function createOfflineResponse(status = 503) {
+	return new Response('Offline', {
+		status,
+		statusText: 'Offline'
+	});
+}
 
 self.addEventListener('install', (event) => {
 	event.waitUntil(
@@ -50,7 +58,7 @@ async function networkFirst(request: Request) {
 	} catch {
 		const cached = await caches.match(request);
 		if (cached) return cached;
-		return caches.match('/') || caches.match('/app');
+		return (await caches.match('/')) || (await caches.match('/app')) || createOfflineResponse();
 	}
 }
 
@@ -63,7 +71,7 @@ async function staleWhileRevalidate(request: Request) {
 			cache.put(request, response.clone());
 			return response;
 		})
-		.catch(() => cached);
+		.catch(() => cached || createOfflineResponse(504));
 
 	return cached || networkPromise;
 }
@@ -75,6 +83,7 @@ self.addEventListener('fetch', (event) => {
 
 	const url = new URL(request.url);
 	if (url.origin !== self.location.origin) return;
+	if (DEV_ONLY_PATH_PREFIXES.some((prefix) => url.pathname.startsWith(prefix))) return;
 
 	if (request.mode === 'navigate') {
 		event.respondWith(networkFirst(request));
