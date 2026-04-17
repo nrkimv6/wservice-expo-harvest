@@ -7,6 +7,7 @@
 - [ ] **fix: merge-test owner plan dirty guard** — [plan](docs/plan/2026-04-17_fix-merge-test-owner-plan-dirty-guard.md) (0/16, 0%)
 - [ ] **refine: map pin hover UX** — [plan](docs/plan/2026-04-17_refine-map-pin-hover-ux.md) (0/9, 0%)
 - [ ] **fix: build wrapper dev-server detection blind spot** — [plan](docs/plan/2026-04-17_fix-build-wrapper-dev-server-detection.md) (0/12, 0%)
+- [ ] **refine: coupang floor map readability and mobile flow** — [plan](docs/plan/2026-04-17_refine-coupang-floor-map-readability-mobile.md) (0/20, 0%)
 
 ## Done
 
