@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.4] - 2026-04-17
+
+### Fixed
+
+- 해시태그 복사 블록에서 브랜드 기준 인스타그램 계정 태그가 체크박스 해제로 빠지지 않도록 고정값으로 분리하고 체크박스를 비활성화
+
 ## [0.2.3] - 2026-04-17
 
 ### Fixed

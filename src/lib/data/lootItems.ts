@@ -33,6 +33,7 @@ export interface LootItem {
 	isCompleted: boolean;
 	memo: string;
 	hashtags: string[];
+	hashtagAccountTags?: string[];
 	socialLinks: BoothSocialLink[];
 }
 
@@ -106,6 +107,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isCompleted: false,
 			memo: '',
 			hashtags: ['#닥터지', '#쿠팡뷰티', '#메가뷰티쇼'],
+			hashtagAccountTags: ['@dr.g_official'],
 			socialLinks: [
 				createSocialLink(
 					'drg-instagram',
@@ -266,6 +268,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isCompleted: false,
 			memo: '',
 			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#페이스샵', '#파워롱래스팅선크림'],
+			hashtagAccountTags: ['@thefaceshop.official'],
 			socialLinks: [
 				createSocialLink(
 					'thefaceshop-instagram',
@@ -394,6 +397,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isCompleted: false,
 			memo: '',
 			hashtags: ['#쿠팡뷰티', '#쿠팡메가뷰티쇼', '#토니모리', '#쇼킹립'],
+			hashtagAccountTags: ['@tonymory'],
 			socialLinks: [
 				createSocialLink(
 					'tonymoly-instagram',
@@ -426,6 +430,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isCompleted: false,
 			memo: '',
 			hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#롬앤', '#누즈'],
+			hashtagAccountTags: ['@romandyou', '@nuse.official'],
 			socialLinks: [
 				createSocialLink(
 					'romand-instagram',
@@ -529,6 +534,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isCompleted: false,
 			memo: '',
 			hashtags: ['#쿠팡뷰티', '#메가뷰티쇼', '#아리얼'],
+			hashtagAccountTags: ['@ariul_official'],
 			socialLinks: [
 				createSocialLink(
 					'ariul-instagram',
@@ -561,6 +567,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isCompleted: false,
 			memo: '',
 			hashtags: ['#네이처리퍼블릭', '#쿠팡뷰티', '#메가뷰티쇼'],
+			hashtagAccountTags: ['@naturerepublic_kr'],
 			socialLinks: [
 				createSocialLink(
 					'naturerepublic-instagram',
@@ -689,6 +696,7 @@ const coupangMegaBeautyShow2026: Exhibition = {
 			isCompleted: false,
 			memo: '',
 			hashtags: ['#포렌코즈', '#트리플쉴드', '#선세럼', '#쿠팡뷰티', '#메가뷰티쇼'],
+			hashtagAccountTags: ['@forencos_official'],
 			socialLinks: [
 				createSocialLink(
 					'forencos-instagram',

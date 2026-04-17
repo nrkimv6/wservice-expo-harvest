@@ -27,16 +27,6 @@
 	let { item, onClose, onToggleBookmark, onToggleComplete, onMemoChange }: Props = $props();
 	let closeButton = $state<HTMLButtonElement | null>(null);
 	let copyState = $state<'idle' | 'done' | 'error'>('idle');
-	let includeInstagramAccounts = $state(false);
-
-	function getInstagramAccountId(url: string): string | null {
-		try {
-			const [accountId] = new URL(url).pathname.split('/').filter(Boolean);
-			return accountId ? accountId.replace(/^@/, '') : null;
-		} catch {
-			return null;
-		}
-	}
 
 	function formatHashtagCopyText(tags: string[]): string {
 		return tags
@@ -46,29 +36,15 @@
 			.trim();
 	}
 
-	const instagramAccountTags = $derived(
-		item
-			? Array.from(
-					new Set(
-						item.socialLinks
-							.filter((link) => link.platform === 'instagram')
-							.map((link) => link.accountId?.trim() || getInstagramAccountId(link.url))
-							.filter((accountId): accountId is string => Boolean(accountId))
-							.map((accountId) => `@${accountId}`)
-					)
-				)
-			: []
-	);
-	const hashtagTags = $derived(
-		item ? [...item.hashtags, ...(includeInstagramAccounts ? instagramAccountTags : [])] : []
-	);
+	const instagramAccountTags = $derived(item?.hashtagAccountTags ?? []);
+	const hashtagTags = $derived(item ? [...item.hashtags, ...instagramAccountTags] : []);
 	const hashtagBlock = $derived(
 		hashtagTags.length > 0 ? hashtagTags.join('\n') : ''
 	);
 	const hashtagCopyText = $derived(
 		hashtagTags.length > 0 ? formatHashtagCopyText(hashtagTags) : ''
 	);
-	const hasHashtags = $derived((item?.hashtags.length ?? 0) > 0);
+	const hasHashtags = $derived(hashtagTags.length > 0);
 	const hasInstagramAccountTags = $derived(instagramAccountTags.length > 0);
 	const hasFirstComeEvent = $derived((item?.firstComeEvent.trim().length ?? 0) > 0);
 	const firstComeMessage = $derived(
@@ -90,7 +66,6 @@
 	$effect(() => {
 		item?.id;
 		copyState = 'idle';
-		includeInstagramAccounts = false;
 	});
 
 	$effect(() => {
@@ -248,14 +223,15 @@
 
 						{#if hasInstagramAccountTags}
 							<label
-								class="mt-2 inline-flex cursor-pointer items-center gap-2 text-[11px] text-muted-foreground/85"
+								class="mt-2 inline-flex items-center gap-2 text-[11px] text-muted-foreground/85"
 							>
 								<input
 									type="checkbox"
 									class="h-3.5 w-3.5 rounded border-border bg-navy-surface text-gold accent-gold"
-									bind:checked={includeInstagramAccounts}
+									checked
+									disabled
 								/>
-								<span>인스타그램 계정 추가 (@계정id)</span>
+								<span>인스타그램 계정 포함 (@계정id, 기준값 고정)</span>
 							</label>
 						{/if}
 
