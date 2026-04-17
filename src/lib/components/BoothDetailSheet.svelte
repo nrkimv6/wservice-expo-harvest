@@ -1,7 +1,18 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { fly } from 'svelte/transition';
-	import { Bookmark, CheckCircle2, Gift, MapPin, MessageSquare, X } from 'lucide-svelte';
+	import {
+		Bookmark,
+		Check,
+		CheckCircle2,
+		Copy,
+		ExternalLink,
+		Gift,
+		MapPin,
+		MessageSquare,
+		Share2,
+		X
+	} from 'lucide-svelte';
 	import type { LootItem } from '$lib/data/lootItems';
 
 	type Props = {
@@ -14,10 +25,18 @@
 
 	let { item, onClose, onToggleBookmark, onToggleComplete, onMemoChange }: Props = $props();
 	let closeButton = $state<HTMLButtonElement | null>(null);
+	let copyState = $state<'idle' | 'done' | 'error'>('idle');
+
+	const hashtagBlock = $derived(item ? item.hashtags.join('\n') : '');
 
 	$effect(() => {
 		if (!item || !browser) return;
 		closeButton?.focus();
+	});
+
+	$effect(() => {
+		item?.id;
+		copyState = 'idle';
 	});
 
 	$effect(() => {
@@ -30,6 +49,29 @@
 			document.body.style.overflow = previousOverflow;
 		};
 	});
+
+	$effect(() => {
+		if (copyState !== 'done') return;
+
+		const timeout = window.setTimeout(() => {
+			copyState = 'idle';
+		}, 1800);
+
+		return () => {
+			window.clearTimeout(timeout);
+		};
+	});
+
+	async function copyHashtags() {
+		if (!item || !browser) return;
+
+		try {
+			await navigator.clipboard.writeText(item.hashtags.join('\n'));
+			copyState = 'done';
+		} catch {
+			copyState = 'error';
+		}
+	}
 </script>
 
 <svelte:window
@@ -102,6 +144,59 @@
 				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
 					<p class="text-sm font-semibold text-foreground">Mission</p>
 					<p class="mt-2 text-sm leading-6 text-muted-foreground">{item.mission}</p>
+				</div>
+
+				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
+					<div class="flex items-center justify-between gap-3">
+						<div class="flex items-center gap-2 text-foreground">
+							<Share2 size={16} />
+							<p class="text-sm font-semibold">Hashtag Block</p>
+						</div>
+
+						<button
+							type="button"
+							class={[
+								'flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition',
+								copyState === 'done'
+									? 'border-mint/40 bg-mint/10 text-mint'
+									: copyState === 'error'
+										? 'border-red-400/30 bg-red-400/10 text-red-200'
+										: 'border-border bg-black/20 text-foreground'
+							]}
+							onclick={copyHashtags}
+						>
+							{#if copyState === 'done'}
+								<Check size={14} />
+								<span>복사됨</span>
+							{:else}
+								<Copy size={14} />
+								<span>{copyState === 'error' ? '다시 시도' : '코드블럭 복사'}</span>
+							{/if}
+						</button>
+					</div>
+
+					<pre class="mt-3 overflow-x-auto rounded-2xl border border-white/6 bg-black/35 px-4 py-3 text-xs leading-6 text-gold"><code>{hashtagBlock}</code></pre>
+				</div>
+
+				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
+					<div class="flex items-center gap-2 text-foreground">
+						<ExternalLink size={16} />
+						<p class="text-sm font-semibold">SNS Links</p>
+					</div>
+
+					<div class="mt-3 grid gap-2">
+						{#each item.socialLinks as link (link.id)}
+							<a
+								href={link.url}
+								target="_blank"
+								rel="noreferrer"
+								class="flex items-center justify-between rounded-2xl border border-border bg-black/20 px-4 py-3 text-sm text-foreground transition hover:border-gold/40 hover:text-gold"
+							>
+								<span>{link.label}</span>
+								<ExternalLink size={14} />
+							</a>
+						{/each}
+					</div>
 				</div>
 
 				<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">

@@ -33,7 +33,15 @@
 		return items.filter((item) => {
 			const matchesSearch =
 				normalized.length === 0 ||
-				[item.title, item.prize, item.location, item.category, item.mission]
+				[
+					item.title,
+					item.prize,
+					item.location,
+					item.category,
+					item.mission,
+					item.hashtags.join(' '),
+					item.socialLinks.map((link) => link.label).join(' ')
+				]
 					.join(' ')
 					.toLowerCase()
 					.includes(normalized);

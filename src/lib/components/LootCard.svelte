@@ -50,12 +50,7 @@
 			{/if}
 		</button>
 
-		<button
-			type="button"
-			class="flex-1 text-left"
-			aria-label={`${item.title} 상세 보기`}
-			onclick={() => onSelect(item.id)}
-		>
+		<button type="button" class="flex-1 text-left" aria-label={`${item.title} 상세 보기`} onclick={() => onSelect(item.id)}>
 			<div class="flex flex-wrap items-center gap-2">
 				<span
 					class={[
@@ -87,6 +82,15 @@
 			<div class="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
 				<MapPin size={14} />
 				<span>{item.location}</span>
+			</div>
+
+			<div class="mt-3 flex flex-wrap gap-2 text-[11px]">
+				<span class="rounded-full border border-border bg-black/20 px-2.5 py-1 text-muted-foreground">
+					#{item.hashtags.length} hashtags
+				</span>
+				<span class="rounded-full border border-border bg-black/20 px-2.5 py-1 text-muted-foreground">
+					{item.socialLinks.length} SNS links
+				</span>
 			</div>
 		</button>
 	</div>
