@@ -13,6 +13,8 @@
 	const isTimeLimited = $derived(item.time !== 'Always');
 	const hasFirstComeEvent = $derived(item.firstComeEvent.trim().length > 0);
 	const hasPrize = $derived(item.prize.trim().length > 0);
+	const hasCategory = $derived(item.category.trim().length > 0);
+	const hasDetailedLocation = $derived(item.location.trim().length > 0 && item.location !== item.floorId);
 </script>
 
 <article
@@ -67,9 +69,14 @@
 						선착순
 					</span>
 				{/if}
-				<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
-					{item.category}
+				<span class="rounded-full bg-black/20 px-2.5 py-1 text-[10px] font-semibold text-gold">
+					{item.floorId}
 				</span>
+				{#if hasCategory}
+					<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
+						{item.category}
+					</span>
+				{/if}
 			</div>
 
 			<h3
@@ -92,7 +99,7 @@
 				<p class="mt-3 text-sm font-medium text-rose-100">{item.firstComeEvent}</p>
 			{/if}
 
-			{#if item.location}
+			{#if hasDetailedLocation}
 				<div class="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
 					<MapPin size={14} />
 					<span>{item.location}</span>

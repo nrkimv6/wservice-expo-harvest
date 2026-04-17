@@ -89,6 +89,8 @@
 	const hasPrize = $derived((item?.prize.trim().length ?? 0) > 0);
 	const hasMission = $derived((item?.mission.trim().length ?? 0) > 0);
 	const hasMemoContent = $derived((item?.memo.trim().length ?? 0) > 0);
+	const hasCategory = $derived((item?.category.trim().length ?? 0) > 0);
+	const hasDetailedLocation = $derived(Boolean(item && item.location.trim().length > 0 && item.location !== item.floorId));
 	const detailTitle = $derived(
 		item ? (item.englishTitle ? `${item.title} (${item.englishTitle})` : item.title) : ''
 	);
@@ -173,16 +175,21 @@
 							<span class="rounded-full bg-gold/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-gold">
 								{item.time}
 							</span>
-							<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] text-muted-foreground">
-								{item.category}
+							<span class="rounded-full bg-black/20 px-2.5 py-1 text-[10px] font-semibold text-gold">
+								{item.floorId}
 							</span>
+							{#if hasCategory}
+								<span class="rounded-full bg-navy-elevated px-2.5 py-1 text-[10px] text-muted-foreground">
+									{item.category}
+								</span>
+							{/if}
 						</div>
 
 						<h2 id={`sheet-title-${item.id}`} class="mt-3 font-heading text-2xl font-semibold text-foreground">
 							{detailTitle}
 						</h2>
 
-						{#if item.location}
+						{#if hasDetailedLocation}
 							<div class="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
 								<MapPin size={15} />
 								<span>{item.location}</span>

@@ -1,19 +1,101 @@
 <script lang="ts">
-	import { Bookmark, CheckCircle2, MapPin } from 'lucide-svelte';
-	import type { Exhibition, LootItem } from '$lib/data/lootItems';
+	import type { ArrowOverlay, Exhibition, LootItem, StairsOverlay } from '$lib/data/lootItems';
+
+	type ActiveFloor = Exhibition['defaultFloorId'] | 'all';
 
 	type Props = {
 		exhibition: Exhibition;
 		items: LootItem[];
 		onPinClick: (id: string) => void;
+		activeFloorOverride?: string | null;
 	};
 
-	let { exhibition, items, onPinClick }: Props = $props();
+	let { exhibition, items, onPinClick, activeFloorOverride = null }: Props = $props();
 
-	const rows = Array.from({ length: 8 });
-	const columns = Array.from({ length: 12 });
+	let activeFloor = $state<ActiveFloor>(exhibition.defaultFloorId);
 	let hoveredItemId = $state<string | null>(null);
+
 	const hoveredItem = $derived(items.find((item) => item.id === hoveredItemId) ?? null);
+	const visibleFloors = $derived(
+		activeFloor === 'all'
+			? exhibition.floors
+			: exhibition.floors.filter((floor) => floor.id === activeFloor)
+	);
+
+	$effect(() => {
+		exhibition.id;
+		activeFloor = exhibition.defaultFloorId;
+		hoveredItemId = null;
+	});
+
+	$effect(() => {
+		if (activeFloorOverride) {
+			activeFloor = activeFloorOverride as ActiveFloor;
+		}
+	});
+
+	function getFloorItems(floorId: string) {
+		return items.filter((item) => item.floorId === floorId);
+	}
+
+	function getFloorOutlineHeight(viewBox: string) {
+		const parts = viewBox.split(/\s+/).map(Number);
+		return parts[3] ? parts[3] - 40 : 0;
+	}
+
+	function getBoothVisual(item: LootItem) {
+		if (item.isCompleted) {
+			return { fill: '#10392d', stroke: '#6ee7b7', text: '#d1fae5' };
+		}
+
+		if (item.firstComeEvent.trim().length > 0) {
+			return { fill: '#4c1d28', stroke: '#fda4af', text: '#ffe4e6' };
+		}
+
+		if (item.isBookmarked) {
+			return { fill: '#4a3915', stroke: '#f5c35c', text: '#fde68a' };
+		}
+
+		return { fill: '#e8f5e9', stroke: '#4caf50', text: '#2e7d32' };
+	}
+
+	function getFloorBadge(item: LootItem) {
+		return item.location || item.floorId;
+	}
+
+	function getArrowPath(overlay: ArrowOverlay) {
+		switch (overlay.direction) {
+			case 'up':
+				return `M${overlay.x},${overlay.y + 10} L${overlay.x},${overlay.y} L${overlay.x - 5},${overlay.y + 5} M${overlay.x},${overlay.y} L${overlay.x + 5},${overlay.y + 5}`;
+			case 'down':
+				return `M${overlay.x},${overlay.y} L${overlay.x},${overlay.y + 10} L${overlay.x - 5},${overlay.y + 5} M${overlay.x},${overlay.y + 10} L${overlay.x + 5},${overlay.y + 5}`;
+			case 'left':
+				return `M${overlay.x + 10},${overlay.y} L${overlay.x},${overlay.y} L${overlay.x + 5},${overlay.y - 5} M${overlay.x},${overlay.y} L${overlay.x + 5},${overlay.y + 5}`;
+			case 'right':
+				return `M${overlay.x},${overlay.y} L${overlay.x + 10},${overlay.y} L${overlay.x + 5},${overlay.y - 5} M${overlay.x + 10},${overlay.y} L${overlay.x + 5},${overlay.y + 5}`;
+		}
+	}
+
+	function getOverlayTextY(overlay: ArrowOverlay) {
+		switch (overlay.direction) {
+			case 'up':
+				return overlay.y - 5;
+			case 'down':
+				return overlay.y + 20;
+			default:
+				return overlay.y - 8;
+		}
+	}
+
+	function getOverlayTextX(overlay: ArrowOverlay) {
+		return overlay.direction === 'up' || overlay.direction === 'down' ? overlay.x : overlay.x + 5;
+	}
+
+	function getStairsLines(overlay: StairsOverlay) {
+		const steps = overlay.steps ?? 6;
+		const stepHeight = overlay.height / steps;
+		return Array.from({ length: steps }, (_, index) => overlay.y + stepHeight * (index + 1));
+	}
 </script>
 
 <section class="rounded-[32px] border border-border bg-navy-surface p-4 shadow-[0_24px_50px_rgba(0,0,0,0.35)]">
@@ -22,13 +104,49 @@
 			<p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
 				{exhibition.mapTitle}
 			</p>
-			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">부스 보기</h2>
+			<h2 class="mt-1 font-heading text-2xl font-semibold text-foreground">층별 부스 보기</h2>
 			<p class="mt-2 text-xs leading-5 text-muted-foreground">{exhibition.mapNote}</p>
 		</div>
 
 		<div class="rounded-full border border-border bg-navy-elevated px-3 py-1 text-xs text-muted-foreground">
-			{items.length} pins
+			{items.length} booths
 		</div>
+	</div>
+
+	<div class="mb-4 flex flex-wrap gap-2">
+		<button
+			type="button"
+			class={[
+				'rounded-full border px-4 py-2 text-sm font-semibold transition',
+				activeFloor === 'all'
+					? 'border-gold/40 bg-gold text-black'
+					: 'border-border bg-navy-elevated text-muted-foreground'
+			]}
+			onclick={() => {
+				activeFloor = 'all';
+				hoveredItemId = null;
+			}}
+		>
+			전체
+		</button>
+
+		{#each exhibition.floors as floor (floor.id)}
+			<button
+				type="button"
+				class={[
+					'rounded-full border px-4 py-2 text-sm font-semibold transition',
+					activeFloor === floor.id
+						? 'border-gold/40 bg-gold text-black'
+						: 'border-border bg-navy-elevated text-muted-foreground'
+				]}
+				onclick={() => {
+					activeFloor = floor.id;
+					hoveredItemId = null;
+				}}
+			>
+				{floor.label}
+			</button>
+		{/each}
 	</div>
 
 	<div class="mb-4 min-h-[68px] rounded-[24px] border border-border bg-black/25 px-4 py-3">
@@ -36,107 +154,139 @@
 			<p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Hover Booth</p>
 			<p class="mt-1 text-sm font-semibold text-foreground">{hoveredItem.title}</p>
 			<div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+				<span>{getFloorBadge(hoveredItem)}</span>
 				{#if hoveredItem.firstComeEvent}
 					<span class="text-rose-200">{hoveredItem.firstComeEvent}</span>
-				{/if}
-				{#if hoveredItem.location}
-					<span>{hoveredItem.location}</span>
 				{/if}
 			</div>
 		{:else}
 			<p class="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">Hover Booth</p>
+			<p class="mt-1 text-sm text-muted-foreground">브랜드 박스에 커서를 올리면 층과 상태를 요약해 보여줍니다.</p>
 		{/if}
 	</div>
 
-	<div
-		class="relative overflow-hidden rounded-[28px] border border-border bg-navy-surface"
-		style={`aspect-ratio:${exhibition.mapAspectRatio ?? '16 / 10'}`}
-	>
-		{#if exhibition.mapBackgroundImage}
-			<img
-				src={exhibition.mapBackgroundImage}
-				alt={`${exhibition.name} 부스배치도`}
-				class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-90"
-			/>
-			<div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/5 via-black/10 to-black/35"></div>
-		{/if}
-
-		<div class="pointer-events-none absolute inset-0">
-			{#each rows as _, index}
-				<div
-					class="absolute left-0 right-0 border-t border-white/5"
-					style={`top:${(index + 1) * 12.5}%`}
-				></div>
-			{/each}
-
-			{#each columns as _, index}
-				<div
-					class="absolute bottom-0 top-0 border-l border-white/5"
-					style={`left:${(index + 1) * 8.333}%`}
-				></div>
-			{/each}
-		</div>
-
-		{#if exhibition.hallLabels?.length}
-			<div class="pointer-events-none absolute inset-x-4 top-3 flex justify-between text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-				{#each exhibition.hallLabels as label}
-					<span>{label}</span>
-				{/each}
-			</div>
-		{/if}
-
-		<div class="pointer-events-none absolute bottom-3 left-4 rounded-full border border-white/8 bg-black/45 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-			{exhibition.subtitle}
-		</div>
-
-		{#each items as item (item.id)}
-			<button
-				type="button"
-				class={[
-					'group absolute -translate-x-1/2 -translate-y-1/2 rounded-full border p-2 transition',
-					item.isCompleted
-						? 'border-mint/35 bg-mint/20 text-mint glow-mint'
-						: item.firstComeEvent.trim().length > 0
-							? 'border-rose-300/70 bg-rose-400/20 text-rose-50 shadow-[0_0_0_6px_rgba(251,113,133,0.16),0_10px_24px_rgba(244,63,94,0.22)]'
-						: item.isBookmarked
-							? 'border-gold/60 bg-gold/20 text-gold glow-gold'
-							: 'border-border bg-navy-elevated text-foreground'
-				]}
-				aria-label={`${item.title} 상세 보기 - ${item.isCompleted ? '완료' : item.firstComeEvent.trim().length > 0 ? '선착순 이벤트' : item.isBookmarked ? '찜' : '기본'}`}
-				style={`left:${item.mapX}%; top:${item.mapY}%`}
-				onmouseenter={() => {
-					hoveredItemId = item.id;
-				}}
-				onmouseleave={() => {
-					if (hoveredItemId === item.id) {
-						hoveredItemId = null;
-					}
-				}}
-				onfocus={() => {
-					hoveredItemId = item.id;
-				}}
-				onblur={() => {
-					if (hoveredItemId === item.id) {
-						hoveredItemId = null;
-					}
-				}}
-				onclick={() => onPinClick(item.id)}
-			>
-				{#if item.firstComeEvent.trim().length > 0 && !item.isCompleted}
-					<span class="absolute -right-1 -top-1 flex h-3 w-3">
-						<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-300 opacity-70"></span>
-						<span class="relative inline-flex h-3 w-3 rounded-full border border-rose-100/80 bg-rose-300"></span>
+	<div class="flex flex-col gap-4">
+		{#each visibleFloors as floor (floor.id)}
+			<div class="overflow-hidden rounded-[28px] border border-border bg-black/20 p-3">
+				<div class="mb-3 flex items-center justify-between gap-3 px-1">
+					<h3 class="font-heading text-lg font-semibold text-foreground">{floor.label}</h3>
+					<span class="rounded-full border border-white/10 bg-black/30 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+						{getFloorItems(floor.id).length} booths
 					</span>
-				{/if}
+				</div>
 
-				{#if item.isCompleted}
-					<CheckCircle2 size={16} />
-				{:else if item.isBookmarked}
-					<Bookmark size={16} />
-				{:else}
-					<MapPin size={16} />
-				{/if}
-			</button>
+				<svg viewBox={floor.viewBox} class="w-full overflow-visible rounded-[22px] bg-[#0f1724] p-2">
+					<rect
+						x="20"
+						y="20"
+						width="660"
+						height={getFloorOutlineHeight(floor.viewBox)}
+						fill="none"
+						stroke="#4caf50"
+						stroke-width="2"
+					/>
+
+					{#each floor.overlays as overlay, index (`${floor.id}-${overlay.kind}-${index}`)}
+						{#if overlay.kind === 'eventZone'}
+							<g pointer-events="none">
+								<rect x={overlay.x} y={overlay.y} width={overlay.width} height={overlay.height} fill="#e8f5e9" stroke="#4caf50" stroke-width="1" />
+								<text
+									x={overlay.x + overlay.width / 2}
+									y={overlay.y + overlay.height / 2}
+									text-anchor="middle"
+									dominant-baseline="middle"
+									fill="#2e7d32"
+									font-size={overlay.fontSize ?? 9}
+									font-weight="600"
+								>
+									{overlay.label}
+								</text>
+							</g>
+						{:else if overlay.kind === 'stairs'}
+							<g pointer-events="none">
+								<rect x={overlay.x} y={overlay.y} width={overlay.width} height={overlay.height} fill="#f5f5f5" stroke="#4caf50" stroke-width="1" />
+								{#each getStairsLines(overlay) as lineY}
+									<line x1={overlay.x} y1={lineY} x2={overlay.x + overlay.width} y2={lineY} stroke="#4caf50" stroke-width="0.5" />
+								{/each}
+							</g>
+						{:else if overlay.kind === 'arrow'}
+							<g pointer-events="none">
+								<path d={getArrowPath(overlay)} stroke={overlay.color ?? '#c62828'} stroke-width="2" fill="none" />
+								<text
+									x={getOverlayTextX(overlay)}
+									y={getOverlayTextY(overlay)}
+									text-anchor="middle"
+									fill={overlay.color ?? '#c62828'}
+									font-size="10"
+									font-weight="600"
+								>
+									{overlay.label}
+								</text>
+							</g>
+						{:else}
+							<rect x={overlay.x} y={overlay.y} width={overlay.width} height={overlay.height} fill={overlay.fill} pointer-events="none" />
+						{/if}
+					{/each}
+
+					{#each getFloorItems(floor.id) as item (item.id)}
+						{@const visual = getBoothVisual(item)}
+						<g
+							role="button"
+							tabindex="0"
+							class="cursor-pointer"
+							aria-label={`${item.title} 상세 보기 - ${item.floorId}`}
+							onmouseenter={() => {
+								hoveredItemId = item.id;
+							}}
+							onmouseleave={() => {
+								if (hoveredItemId === item.id) {
+									hoveredItemId = null;
+								}
+							}}
+							onfocus={() => {
+								hoveredItemId = item.id;
+							}}
+							onblur={() => {
+								if (hoveredItemId === item.id) {
+									hoveredItemId = null;
+								}
+							}}
+							onclick={() => onPinClick(item.id)}
+							onkeydown={(event) => {
+								if (event.key === 'Enter' || event.key === ' ') {
+									event.preventDefault();
+									onPinClick(item.id);
+								}
+							}}
+						>
+							<title>{item.title}</title>
+							<rect x={item.mapX} y={item.mapY} width={item.boxWidth} height={item.boxHeight} rx="8" fill={visual.fill} stroke={visual.stroke} stroke-width="1.5" />
+							<text
+								x={item.mapX + item.boxWidth / 2}
+								y={item.mapY + item.boxHeight / 2}
+								text-anchor="middle"
+								dominant-baseline="middle"
+								fill={visual.text}
+								font-size={item.fontSize ?? 10}
+								font-weight="500"
+							>
+								{item.englishTitle ?? item.title}
+							</text>
+
+							{#if item.isCompleted}
+								<circle cx={item.mapX + item.boxWidth - 7} cy={item.mapY + 7} r="7" fill="#6ee7b7" stroke="#0f1724" stroke-width="1" />
+								<text x={item.mapX + item.boxWidth - 7} y={item.mapY + 7} text-anchor="middle" dominant-baseline="middle" fill="#0f1724" font-size="9" font-weight="700">✓</text>
+							{:else if item.isBookmarked}
+								<circle cx={item.mapX + item.boxWidth - 7} cy={item.mapY + 7} r="7" fill="#f5c35c" stroke="#0f1724" stroke-width="1" />
+								<text x={item.mapX + item.boxWidth - 7} y={item.mapY + 7} text-anchor="middle" dominant-baseline="middle" fill="#0f1724" font-size="9" font-weight="700">★</text>
+							{:else if item.firstComeEvent.trim().length > 0}
+								<circle cx={item.mapX + item.boxWidth - 7} cy={item.mapY + 7} r="7" fill="#fda4af" stroke="#0f1724" stroke-width="1" />
+								<text x={item.mapX + item.boxWidth - 7} y={item.mapY + 7} text-anchor="middle" dominant-baseline="middle" fill="#0f1724" font-size="9" font-weight="700">!</text>
+							{/if}
+						</g>
+					{/each}
+				</svg>
+			</div>
 		{/each}
 	</div>
 </section>
