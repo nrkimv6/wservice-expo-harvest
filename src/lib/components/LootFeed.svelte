@@ -2,7 +2,12 @@
 	import { Search } from 'lucide-svelte';
 	import FilterChips from '$lib/components/FilterChips.svelte';
 	import LootCard from '$lib/components/LootCard.svelte';
-	import { getVisibleSocialLinks, type LootCategory, type LootItem } from '$lib/data/lootItems';
+	import {
+		getInstagramUploadTypeLabel,
+		getVisibleSocialLinks,
+		type LootCategory,
+		type LootItem
+	} from '$lib/data/lootItems';
 
 	type Props = {
 		items: LootItem[];
@@ -58,6 +63,8 @@
 					item.location,
 					item.category,
 					item.mission,
+					item.raffleEvent ?? '',
+					getInstagramUploadTypeLabel(item.instagramUploadType),
 					item.hashtags.join(' '),
 					visibleSocialLinks.map((link) => link.label).join(' ')
 				]

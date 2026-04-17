@@ -15,7 +15,11 @@
 		Share2,
 		X
 	} from 'lucide-svelte';
-	import { getVisibleSocialLinks, type LootItem } from '$lib/data/lootItems';
+	import {
+		getInstagramUploadTypeLabel,
+		getVisibleSocialLinks,
+		type LootItem
+	} from '$lib/data/lootItems';
 
 	type Props = {
 		item: LootItem | null;
@@ -89,6 +93,9 @@
 	);
 	const hasPrize = $derived((item?.prize.trim().length ?? 0) > 0);
 	const hasMission = $derived((item?.mission.trim().length ?? 0) > 0);
+	const instagramUploadTypeLabel = $derived(getInstagramUploadTypeLabel(item?.instagramUploadType));
+	const hasInstagramUploadType = $derived(instagramUploadTypeLabel.length > 0);
+	const hasRaffleEvent = $derived((item?.raffleEvent?.trim().length ?? 0) > 0);
 	const hasDetailImage = $derived(Boolean(item?.detailImage?.src));
 	const hasMemoContent = $derived((item?.memo.trim().length ?? 0) > 0);
 	const hasCategory = $derived((item?.category.trim().length ?? 0) > 0);
@@ -210,18 +217,6 @@
 					</button>
 				</div>
 
-				{#if hasFirstComeEvent}
-					<div class="mt-5 rounded-[24px] border border-rose-300/35 bg-[linear-gradient(135deg,rgba(251,113,133,0.18),rgba(244,63,94,0.1))] p-4 shadow-[0_18px_44px_rgba(244,63,94,0.16)]">
-						<div class="flex items-center gap-2 text-rose-50">
-							<BadgeAlert size={16} />
-							<p class="text-sm font-semibold tracking-[0.08em]">선착순 이벤트 있음</p>
-						</div>
-						{#if firstComeMessage}
-							<p class="mt-2 text-sm leading-6 text-rose-50/92">{firstComeMessage}</p>
-						{/if}
-					</div>
-				{/if}
-
 				{#if hasHashtags}
 					<div class="mt-4 rounded-[24px] border border-border bg-navy-elevated p-4">
 						<div class="flex items-center justify-between gap-3">
@@ -251,6 +246,17 @@
 								{/if}
 							</button>
 						</div>
+
+						{#if hasInstagramUploadType}
+							<div class="mt-2 flex flex-wrap items-center gap-2">
+								<span class="text-[11px] font-semibold tracking-[0.08em] text-muted-foreground">
+									업로드 조건
+								</span>
+								<span class="rounded-full border border-gold/20 bg-gold/10 px-2.5 py-1 text-[11px] font-semibold text-gold">
+									{instagramUploadTypeLabel}
+								</span>
+							</div>
+						{/if}
 
 						{#if hasInstagramAccountOption}
 							<label
@@ -354,6 +360,16 @@
 							<p class="text-sm font-semibold">Prize</p>
 						</div>
 						<p class="mt-2 whitespace-pre-line text-sm text-foreground">{item.prize}</p>
+					</div>
+				{/if}
+
+				{#if hasRaffleEvent}
+					<div class="mt-4 rounded-[24px] border border-violet-300/25 bg-violet-400/10 p-4">
+						<div class="flex items-center gap-2 text-violet-100">
+							<Gift size={16} />
+							<p class="text-sm font-semibold">추첨 이벤트</p>
+						</div>
+						<p class="mt-2 whitespace-pre-line text-sm text-violet-50/92">{item.raffleEvent}</p>
 					</div>
 				{/if}
 
