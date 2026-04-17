@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-17: 쿠팡 전체 overview 지도 확대/축소 지원
+  - `ExhibitionMap.svelte`의 `전체` 탭을 단일 overview SVG와 전용 viewport 모델로 재구성해 pinch, drag, wheel, `+ / - / 리셋` 확대 흐름을 연결
+  - overview에서 부스를 탭해도 `all` 상태를 유지하도록 `selectItem()` override 정책을 분리하고, 선택 부스 포커스와 안내 문구를 새 계약 기준으로 갱신
+  - `npm run check`, `npm run build` 통과 후 plan archive 및 impl worktree 정리 완료
+
 - [x] 2026-04-17: 쿠팡 메가뷰티쇼 지도 구역 분리 및 부스 정규화
   - 지도를 `1F 전시관`, `2F 전시관`, `뷰티박스 수령존(1F 외부)` 3개 map section으로 분리하고 리스트/상세의 지도 포커스를 구역 기준으로 다시 연결
   - 정보 부족 부스를 공통 4:3 박스로 정규화하고 내부 여백, 글자 밀도, 부스 간격, 우측 세로 컬럼 배치를 조정해 한 화면 정보량을 높임

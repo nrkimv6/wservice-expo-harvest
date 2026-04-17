@@ -1,7 +1,6 @@
 # TODO
 
 ## In Progress
-- [ ] **refine: coupang overview map zoom** — [plan](docs/plan/2026-04-17_refine-coupang-overview-map-zoom.md) (58/60, 96%)
 
 ## Pending
 - [ ] **fix: coupang map layout regressions after section split** — [plan](docs/plan/2026-04-17_fix-coupang-map-layout-regressions-after-section-split.md) (0/24, 0%)

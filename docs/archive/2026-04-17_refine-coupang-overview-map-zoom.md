@@ -1,13 +1,15 @@
 # refine: coupang overview map zoom
 
+> 완료일: 2026-04-17
+> 아카이브됨
+> 진행률: 60/60 (100%)
 > 작성일시: 2026-04-17 19:43
 > 기준커밋: 11be920
 > 대상 프로젝트: expo-harvest
-> 상태: 구현중
-> branch: impl/refine-coupang-overview-map-zoom
-> worktree: .worktrees/impl-refine-coupang-overview-map-zoom
-> worktree-owner: D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-17_refine-coupang-overview-map-zoom.md
-> 진행률: 58/60 (96%)
+> 상태: 구현완료
+> 반영일시: 2026-04-17 20:33
+> 머지커밋: 6de94e5
+> 진행률: 60/60 (100%)
 > 요약: 현재 `ExhibitionMap`의 `전체` 뷰는 `mapSections`를 카드 단위로 나열하는 overview라서, 단일 섹션에서만 제공되는 zoom/pan/button 제어를 재사용할 수 없다. 이번 계획은 `전체` 뷰를 통합 좌표계 기반 overview map으로 재구성하고, 동일한 확대/축소 인터랙션을 제공하되 `activeMapSectionOverride`, 선택 포커스, 상세 시트 흐름과 충돌하지 않도록 상태 모델을 분리하는 데 목적이 있다.
 
 ---
@@ -119,12 +121,12 @@
    - [x] `src/routes/+page.svelte`: `viewItemOnMap()`와 홈/리스트의 `지도에서 보기` 버튼은 기존처럼 해당 `mapSectionId`로 이동시키는 경로를 유지한다고 구분한다.
    - [x] `src/routes/+page.svelte`: 리스트 `onSelectItem(id, true, true)` 경로와 지도 탭 `onPinClick` 경로가 서로 다른 override 정책을 쓸 수 있도록 호출부를 분리한다고 명시한다.
 
-12. - [ ] **overview 안내 문구와 수동 검증 기준을 새 계약에 맞춘다** — 사용자가 `전체`에서도 확대된다는 사실을 이해하게 만든다
+12. - [x] **overview 안내 문구와 수동 검증 기준을 새 계약에 맞춘다** — 사용자가 `전체`에서도 확대된다는 사실을 이해하게 만든다
    - [x] `src/lib/components/ExhibitionMap.svelte`: 상단 focus 패널 설명과 coarse pointer 안내 문구를 `전체` overview zoom 지원 기준으로 갱신 대상으로 적는다.
    - [x] `MANUAL_TASKS.md`: `전체` 뷰 pinch/wheel/button 확대, drag pan, selection 후 `all` 유지, `지도에서 보기` CTA의 섹션 강제 이동을 각각 별도 체크 항목으로 추가한다고 명시한다.
-   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 구현 후 `npm run check`로 타입/컴파일 회귀가 없는지 확인하는 검증 체크를 마지막 Phase에 포함한다고 적는다.
+   - [x] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 구현 후 `npm run check`로 타입/컴파일 회귀가 없는지 확인하는 검증 체크를 마지막 Phase에 포함한다고 적는다.
    - [x] `MANUAL_TASKS.md`: 같은 부스를 overview에서 한 번 탭할 때는 선택만 되고, 두 번째 탭에서 detail sheet가 열리는 현재 계약이 유지되는지도 별도 체크 항목으로 추가한다고 명시한다.
 
 ---
 
-*상태: 구현중 | 진행률: 58/60 (96%)*
+*상태: 구현완료 | 진행률: 60/60 (100%)*

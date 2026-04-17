@@ -1200,11 +1200,9 @@
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
 						<h3 class="font-heading text-lg font-semibold text-foreground">{section.label}</h3>
-						{#if activeMapSection !== 'all'}
-							<p class="mt-1 text-[11px] text-muted-foreground">
-								지도 영역 안에서는 한 손가락 드래그가 지도 이동을 소유합니다. 핀치와 확대 버튼으로 배율을 바꿀 수 있고, 페이지 스크롤은 지도 밖에서 계속됩니다.
-							</p>
-						{/if}
+						<p class="mt-1 text-[11px] text-muted-foreground">
+							지도 영역 안에서는 한 손가락 드래그가 지도 이동을 소유합니다. 핀치와 확대 버튼으로 배율을 바꿀 수 있고, 페이지 스크롤은 지도 밖에서 계속됩니다.
+						</p>
 					</div>
 
 					<div class="flex items-center gap-2">
@@ -1252,10 +1250,7 @@
 				<div
 					role="group"
 					aria-label={`${section.label} 지도 viewport`}
-					class={[
-						'overflow-hidden rounded-[24px] border border-white/6 bg-[#0b1320]',
-						activeMapSection !== 'all' && 'touch-none'
-					]}
+					class={['overflow-hidden rounded-[24px] border border-white/6 bg-[#0b1320]', 'touch-none']}
 					style={`aspect-ratio: ${sectionMetrics.width} / ${sectionMetrics.height}; touch-action: ${activeMapSection === section.id ? 'none' : 'auto'};`}
 					bind:this={zoomViewport}
 					onwheel={activeMapSection === section.id ? handleViewportWheel : undefined}
