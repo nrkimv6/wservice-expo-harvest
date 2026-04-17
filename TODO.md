@@ -7,6 +7,7 @@
 ## Pending
 - [ ] **fix: hamburger menu and cache regression** — [plan](docs/plan/2026-04-18_fix-hamburger-menu-cache-regression.md) (2/8, 25%)
 - [ ] **test: map booth interaction regression coverage** — [plan](docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md) (0/8, 0%)
+- [ ] **refactor: dedup exhibition map render contract** — [plan](docs/plan/2026-04-18_refactor-dedup-exhibition-map-render-contract.md) (0/8, 0%)
 - [ ] **refine: adopt plans worktree for doc isolation** — [plan](docs/plan/2026-04-17_refine-adopt-plans-worktree-for-doc-isolation.md) (0/20, 0%)
 
 ## Merged
