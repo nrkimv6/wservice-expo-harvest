@@ -99,7 +99,7 @@
 
 	const fallbackAlertMessage = $derived.by(() => {
 		if (!nextHotItem) {
-			return `${selectedExhibition.name}에서 바로 파밍 가능한 상시 부스를 확인하세요`;
+			return null;
 		}
 
 		return `${selectedExhibition.name} · ${nextHotItem.time} ${nextHotItem.title} 임박 → ${nextHotItem.location}`;
@@ -272,7 +272,9 @@
 	</div>
 
 	<div class="bottom-nav-offset mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pt-5 sm:px-5">
-		<AlertBanner message={alertMessage} mode={alertMode} />
+		{#if alertMessage}
+			<AlertBanner message={alertMessage} mode={alertMode} />
+		{/if}
 
 		<header class="px-1 py-2">
 			<h1 class="font-heading text-3xl font-bold text-foreground">박람회 파밍 트래커</h1>
