@@ -77,7 +77,7 @@
 
 	const fallbackAlertMessage = $derived.by(() => {
 		if (!nextHotItem) {
-			return `${selectedExhibition.name}에서 바로 파밍 가능한 상시 부스를 확인하세요`;
+			return null;
 		}
 
 		return `${selectedExhibition.name} · ${nextHotItem.time} ${nextHotItem.title} 임박 → ${nextHotItem.location}`;
@@ -225,7 +225,9 @@
 	</div>
 
 	<div class="bottom-nav-offset mx-auto flex w-full max-w-lg flex-col gap-4 px-4 pt-5 sm:px-5">
-		<AlertBanner message={alertMessage} mode={alertMode} />
+		{#if alertMessage}
+			<AlertBanner message={alertMessage} mode={alertMode} />
+		{/if}
 
 		<section class="rounded-[32px] border border-border bg-navy-surface p-5 shadow-[0_24px_60px_rgba(0,0,0,0.4)]">
 			<div class="flex items-start justify-between gap-4">
