@@ -5,6 +5,7 @@
 ## In Progress
 
 ## Pending
+- [ ] **refine: booth view viewport compaction and label density** — [plan](docs/plan/2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md) (0/9, 0%)
 - [ ] **fix: agent merge completion reporting guard** — [plan](docs/plan/2026-04-18_fix-agent-merge-completion-reporting-guard.md) (0/8, 0%)
 - [ ] **fix: preview process cleanup before raw build smoke** — [plan](docs/plan/2026-04-18_fix-preview-process-cleanup-before-raw-build-smoke.md) (0/8, 0%)
 - [ ] **test: map booth interaction regression coverage** — [plan](docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md) (0/8, 0%)
