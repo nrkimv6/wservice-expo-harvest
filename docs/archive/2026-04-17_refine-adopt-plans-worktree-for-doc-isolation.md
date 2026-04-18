@@ -1,12 +1,14 @@
 # refine: adopt plans worktree for doc isolation
 
+> 완료일: 2026-04-18
+> 아카이브됨
+> 진행률: 44/44 (100%)
 > 작성일시: 2026-04-17 23:47
 > 기준커밋: 555b4c3
 > 대상 프로젝트: expo-harvest
-> 상태: 머지대기
-> branch: impl/refine-adopt-plans-worktree-for-doc-isolation
-> worktree: .worktrees/impl-refine-adopt-plans-worktree-for-doc-isolation
-> worktree-owner: D:\work\project\service\wtools\expo-harvest\.worktrees\impl-refine-adopt-plans-worktree-for-doc-isolation\docs\plan\2026-04-17_refine-adopt-plans-worktree-for-doc-isolation.md
+> 상태: 구현완료
+> 반영일시: 2026-04-18 09:43
+> 머지커밋: add8ab5
 > 진행률: 44/44 (100%)
 > 요약: 현재 문서 흐름은 `main dirty 무시/완화` 예외 규칙에 기대고 있어, plan 문서 dirty가 root/main에 남아 있을 때 구현과 merge-test가 계속 흔들린다. `plans` worktree를 정식 도입해 plan/archive/TODO/DONE 문서 변경을 root/main에서 분리하고, 스킬들이 예외 해석 대신 분리된 작업공간을 기본으로 사용하도록 정리한다.
 > 재검토일시: 2026-04-18
@@ -164,4 +166,4 @@
 
 ---
 
-*상태: 머지대기 | 진행률: 44/44 (100%)*
+*상태: 구현완료 | 진행률: 44/44 (100%)*

@@ -3,7 +3,6 @@
 > 마지막 업데이트: 2026-04-18
 
 ## In Progress
-- [ ] **refine: adopt plans worktree for doc isolation** — [plan](docs/plan/2026-04-17_refine-adopt-plans-worktree-for-doc-isolation.md) (44/44, 100%, 머지대기)
 
 ## Pending
 - [ ] **fix: agent merge completion reporting guard** — [plan](docs/plan/2026-04-18_fix-agent-merge-completion-reporting-guard.md) (0/8, 0%)

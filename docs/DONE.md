@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-18: adopt plans worktree doc isolation
+  - `plan/_path-rules.md`, `plan/SKILL.md`, `plan/_template.md`에 plans-first 문서 경로 해석과 bootstrap 절차를 추가
+  - `review-plan`, `expand-todo`, `reflect`, `implement`, `merge-test`, `done`, `plan-list`, `next`, `pull-sync`, `batch-done`의 문서 cwd 규칙을 같은 plan root 기준으로 정리
+  - 계획서를 archive로 이동하고 merge-test root dirty 충돌을 줄이기 위한 운영 메모와 수동 검증 기준을 반영
+
 - [x] 2026-04-18: booth view viewport compaction and label density
   - `src/lib/data/lootItems.ts`에서 `1F` 우측 column과 `2F` 우측 lane 좌표를 압축하고, 두 section의 `displayViewBox`를 실제 점유 bounds 기준으로 다시 고정
   - `src/lib/components/ExhibitionMap.svelte`에서 요청된 overlay 2줄 라벨 분기와 booth/event-zone 텍스트 밀도를 함께 조정
