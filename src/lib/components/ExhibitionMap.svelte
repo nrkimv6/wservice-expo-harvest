@@ -284,7 +284,7 @@
 		const placements = {} as Record<MapSectionId, OverviewSectionPlacement>;
 
 		for (const section of exhibition.mapSections) {
-			const metrics = getSourceMapSectionMetrics(section);
+			const metrics = getDisplayMapSectionMetrics(section);
 			placements[section.id] = {
 				sectionId: section.id,
 				offsetX: OVERVIEW_OUTER_PADDING - metrics.x,
@@ -1247,7 +1247,7 @@
 						{#each exhibition.mapSections as section (section.id)}
 							{@const placement = overviewMetrics.placements[section.id]}
 							{@const sectionItems = getSectionItems(section.id)}
-							{@const sectionMetrics = getSourceMapSectionMetrics(section)}
+							{@const sectionMetrics = getDisplayMapSectionMetrics(section)}
 							<g transform={`translate(${placement.offsetX} ${placement.offsetY})`}>
 								<rect
 									x={sectionMetrics.x - 6}

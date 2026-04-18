@@ -1,15 +1,16 @@
 # refactor: dedup exhibition map render contract
 
+> 완료일: 2026-04-18
+> 아카이브됨
+> 진행률: 8/8 (100%)
+> 요약: `ExhibitionMap.svelte`의 overview/single-section booth·event-zone·stairs SVG를 shared renderer 경로로 수렴시키고, `lootItems.ts` layout assertion을 required render 좌표 selector 기반으로 정리해 다음 지도 수정이 한 경로에서 끝나도록 만들었다.
 > 작성일시: 2026-04-18 00:25
 > 기준커밋: cd0da6a
 > 대상 프로젝트: expo-harvest
-> branch: impl/refactor-dedup-exhibition-map-render-contract
-> worktree: .worktrees/impl-refactor-dedup-exhibition-map-render-contract
-> worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-18_refactor-dedup-exhibition-map-render-contract.md
-> 상태: 머지대기
-> 진행률: 7/8 (87%)
+> 상태: 구현완료
+> 반영일시: 2026-04-18 09:55
+> 머지커밋: b55dc09
 > 출처: /review에서 자동 생성
-> 요약: `ExhibitionMap.svelte`는 overview와 single-section SVG 렌더 경로가 같은 booth/event-zone/stairs 마크업을 두 번 들고 있어 이번 좌표·카피 수정도 양쪽 블록을 함께 건드려야 했다. 같은 세션에서 `lootItems.ts` layout assertion은 optional `renderX/renderY` 타입 경계 때문에 `npm run check`에서 한 번 실패했으므로, 렌더 중복과 layout contract 경계를 함께 정리해 다음 지도 수정이 한 경로에서 끝나게 만든다.
 > 재검토일시: 2026-04-18
 > 재검토 결론: 적용한다. 다만 현재 코드에는 `displayViewBox`/`defaultScale` 기반 viewport 분리가 이미 들어가 있으므로, 이번 plan 범위는 viewport 재설계가 아니라 booth/overlay SVG 중복 제거와 required render contract 강화에만 고정해야 한다. 또한 overview/section 차이는 booth interactive wrapper보다 section `transform`/viewport shell 쪽에 있으므로, 추출 경계는 그 기준으로 다시 잡아야 한다.
 
@@ -87,12 +88,12 @@
    - [x] `src/lib/components/ExhibitionMap.svelte`: `handleItemPinClick(itemId)`는 계속 `onPinClick(itemId, activeMapSection === 'all' ? { preserveMapSectionOverride: true } : undefined)`만 담당하게 남겨 renderer 추출물이 viewport 상태를 직접 만지지 않게 했다.
    - [x] `src/lib/components/ExhibitionMap.svelte`: overview outer viewport의 `onpointerdown={handleViewportPointerDown}`와 section wrapper의 `onpointerdown/onpointermove/onpointerup/onpointercancel`는 booth renderer 밖에 남겼다.
 
-8. - [ ] **정적 검증과 육안 확인 포인트를 다시 기록한다** — 이번 회고 원인이던 실패/이중수정 경로가 사라졌는지 확인
-   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/lib/data/lootItems.ts`: `npm run check`를 실행해 shared renderer 추출 뒤 Svelte 템플릿/타입 오류와 required render contract 타입 오류가 없는지 기록한다.
-   - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/lib/data/lootItems.ts`: `npm run build`를 실행해 모듈 import 시점 `assertCoupangMegaBeautyLayoutContract()`가 계속 통과하는지 확인한다.
+8. - [x] **정적 검증과 육안 확인 포인트를 다시 기록한다** — 이번 회고 원인이던 실패/이중수정 경로가 사라졌는지 확인
+   - [x] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/lib/data/lootItems.ts`: `npm run check`를 실행해 shared renderer 추출 뒤 Svelte 템플릿/타입 오류와 required render contract 타입 오류가 없는지 기록한다.
+   - [x] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/lib/data/lootItems.ts`: `npm run build`를 실행해 모듈 import 시점 `assertCoupangMegaBeautyLayoutContract()`가 계속 통과하는지 확인한다.
    - [x] `MANUAL_TASKS.md`: overview와 single-section에서 booth badge, selection halo, multi-line booth label이 같은 시각 규칙으로 보이는지 확인하는 육안 항목을 추가했다.
    - [x] `MANUAL_TASKS.md`: overview와 single-section에서 `쿠팡 뉴존 체험존`, `뉴존 선물 수령존`, `파페치 / TW 홍보 부스`, `인생네컷 포토존` event-zone 라벨이 같은 줄바꿈으로 보이는지 확인 항목을 추가했다.
 
 ---
 
-*상태: 머지대기 | 진행률: 7/8 (87%)*
+*상태: 구현완료 | 진행률: 8/8 (100%)*
