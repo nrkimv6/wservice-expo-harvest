@@ -1148,6 +1148,7 @@ Mission 3
 
 Mission 2
 - 10초 안에 스피큘 5개 맞추기`,
+		raffleEvent: '후기 이벤트 (4/17~4/23)',
 		isBookmarked: false,
 		isCompleted: false,
 		memo: '',
