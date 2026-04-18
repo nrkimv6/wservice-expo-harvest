@@ -3,7 +3,7 @@
 > 마지막 업데이트: 2026-04-18
 
 ## In Progress
-- [ ] **fix: map booth viewport normalization** — [plan](docs/plan/2026-04-18_fix-map-booth-viewport-normalization.md) (0/8, 0%)
+- [ ] **fix: map booth viewport normalization** — [plan](docs/plan/2026-04-18_fix-map-booth-viewport-normalization.md) (8/8, 100%, main merge 완료)
 
 ## Pending
 - [ ] **fix: preview process cleanup before raw build smoke** — [plan](docs/plan/2026-04-18_fix-preview-process-cleanup-before-raw-build-smoke.md) (0/8, 0%)
