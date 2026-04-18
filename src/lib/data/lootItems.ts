@@ -1599,15 +1599,15 @@ Mission 3
 		englishTitle: 'FORENCOS',
 		firstComeEvent: '',
 		prize:
-			'트리플 쉴드 선세럼 장바구니 담기 시 사쉐, 인스타 업로드 후 가차로 팔레트/블러셔/컨실러/틴트',
+			'트리플 쉴드 선세럼 장바구니 담기 시 사쉐, 인스타 게시글 업로드 후 가차로 팔레트/블러셔/컨실러/틴트',
 		time: 'Always',
 		category: 'SNS 업로드',
 		mission: `Mission 1
 - 포렌코즈 쿠팡 브랜드 찜 후 트리플 쉴드 선세럼 장바구니 담기
 
 Mission 2
-- 인스타 업로드 후 가차 참여`,
-		instagramUploadType: 'upload',
+- 인스타 게시글 업로드 후 가차 참여`,
+		instagramUploadType: 'feed',
 		isBookmarked: false,
 		isCompleted: false,
 		memo: '',
