@@ -1626,6 +1626,12 @@ Mission 2
 				'https://www.coupang.com/np/products/brand-shop?brandName=%ED%8F%AC%EB%A0%8C%EC%BD%94%EC%A6%88',
 				'website'
 			),
+			createSocialLink(
+				'forencos-sun-serum',
+				'선세럼 상품 링크',
+				'https://www.coupang.com/vp/products/9422374753?itemId=28005725312&searchId=e315482ca8f24512bab4c978a402eb28&sourceType=brandstore_sdp_atf_topbadge-best_products&storeId=192968&subSourceType=brandstore_sdp_atf_topbadge-best_products&vendorId=A00458728&vendorItemId=94963167718',
+				'website'
+			),
 			createSocialLink('forencos-kakao', '카카오톡 채널', 'https://pf.kakao.com/_CyVZV', 'kakao')
 		]
 	}
