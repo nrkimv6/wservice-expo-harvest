@@ -151,6 +151,11 @@ Codex가 구현 요청 받으면:
    > impl/plan 브랜치 작업은 `.worktrees/...` 경로에서만 허용한다.
    > 루트가 `main`이 아니면 자동 전환하지 말고 즉시 중단 후 사용자에게 보고한다.
 
+   **문서 dirty 판정 분리:**
+   - code/root dirty는 원본 프로젝트 루트와 impl worktree preflight 대상으로 본다.
+   - docs/plans dirty는 `Get-PlanRoot()` / `Resolve-DocsCommitRoot()` / `Test-PlansDirty()` 기준으로 별도 판정한다.
+   - plan 헤더 갱신, TODO 동기화, 진행률 반영 같은 문서 변경은 code/root 정리와 분리해 문서 cwd에서만 수행한다.
+
    **A. plan-runner 환경 감지:**
    - 환경변수 `PLAN_RUNNER_WORKTREE_PATH`가 설정되어 있고 **AND** 해당 경로가 현재 프로젝트의 `.worktrees/` 하위인 경우에만 → 이 단계 전체 **스킵** (이미 격리됨)
      - 이 경우 루트 stash 로직도 호출하지 않는다.
@@ -219,10 +224,11 @@ Codex가 구현 요청 받으면:
 
    사용자가 "main의 기존 수정사항을 고려하지 말라"고 명시한 경우:
    - 실행 지시문(고정): **"상관없는 main 변경 감지는 무시하고, 현재 plan 대상 레포 변경만 처리한다."**
-   - 루트(main worktree)의 기존 `dirty`/`untracked` 파일은 충돌/중단 사유로 취급하지 않는다.
-   - `plan-runner` git safety 감지는 **현재 plan 대상 레포 범위로만** 수행하고, 다른 레포/루트(main)의 기존 dirty는 무시한다.
-   - 루트(main)의 기존 수정 파일은 읽기/수정/복구하지 않는다.
-   - 구현/테스트/체크박스/커밋 판단은 현재 impl 워크트리 변경분만 기준으로 진행한다.
+- 루트(main worktree)의 기존 `dirty`/`untracked` 파일은 충돌/중단 사유로 취급하지 않는다.
+- `plan-runner` git safety 감지는 **현재 plan 대상 레포 범위로만** 수행하고, 다른 레포/루트(main)의 기존 dirty는 무시한다.
+- 루트(main)의 기존 수정 파일은 읽기/수정/복구하지 않는다.
+- 문서 dirty(plans worktree, plan root의 TODO/DONE/plan 변경분)는 무시 대상이 아니다. 별도 문서 cwd에서 판정하고 정리한다.
+- 구현/테스트/체크박스/커밋 판단은 현재 impl 워크트리 변경분만 기준으로 진행한다.
    - 무시 모드는 "중단 판정 완화"에만 적용되며, 판정 범위를 제외한 동작은 기존 규칙을 유지한다.
    - 단, `.git` 보호 및 파괴적 명령 금지 규칙은 그대로 적용한다.
 
@@ -325,6 +331,8 @@ plan, TODO.md, DONE.md 변경도 함께 커밋:
 commit "feat: 기능 구현"
 ```
 plans 워크트리가 있으면 `Resolve-DocsCommitRoot` 기준 cwd로 이동하고, `Resolve-DocsCommitCandidates` 반환 파일만 `git add`한다. `git add -A`는 사용하지 않는다.
+- 코드 파일 add/commit은 impl worktree cwd에서 수행한다.
+- plan/TODO/DONE add/commit은 plans worktree 또는 resolved plan root cwd에서 수행한다.
 
 **워크트리 내에서 커밋 시**: commit.sh의 cwd를 워크트리 경로로 설정해야 한다.
 ```bash

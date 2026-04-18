@@ -171,12 +171,12 @@ plan 문서의 모든 체크박스가 `[x]`이면:
 
 ```powershell
 # ✅ 올바른 방법 — _todo.md와 원본 plan 둘 다 이동
-git mv -f "docs/plan/YYYY-MM-DD_{주제}_todo.md" "docs/archive/YYYY-MM-DD_{주제}_todo.md"
-# 원본 plan이 docs/plan/ 에 남아있으면 함께 이동 (이미 archive에 있으면 스킵)
-# git mv -f "docs/plan/YYYY-MM-DD_{주제}.md" "docs/archive/YYYY-MM-DD_{주제}.md"
+git mv -f "{plan경로}/YYYY-MM-DD_{주제}_todo.md" "{archive경로}/YYYY-MM-DD_{주제}_todo.md"
+# 원본 plan이 resolved plan root의 plan 경로에 남아있으면 함께 이동 (이미 archive에 있으면 스킵)
+# git mv -f "{plan경로}/YYYY-MM-DD_{주제}.md" "{archive경로}/YYYY-MM-DD_{주제}.md"
 
 # 이동 후 archive 헤더 추가 (Set-Content 또는 Edit 도구)
-git add "docs/archive/YYYY-MM-DD_{주제}_todo.md"
+git add "{archive경로}/YYYY-MM-DD_{주제}_todo.md"
 
 # ❌ FORBIDDEN: Move-Item / Remove-Item — 히스토리 유실
 # Move-Item -Path "{plan경로}" -Destination "{archive경로}"
@@ -384,7 +384,7 @@ CHANGELOG.md가 없으면 파일 자동 생성 후 추가.
 
 ### 7.6단계: plans dirty 사전 점검
 
-세션 종료 전 `Test-PlansDirty $RepoRoot`를 호출한다. true이면 plans 워크트리의 현재 실행 수정분과 기존 잔존 dirty를 분리한다.
+세션 종료 전 `Test-PlansDirty $RepoRoot`를 호출한다. true이면 plans 워크트리의 현재 실행 수정분과 기존 잔존 dirty를 분리한다. 이 단계는 보조 경고가 아니라 **정상 완료 흐름의 필수 게이트**다.
 
 - 에이전트 컨텍스트(`$env:CLAUDE_RUNNER_CONTEXT` 또는 auto-impl/auto-done/plan-runner/dev-runner)면 `Resolve-DocsCommitRoot` 기준 cwd로 이동한 뒤 `Resolve-DocsCommitCandidates` 반환 파일만 add하여 자동 커밋을 1회 시도한다.
 - 사람 세션(Opus 채팅)이면 경고만 출력하고 수동 복구를 안내한다.
@@ -441,6 +441,9 @@ plans 워크트리에서 문서 변경이 있으면 `Resolve-DocsCommitRoot` 기
 - [ ] {project}/TODO.md에서 항목 제거됨
 - [ ] {project}/docs/DONE.md에 항목 추가됨
 - [ ] **wtools/TODO.md 동기화됨**
+- [ ] plans worktree 또는 resolved plan root가 clean 상태다
+- [ ] root/main에 plan/archive/TODO/DONE 문서 dirty가 남지 않았다
+- [ ] 스테이징 대상이 `Resolve-DocsCommitCandidates` 반환 파일로만 제한됐다
 - [ ] **7단계 검증 통과** (누락 없이 모두 정리됨)
 
 **완료 후 안내:** 모든 단계가 끝나면 아래 안내를 출력한다:
