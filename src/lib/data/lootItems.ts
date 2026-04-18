@@ -1275,6 +1275,7 @@ Mission 2
 		isCompleted: false,
 		memo: '',
 		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-mediheal'),
+		hiddenSocialPlatforms: ['instagram'],
 		socialLinks: [
 			createSocialLink(
 				'mediheal-instagram',
