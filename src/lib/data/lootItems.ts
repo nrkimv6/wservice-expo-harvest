@@ -152,8 +152,8 @@ export function getMapSectionLabel(exhibition: Exhibition, mapSectionId: string)
 const instagramUploadTypeLabels: Record<Exclude<InstagramUploadType, ''>, string> = {
 	feed: '피드',
 	story: '스토리',
-	feed_or_story: '피드 또는 스토리',
-	upload: '업로드'
+	feed_or_story: '무관',
+	upload: '무관'
 };
 
 export function getInstagramUploadTypeLabel(uploadType: InstagramUploadType | undefined) {
@@ -1582,6 +1582,12 @@ Mission 3
 				'https://www.instagram.com/dewytree_official/',
 				'instagram',
 				'dewytree_official'
+			),
+			createSocialLink(
+				'dewytree-coupang-product',
+				'상품찜 링크',
+				'https://www.coupang.com/vp/products/8417998801?itemId=24413603198&vendorItemId=91428845796',
+				'website'
 			),
 			createSocialLink('dewytree-kakao', '카카오톡 채널', 'https://pf.kakao.com/_Anxhjl', 'kakao')
 		]
