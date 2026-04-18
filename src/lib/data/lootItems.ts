@@ -230,8 +230,6 @@ type BaseLootItem = Omit<
 
 const NORMALIZED_BOOTH_RENDER_WIDTH = 72;
 const NORMALIZED_BOOTH_RENDER_HEIGHT = 54;
-const HALL_1F_REFERENCE_DISPLAY_WIDTH = 666;
-const HALL_1F_REFERENCE_DISPLAY_HEIGHT = 364;
 const HALL_1F_VIEW_BOX = '12 16 666 364';
 const HALL_2F_VIEW_BOX = '12 16 726 308';
 const BEAUTY_BOX_PICKUP_SOURCE_VIEW_BOX = '418 296 144 96';
@@ -239,10 +237,27 @@ const NORMALIZED_BOOTH_IDS = new Set<string>(['cmbs-2026-forencos']);
 const COUPANG_MEGA_BEAUTY_SOURCE_LAYOUT_COMMIT = '13f12bd';
 const BOOTH_SIZED_EVENT_ZONE_WIDTH = NORMALIZED_BOOTH_RENDER_WIDTH;
 const BOOTH_SIZED_EVENT_ZONE_HEIGHT = NORMALIZED_BOOTH_RENDER_HEIGHT;
+const HALL_1F_DISPLAY_MIN_X = 12;
+const HALL_1F_DISPLAY_MIN_Y = 12;
+const HALL_1F_DISPLAY_MAX_X = 552;
+const HALL_1F_DISPLAY_MAX_Y = 294;
+const HALL_1F_REFERENCE_DISPLAY_WIDTH = HALL_1F_DISPLAY_MAX_X - HALL_1F_DISPLAY_MIN_X;
+const HALL_1F_REFERENCE_DISPLAY_HEIGHT = HALL_1F_DISPLAY_MAX_Y - HALL_1F_DISPLAY_MIN_Y;
+const HALL_2F_DISPLAY_MIN_X = 12;
+const HALL_2F_DISPLAY_MIN_Y = 12;
+const HALL_2F_DISPLAY_MAX_X = 648;
+const HALL_2F_DISPLAY_MAX_Y = 306;
+const HALL_2F_REFERENCE_DEFAULT_SCALE =
+	(HALL_2F_DISPLAY_MAX_X - HALL_2F_DISPLAY_MIN_X) / HALL_1F_REFERENCE_DISPLAY_WIDTH;
 // Keep the 1F right column close to the center row: AHC right edge 420 + target gap 36 = x 456.
 const HALL_1F_RIGHT_COLUMN_X = 456;
 // Trim the blank right/bottom span while keeping a narrow 24px right margin beyond the moved 1F booth edge (528).
-const HALL_1F_DISPLAY_VIEW_BOX = createDisplayViewBoxFromBounds(12, 12, 552, 294);
+const HALL_1F_DISPLAY_VIEW_BOX = createDisplayViewBoxFromBounds(
+	HALL_1F_DISPLAY_MIN_X,
+	HALL_1F_DISPLAY_MIN_Y,
+	HALL_1F_DISPLAY_MAX_X,
+	HALL_1F_DISPLAY_MAX_Y
+);
 // Start the 2F right lane below Ariul with a visible but tighter gap, and stop short of the old far-right edge.
 const HALL_2F_RIGHT_LANE_X = 564;
 const HALL_2F_RIGHT_LANE_CENTER_X = HALL_2F_RIGHT_LANE_X + BOOTH_SIZED_EVENT_ZONE_WIDTH / 2;
@@ -252,7 +267,12 @@ const HALL_2F_RIGHT_LANE_BOTTOM_Y = HALL_2F_RIGHT_LANE_MIDDLE_Y + BOOTH_SIZED_EV
 const HALL_2F_RIGHT_LANE_TOP_CENTER_Y = HALL_2F_RIGHT_LANE_TOP_Y + BOOTH_SIZED_EVENT_ZONE_HEIGHT / 2;
 const HALL_2F_RIGHT_LANE_BOTTOM_CENTER_Y =
 	HALL_2F_RIGHT_LANE_BOTTOM_Y + BOOTH_SIZED_EVENT_ZONE_HEIGHT / 2;
-const HALL_2F_DISPLAY_VIEW_BOX = createDisplayViewBoxFromBounds(12, 12, 648, 306);
+const HALL_2F_DISPLAY_VIEW_BOX = createDisplayViewBoxFromBounds(
+	HALL_2F_DISPLAY_MIN_X,
+	HALL_2F_DISPLAY_MIN_Y,
+	HALL_2F_DISPLAY_MAX_X,
+	HALL_2F_DISPLAY_MAX_Y
+);
 const HALL_1F_LEFT_COLUMN_BOOTH_IDS = [
 	'cmbs-2026-romand',
 	'cmbs-2026-dewytree',
@@ -970,7 +990,7 @@ const coupangMegaBeautyShow2026MapSections: MapSection[] = [
 		label: '2F',
 		viewBox: HALL_2F_VIEW_BOX,
 		displayViewBox: HALL_2F_DISPLAY_VIEW_BOX,
-		defaultScale: 1,
+		defaultScale: HALL_2F_REFERENCE_DEFAULT_SCALE,
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter((overlay) => overlay.mapSectionId === 'hall-2f')
 	},
 	{
