@@ -1193,7 +1193,7 @@ Mission 2
 			createSocialLink(
 				'thefaceshop-kakao',
 				'카카오톡 채널',
-				'https://pf.kakao.com/xisxdGR',
+				'https://pf.kakao.com/_xisxdGR',
 				'kakao'
 			)
 		]
