@@ -528,8 +528,8 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
-		mapLabelLines: ['THE FACE', 'SHOP'],
-		mapLabelFontSize: 10.8
+		mapLabel: '더페이스샵',
+		mapLabelFontSize: 12
 	},
 	'cmbs-2026-espoir': {
 		floorId: '1F',
