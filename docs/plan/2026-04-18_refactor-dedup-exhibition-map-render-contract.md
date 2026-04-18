@@ -8,7 +8,7 @@
 > 출처: /review에서 자동 생성
 > 요약: `ExhibitionMap.svelte`는 overview와 single-section SVG 렌더 경로가 같은 booth/event-zone/stairs 마크업을 두 번 들고 있어 이번 좌표·카피 수정도 양쪽 블록을 함께 건드려야 했다. 같은 세션에서 `lootItems.ts` layout assertion은 optional `renderX/renderY` 타입 경계 때문에 `npm run check`에서 한 번 실패했으므로, 렌더 중복과 layout contract 경계를 함께 정리해 다음 지도 수정이 한 경로에서 끝나게 만든다.
 > 재검토일시: 2026-04-18
-> 재검토 결론: 적용한다. 다만 현재 코드에는 `displayViewBox`/`defaultScale` 기반 viewport 분리가 이미 들어가 있으므로, 이번 plan 범위는 viewport 재설계가 아니라 booth/overlay SVG 중복 제거와 required render contract 강화에만 고정해야 한다.
+> 재검토 결론: 적용한다. 다만 현재 코드에는 `displayViewBox`/`defaultScale` 기반 viewport 분리가 이미 들어가 있으므로, 이번 plan 범위는 viewport 재설계가 아니라 booth/overlay SVG 중복 제거와 required render contract 강화에만 고정해야 한다. 또한 overview/section 차이는 booth interactive wrapper보다 section `transform`/viewport shell 쪽에 있으므로, 추출 경계는 그 기준으로 다시 잡아야 한다.
 
 ---
 
@@ -24,8 +24,10 @@
 
 - [`src/lib/components/ExhibitionMap.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte): 파일 길이가 1420줄이고, event-zone 렌더 블록이 overview L1000대와 section L1310대에, booth label/배지 렌더 블록이 overview L1160대와 section L1470대에 각각 중복되어 있다.
 - [`src/lib/components/ExhibitionMap.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte): `getSourceMapSectionMetrics()`와 `getDisplayMapSectionMetrics()`가 이미 분리돼 있고 section viewport는 `displayViewBox`를 사용한다. 따라서 이번 후속은 viewport metric을 다시 바꾸지 말고, 중복된 booth/overlay 마크업만 공통 경로로 수렴시키는 편이 안전하다.
+- [`src/lib/components/ExhibitionMap.svelte`](D:/work/project/service/wtools/expo-harvest/src/lib/components/ExhibitionMap.svelte): overview/section booth `<g role="button">`의 hover/focus/keyboard/pointer 처리 자체는 사실상 동일하고, 실제 차이는 section title shell·overview `transform`·viewport pointer handler 위치다. 따라서 공통화 기준을 booth interaction 밖이 아니라 wrapper 계층에서 잡아야 extraction 후 회귀가 적다.
 - [`src/routes/+page.svelte`](D:/work/project/service/wtools/expo-harvest/src/routes/+page.svelte): `ExhibitionMap` 소비처는 현재 이 한 곳뿐이라 prop surface를 유지하면 side effect 범위는 제한적이다.
 - [`src/lib/data/lootItems.ts`](D:/work/project/service/wtools/expo-harvest/src/lib/data/lootItems.ts): `getRequiredBoothRenderValue()`와 `assertCoupangMegaBeautyLayoutContract()`는 파일 내부 전용 helper라서, required layout 전용 타입/selector를 도입해도 외부 import 영향은 없다.
+- [`src/lib/data/lootItems.ts`](D:/work/project/service/wtools/expo-harvest/src/lib/data/lootItems.ts): `HALL_2F_RIGHT_LANE_LABELS`는 event-zone label과 booth title(`포렌코즈`)를 같은 문자열 배열에 섞어 special case로 읽고 있다. 이번 contract 정리에는 required booth selector를 강화하는 것뿐 아니라 이 stringly typed lane 선언을 분리하는 작업까지 포함돼야 의도가 분명해진다.
 - 기존 미완료 plan [`docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md`](D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md)는 pointer/drag 회귀 자동화가 목적이므로, 이번 구조 중복 정리 plan과는 범위가 겹치지 않는다.
 
 ---
@@ -35,12 +37,13 @@
 ### Phase 1: 중복 렌더와 contract 경계를 고정한다
 
 1. - [ ] **overview/section SVG 중복 지점을 렌더 책임 단위로 다시 나눈다** — 어떤 블록을 공통화할지 먼저 고정
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: overview 경로와 single-section 경로에서 중복되는 `eventZone`, `stairs`, `booth` SVG 블록의 차이를 주석 메모 기준으로 정리하고, 실제 차이가 `placement offset`과 `interactive wrapper`뿐인지 먼저 확인한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 공통화 이후에도 section 전용으로 남겨야 하는 상태(`isInteractiveSection`, viewport 이벤트, `preserveMapSectionOverride`)를 shared renderer 밖에 남기고, 그 기준을 추출 지점 바로 위 짧은 주석으로 고정한다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: overview 경로와 single-section 경로에서 중복되는 `eventZone`, `stairs`, `booth` SVG 블록을 대조해, 실제 차이가 booth 내부 interaction이 아니라 section title shell·overview `transform`·viewport handler 위치인지 먼저 확인한다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: 공통화 이후에도 section/overview 바깥에 남겨야 하는 책임을 `section title`, viewport `onpointerdown/move/up`, overview placement transform으로 고정하고, booth `handleItemPinClick()`/keyboard/hover 흐름은 shared renderer 안에서 재사용하도록 추출 경계를 짧은 주석으로 남긴다.
 
 2. - [ ] **layout assertion이 required render 좌표만 읽도록 입력 경계를 분명히 한다** — optional booth layout을 그대로 흘리지 않게 만든다
-   - [ ] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`가 사용하는 booth id 묶음을 기준으로 `renderX/renderY`가 필수인 layout selector를 별도 helper 또는 타입 alias로 분리한다.
-   - [ ] `src/lib/data/lootItems.ts`: `getRequiredBoothRenderValue()`와 lane assertion 호출부 이름이 "검사 대상은 required 좌표가 보장된다"는 의도를 드러내도록 정리하고, optional raw layout 접근과 구분한다.
+   - [ ] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()`가 사용하는 booth id 묶음을 기준으로 `renderX/renderY`가 필수인 layout selector 또는 `Required` 기반 타입 alias를 분리해, assertion 본문이 raw optional layout 인덱싱을 직접 하지 않게 만든다.
+   - [ ] `src/lib/data/lootItems.ts`: `HALL_2F_RIGHT_LANE_LABELS`의 booth/event-zone 혼합 문자열을 descriptor 배열이나 별도 booth id + event-zone label 묶음으로 분리해, `'포렌코즈'` special case 없이 required booth selector와 overlay selector가 각자 자기 타입만 읽게 만든다.
+   - [ ] `src/lib/data/lootItems.ts`: `getRequiredBoothRenderValue()` 계열 이름과 호출부가 "검사 대상은 required 좌표가 보장된다"는 의도를 드러내도록 정리하고, optional raw layout 접근 경로와 명확히 구분한다.
 
 ### Phase 2: booth 렌더 경로를 한 곳으로 수렴시킨다
 
@@ -66,7 +69,7 @@
 
 7. - [ ] **외부 소비 surface와 map interaction 계약이 흔들리지 않게 확인한다** — 구조 정리 중 공개 동작이 바뀌지 않게 방어
    - [ ] `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: `onPinClick(id, options?)`, `activeMapSectionOverride`, section 전환/overview 유지 계약이 리팩터링 후에도 동일 시그니처와 호출 순서를 유지하는지 대조한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: `pointerdown` 기반 booth 선택과 `activeMapSection === 'all'`일 때의 `preserveMapSectionOverride` 경로가 공통 렌더 추출 뒤에도 wrapper 레벨에 그대로 남아 있는지 재검색한다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: viewport pan용 `pointerdown` handler와 booth 선택용 `handleItemPinClick()`/`preserveMapSectionOverride` 분기가 공통 렌더 추출 뒤에도 섞이지 않았는지 재검색해, overview 유지 로직은 클릭 경로에만 남고 제스처 guard는 viewport wrapper에 남게 고정한다.
 
 8. - [ ] **정적 검증과 육안 확인 포인트를 다시 기록한다** — 이번 회고 원인이던 실패/이중수정 경로가 사라졌는지 확인
    - [ ] `package.json`, `src/lib/components/ExhibitionMap.svelte`, `src/lib/data/lootItems.ts`: `npm run check`와 `npm run build`를 실행해 Svelte/TypeScript 회귀가 없는지 확인하고, 특히 layout assertion 타입 오류가 재발하지 않는지 기록한다.
