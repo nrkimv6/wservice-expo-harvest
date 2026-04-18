@@ -3,7 +3,6 @@
 > 마지막 업데이트: 2026-04-18
 
 ## In Progress
-- [ ] **refine: booth view stair removal and 2f lane spacing** — [plan](docs/plan/2026-04-18_refine-booth-view-stair-removal-and-2f-lane-spacing.md) (9/10, 90%, merge-test 대기)
 
 ## Pending
 - [ ] **fix: agent merge completion reporting guard** — [plan](docs/plan/2026-04-18_fix-agent-merge-completion-reporting-guard.md) (0/8, 0%)

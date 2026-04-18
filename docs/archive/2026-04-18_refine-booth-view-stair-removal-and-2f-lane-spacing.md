@@ -1,13 +1,14 @@
 # refine: booth view stair removal and 2f lane spacing
 
+> 완료일: 2026-04-18
+> 아카이브됨
 > 작성일시: 2026-04-18 00:41
 > 기준커밋: cb1daf7
 > 대상 프로젝트: expo-harvest
-> branch: impl/refine-booth-view-stair-removal-and-2f-lane-spacing
-> worktree: .worktrees/impl-refine-booth-view-stair-removal-and-2f-lane-spacing
-> worktree-owner: D:\work\project\service\wtools\expo-harvest\docs\plan\2026-04-18_refine-booth-view-stair-removal-and-2f-lane-spacing.md
-> 상태: 머지대기
-> 진행률: 9/10 (90%)
+> 상태: 구현완료
+> 반영일시: 2026-04-18 09:16
+> 머지커밋: 3330556
+> 진행률: 10/10 (100%)
 > 출처: 사용자 요청
 > 요약: `부스보기`의 현재 1F/2F 배치는 `src/lib/data/lootItems.ts`의 고정 좌표와 `assertCoupangMegaBeautyLayoutContract()`에 묶여 있어, 계단 삭제나 2F 우측 lane 공백 추가 같은 요청이 단순 좌표 수정만으로 끝나지 않는다. 이번 계획은 1F 우측 회색 계단 제거, 1F 중앙 4부스 상향, 2F 계단 제거와 우측 3부스 재배치, 2F 이벤트존 줄바꿈 가독성 개선을 한 번에 반영하면서 기존 수동 체크 기준과 레이아웃 계약을 새 형상에 맞게 다시 잠그는 데 목적이 있다.
 > 재검토일시: 2026-04-18
@@ -103,12 +104,12 @@
 
 ### Phase 4: 정적 검증과 시각 회귀 확인 경로를 남긴다 (상위 2개 작업)
 
-9. - [ ] **정적 검증으로 좌표/타입 회귀를 막는다** — 데이터 수정 후 즉시 깨지는 경로를 먼저 확인
+9. - [x] **정적 검증으로 좌표/타입 회귀를 막는다** — 데이터 수정 후 즉시 깨지는 경로를 먼저 확인
    - [x] `package.json`: `npm run check` 명령이 여전히 `svelte-check` 기반 정적 검증임을 확인하고, 이번 작업의 기본 자동 검증 명령으로 고정한다.
-   - [ ] `src/lib/data/lootItems.ts`: 계단 삭제 직후 모듈 평가 단계에서 `assertCoupangMegaBeautyLayoutContract()`가 throw하지 않는지 `npm run check` 결과로 확인한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`: 새 `getOverlayLabelLines()` 분기가 Svelte 타입/템플릿 오류를 만들지 않는지 `npm run check` 결과로 확인한다.
+   - [x] `src/lib/data/lootItems.ts`: 계단 삭제 직후 모듈 평가 단계에서 `assertCoupangMegaBeautyLayoutContract()`가 throw하지 않는지 `npm run check` 결과로 확인한다.
+   - [x] `src/lib/components/ExhibitionMap.svelte`: 새 `getOverlayLabelLines()` 분기가 Svelte 타입/템플릿 오류를 만들지 않는지 `npm run check` 결과로 확인한다.
    - [x] `package.json`: `npm run build` 명령이 존재하는지 확인해 production 검증 경로를 유지한다.
-   - [ ] `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`: 수정이 끝나면 `npm run build`까지 실행해 data assertion과 Svelte 템플릿이 production 번들 단계에서도 통과하는지 확인한다.
+   - [x] `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`: 수정이 끝나면 `npm run build`까지 실행해 data assertion과 Svelte 템플릿이 production 번들 단계에서도 통과하는지 확인한다.
 
 10. - [x] **육안 확인 포인트를 새 요청 순서대로 다시 묶는다** — 사용자가 바로 확인할 수 있는 acceptance 기준을 남긴다
    - [x] `src/routes/+page.svelte`, `MANUAL_TASKS.md`: `map` 탭 진입 후 `전체` overview에서 1F/2F 모두 새 배치가 반영되는지 확인하는 순서를 수동 확인 기준에 적는다.
@@ -117,4 +118,4 @@
 
 ---
 
-*상태: 머지대기 | 진행률: 9/10 (90%)*
+*상태: 구현완료 | 진행률: 10/10 (100%)*
