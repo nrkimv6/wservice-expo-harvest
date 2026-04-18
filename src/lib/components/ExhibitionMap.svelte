@@ -454,6 +454,15 @@
 
 	function getOverlayLabelLines(label: string) {
 		const normalized = label.trim();
+		if (normalized === '인생네컷 포토존') {
+			return ['인생네컷', '포토존'];
+		}
+		if (normalized === '쿠팡 와우회원 인증존') {
+			return ['와우회원', '인증존'];
+		}
+		if (normalized === '헤어쇼 이벤트(4/18)') {
+			return ['헤어쇼 이벤트', '(4/18)'];
+		}
 		if (normalized === '쿠팡 뉴존 체험존') {
 			return ['쿠팡 뉴존', '체험존'];
 		}

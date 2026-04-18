@@ -258,6 +258,7 @@ const HALL_2F_LEFT_LANE_EVENT_ZONE_LABELS = [
 	'쿠팡 와우회원 인증존',
 	'헤어쇼 이벤트(4/18)'
 ] as const;
+// The right lane now starts below `아리얼` with an intentional top gap and no stair block.
 const HALL_2F_RIGHT_LANE_LABELS = ['인생네컷 포토존', '포렌코즈', '파페치 / TW 홍보 부스'] as const;
 const BOOTH_SIZED_EVENT_ZONE_LABELS = new Set<string>([
 	'쿠팡 어워즈 체험존',
@@ -430,7 +431,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxHeight: 35,
 		fontSize: 9,
 		renderX: 132,
-		renderY: 108,
+		renderY: 51,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '에스트라',
@@ -445,7 +446,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxHeight: 35,
 		fontSize: 9,
 		renderX: 204,
-		renderY: 108,
+		renderY: 51,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '바닐라코',
@@ -460,7 +461,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxHeight: 35,
 		fontSize: 10,
 		renderX: 276,
-		renderY: 108,
+		renderY: 51,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '닥터지',
@@ -475,7 +476,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxHeight: 35,
 		fontSize: 10,
 		renderX: 348,
-		renderY: 108,
+		renderY: 51,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: 'AHC',
@@ -655,7 +656,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxHeight: 80,
 		fontSize: 10,
 		renderX: 654,
-		renderY: 204,
+		renderY: 216,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '포렌코즈',
@@ -663,7 +664,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 	}
 };
 
-// Keep event-zone and stairs ownership explicit so section split cannot drop them again.
+// Keep event-zone and arrow ownership explicit so section split cannot drop them again.
 const COUPANG_MEGA_BEAUTY_OVERLAYS: MapOverlay[] = [
 	createBoothSizedEventZoneAtCenter('hall-1f', '쿠팡 어워즈 체험존', 276, 198, 8.8),
 	createBoothSizedEventZoneAtCenter('hall-1f', '피부측정 이벤트', 168, 252, 8.8),
@@ -672,8 +673,6 @@ const COUPANG_MEGA_BEAUTY_OVERLAYS: MapOverlay[] = [
 	createBoothSizedEventZoneAtCenter('hall-1f', '뉴존 선물 수령존', 384, 252, 8.1),
 	// Keep the pickup box centered inside the padded dedicated section so it does not over-zoom.
 	createBoothSizedEventZoneAtCenter('beauty-box-pickup', '뷰티박스 수령존', 497, 341, 9.2),
-	{ kind: 'stairs', mapSectionId: 'hall-1f', x: 620, y: 30, width: 50, height: 80, steps: 6 },
-	{ kind: 'stairs', mapSectionId: 'hall-1f', x: 620, y: 280, width: 50, height: 80, steps: 6 },
 	{
 		kind: 'arrow',
 		mapSectionId: 'hall-1f',
@@ -710,12 +709,11 @@ const COUPANG_MEGA_BEAUTY_OVERLAYS: MapOverlay[] = [
 		label: 'IN',
 		color: '#c62828'
 	},
-	{ kind: 'stairs', mapSectionId: 'hall-2f', x: 654, y: 96, width: 72, height: 54, steps: 6 },
-	createBoothSizedEventZoneAtCenter('hall-2f', '인생네컷 포토존', 690, 177, 8.8),
+	createBoothSizedEventZoneAtCenter('hall-2f', '인생네컷 포토존', 690, 189, 8.8),
 	createBoothSizedEventZoneAtCenter('hall-2f', '쿠팡 메가뷰티쇼 스토리', 60, 237, 7.8),
 	createBoothSizedEventZoneAtCenter('hall-2f', '쿠팡 와우회원 인증존', 132, 237, 7.8),
 	createBoothSizedEventZoneAtCenter('hall-2f', '헤어쇼 이벤트(4/18)', 204, 237, 8.1),
-	createBoothSizedEventZoneAtCenter('hall-2f', '파페치 / TW 홍보 부스', 690, 285, 7.5)
+	createBoothSizedEventZoneAtCenter('hall-2f', '파페치 / TW 홍보 부스', 690, 297, 7.5)
 ];
 
 function getCoupangMegaBeautyEventZone(
@@ -731,19 +729,6 @@ function getCoupangMegaBeautyEventZone(
 
 	if (!overlay) {
 		throw new Error(`Missing event-zone overlay for ${mapSectionId}:${label}`);
-	}
-
-	return overlay;
-}
-
-function getCoupangMegaBeautyStairs(mapSectionId: MapSectionId): StairsOverlay {
-	const overlay = COUPANG_MEGA_BEAUTY_OVERLAYS.find(
-		(candidate): candidate is StairsOverlay =>
-			candidate.kind === 'stairs' && candidate.mapSectionId === mapSectionId
-	);
-
-	if (!overlay) {
-		throw new Error(`Missing stairs overlay for ${mapSectionId}`);
 	}
 
 	return overlay;
@@ -771,6 +756,14 @@ function assertSingleAxis(values: readonly number[], message: string) {
 function assertPackedAxis(values: readonly number[], step: number, message: string) {
 	for (let index = 1; index < values.length; index += 1) {
 		if (values[index] - values[index - 1] !== step) {
+			throw new Error(message);
+		}
+	}
+}
+
+function assertStrictlyIncreasing(values: readonly number[], message: string) {
+	for (let index = 1; index < values.length; index += 1) {
+		if (values[index] <= values[index - 1]) {
 			throw new Error(message);
 		}
 	}
@@ -807,22 +800,18 @@ function assertCoupangMegaBeautyLayoutContract() {
 	const hall2fLeftLaneY = HALL_2F_LEFT_LANE_EVENT_ZONE_LABELS.map(
 		(label) => getCoupangMegaBeautyEventZone('hall-2f', label).y
 	);
-	const hall2fRightLaneX = [
-		getCoupangMegaBeautyStairs('hall-2f').x,
-		...HALL_2F_RIGHT_LANE_LABELS.map((label) =>
-			label === '포렌코즈'
-				? getRequiredBoothRenderValue('cmbs-2026-forencos', 'renderX')
-				: getCoupangMegaBeautyEventZone('hall-2f', label).x
-		)
-	];
-	const hall2fRightLaneY = [
-		getCoupangMegaBeautyStairs('hall-2f').y,
-		...HALL_2F_RIGHT_LANE_LABELS.map((label) =>
-			label === '포렌코즈'
-				? getRequiredBoothRenderValue('cmbs-2026-forencos', 'renderY')
-				: getCoupangMegaBeautyEventZone('hall-2f', label).y
-		)
-	];
+	const hall2fRightLaneX = HALL_2F_RIGHT_LANE_LABELS.map((label) =>
+		label === '포렌코즈'
+			? getRequiredBoothRenderValue('cmbs-2026-forencos', 'renderX')
+			: getCoupangMegaBeautyEventZone('hall-2f', label).x
+	);
+	const hall2fRightLaneY = HALL_2F_RIGHT_LANE_LABELS.map((label) =>
+		label === '포렌코즈'
+			? getRequiredBoothRenderValue('cmbs-2026-forencos', 'renderY')
+			: getCoupangMegaBeautyEventZone('hall-2f', label).y
+	);
+	const ariulBottomY =
+		getRequiredBoothRenderValue('cmbs-2026-ariul', 'renderY') + NORMALIZED_BOOTH_RENDER_HEIGHT;
 
 	assertSingleAxis(hall1fLeftColumnX, 'Hall 1F left booths must stay on a single x column.');
 	assertPackedAxis(
@@ -855,10 +844,12 @@ function assertCoupangMegaBeautyLayoutContract() {
 		'Hall 2F left event zones must stay horizontally packed with no gap.'
 	);
 	assertSingleAxis(hall2fRightLaneX, 'Hall 2F right lane items must stay on a single x column.');
-	assertPackedAxis(
+	if (hall2fRightLaneY[0] <= ariulBottomY) {
+		throw new Error('Hall 2F right lane items must start below Ariul with a visible gap.');
+	}
+	assertStrictlyIncreasing(
 		hall2fRightLaneY,
-		BOOTH_SIZED_EVENT_ZONE_HEIGHT,
-		'Hall 2F right lane items must stay vertically packed with no gap.'
+		'Hall 2F right lane items must stay ordered from top to bottom.'
 	);
 }
 
