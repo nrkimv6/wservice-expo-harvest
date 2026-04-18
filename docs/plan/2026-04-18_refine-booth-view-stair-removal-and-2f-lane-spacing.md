@@ -54,8 +54,9 @@
 
 3. - [ ] **2F 계단을 제거하고 우측 3부스 column 시작점을 아리얼 아래로 내린다** — 상단 공백을 의도된 배치로 바꾼다
    - [ ] `src/lib/data/lootItems.ts`: `COUPANG_MEGA_BEAUTY_OVERLAYS`에서 `mapSectionId: 'hall-2f'` `stairs` entry 1개를 삭제해 2F 우측 계단이 더 이상 그려지지 않게 만든다.
-   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-ariul`의 `renderY`와 `renderHeight`를 기준으로 `아리얼` 하단 기준선을 계산하고, 우측 lane 첫 블록이 이 기준선보다 아래에서 시작해야 한다는 구현 메모를 남긴다.
-   - [ ] `src/lib/data/lootItems.ts`: `인생네컷 포토존` overlay의 center `y`를 다시 계산해 event box top이 `아리얼` 하단보다 아래에서 시작하도록 옮긴다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-ariul.renderY` 값을 읽어 우측 lane 간격 계산의 시작 기준 숫자로 삼는다.
+   - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-ariul.renderHeight` 값을 읽어 첫 번째 우측 block top이 넘어야 할 `ariulBottomY` 기준을 계산한다.
+   - [ ] `src/lib/data/lootItems.ts`: `인생네컷 포토존` overlay의 목표 top `y`를 먼저 정하고, 그 값으로부터 center `y`를 다시 계산해 event box가 `아리얼` 하단보다 아래에서 시작하도록 옮긴다.
    - [ ] `src/lib/data/lootItems.ts`: `cmbs-2026-forencos.renderY`를 `인생네컷 포토존` 아래 새 위치로 조정해 우측 middle booth가 같은 column 흐름을 타게 만든다.
    - [ ] `src/lib/data/lootItems.ts`: `파페치 / TW 홍보 부스` overlay center `y`를 `포렌코즈` 아래 위치로 다시 계산해 우측 bottom block이 같은 column 안에서 마무리되게 만든다.
 
@@ -63,6 +64,7 @@
    - [ ] `src/lib/data/lootItems.ts`: `HALL_2F_RIGHT_LANE_LABELS`가 더 이상 stairs를 포함하지 않는 3개 block anchor 목록이라는 점을 설명하는 주석을 해당 상수 근처에 추가한다.
    - [ ] `src/lib/data/lootItems.ts`: `hall2fRightLaneX` 계산에서 `getCoupangMegaBeautyStairs('hall-2f').x`를 제거하고, `인생네컷 포토존`, `포렌코즈`, `파페치 / TW 홍보 부스` 3개만으로 column 축을 계산하게 바꾼다.
    - [ ] `src/lib/data/lootItems.ts`: `hall2fRightLaneY` 계산에서도 stairs 시작점을 제거하고, 3개 block의 현재 `y`만 수집하도록 바꾼다.
+   - [ ] `src/lib/data/lootItems.ts`: `hall2fRightLaneY` 배열의 원소 순서가 `인생네컷 포토존 -> 포렌코즈 -> 파페치 / TW 홍보 부스`로 유지되게 정렬 기준을 고정한다.
 
 ### Phase 2: 이벤트존 카피 가독성과 layout contract를 새 요구사항에 맞춘다 (상위 3개 작업)
 
@@ -75,22 +77,26 @@
 6. - [ ] **기존 packed layout assertion을 새 형상 기준으로 재작성한다** — 삭제된 계단과 추가된 공백 때문에 초기화 에러가 나지 않게 한다
    - [ ] `src/lib/data/lootItems.ts`: `assertCoupangMegaBeautyLayoutContract()` 안에 `ariulBottomY = getRequiredBoothRenderValue('cmbs-2026-ariul', 'renderY') + NORMALIZED_BOOTH_RENDER_HEIGHT` 계산을 추가해 right lane 시작 기준선을 코드로 만든다.
    - [ ] `src/lib/data/lootItems.ts`: `assertSingleAxis(hall2fRightLaneX, ...)`는 유지해 3개 block이 같은 `x` column 위에 있는지만 계속 검사하게 둔다.
-   - [ ] `src/lib/data/lootItems.ts`: `assertPackedAxis(hall2fRightLaneY, BOOTH_SIZED_EVENT_ZONE_HEIGHT, ...)` 호출은 제거하고, right lane `y`가 오름차순인지 확인하는 새 loop/helper로 바꾼다.
-   - [ ] `src/lib/data/lootItems.ts`: 첫 번째 right lane `y`가 `ariulBottomY`보다 커야 한다는 조건을 assertion에 추가해 "아리얼 아래 공백" 요구를 코드로 고정한다.
+   - [ ] `src/lib/data/lootItems.ts`: `assertPackedAxis(hall2fRightLaneY, BOOTH_SIZED_EVENT_ZONE_HEIGHT, ...)` 호출 1개를 제거해 packed 간격 강제를 해제한다.
+   - [ ] `src/lib/data/lootItems.ts`: `hall2fRightLaneY` 인접 원소를 순회하며 값이 strictly increasing인지 검사하는 새 loop 또는 helper를 추가한다.
+   - [ ] `src/lib/data/lootItems.ts`: 새 오름차순 검사 실패 시 메시지가 `Hall 2F right lane items must stay ordered from top to bottom.`을 포함하도록 고정한다.
+   - [ ] `src/lib/data/lootItems.ts`: 첫 번째 right lane `y`가 `ariulBottomY`보다 커야 한다는 조건을 별도 assertion으로 추가해 "아리얼 아래 공백" 요구를 코드로 고정한다.
 
 7. - [ ] **계단 helper와 generic renderer의 책임을 새 데이터와 맞춘다** — 계단 데이터 삭제가 map renderer를 불필요하게 흔들지 않게 한다
    - [ ] `src/lib/data/lootItems.ts`: `rg` 결과 기준으로 `getCoupangMegaBeautyStairs()` 호출처가 layout assertion뿐인지 다시 확인하고, 남은 호출이 없으면 함수 자체를 삭제한다.
    - [ ] `src/lib/data/lootItems.ts`: `StairsOverlay` 타입과 `MapOverlay` union은 다른 전시회 overlay 확장을 막지 않도록 그대로 유지한다.
    - [ ] `src/lib/components/ExhibitionMap.svelte`: `overlay.kind === 'stairs'` 분기는 건드리지 않고, 이번 변경이 "해당 section의 stairs 데이터가 0개여도 렌더가 조용히 빠진다"는 기존 동작만 이용한다는 점을 계획에 명시한다.
-   - [ ] `src/lib/components/ExhibitionMap.svelte`, `src/routes/+page.svelte`: 이번 작업에서 `ExhibitionMap` props(`exhibition`, `items`, `onPinClick`, `activeMapSectionOverride`, `selectedItemId`) 시그니처는 바꾸지 않는다고 못 박는다.
+   - [ ] `src/lib/components/ExhibitionMap.svelte`: 이번 작업에서 `export let` surface에 새 prop을 추가하지 않는다고 범위를 고정한다.
+   - [ ] `src/routes/+page.svelte`: `<ExhibitionMap>` 호출부의 기존 prop 목록(`exhibition`, `items`, `onPinClick`, `activeMapSectionOverride`, `selectedItemId`)을 그대로 유지한다고 범위를 고정한다.
 
 ### Phase 3: 검증 기준과 문서를 새 형상으로 동기화한다 (상위 1개 작업)
 
 8. - [ ] **수동 검증 항목을 기존 기대치에서 새 기대치로 교체한다** — 구현 후 확인 포인트가 반대로 남지 않게 한다
-   - [ ] `MANUAL_TASKS.md`: 기존 `1F 전시관` 계단 존재 확인 문장을 찾아 "우측 회색 계단 2개가 사라졌는지"를 확인하는 문장으로 교체한다.
+   - [ ] `MANUAL_TASKS.md`: 기존 "`1F 전시관`에서 상·하단 계단 2개와 파란 `decorRect`가 함께 다시 보이는지 확인" 문장을 찾아 "우측 회색 계단 2개가 사라졌는지"를 확인하는 문장으로 교체한다.
    - [ ] `MANUAL_TASKS.md`: 같은 영역의 1F 검증에 "에스트라/바닐라코/닥터지/AHC가 기존보다 위에 올라와 듀이트리와 롬앤 사이 높이대에 보이는지" 문장을 별도 항목으로 추가한다.
-   - [ ] `MANUAL_TASKS.md`: 기존 `2F` 우측 4블록 lane 검증 문장을 찾아 "아리얼 아래 공백 뒤에 인생네컷/포렌코즈/파페치가 세로열로 보이는지" 문장으로 교체한다.
-   - [ ] `MANUAL_TASKS.md`: `인생네컷 포토존`, `쿠팡 와우회원 인증존`, `헤어쇼 이벤트(4/18)` 3개가 줄바꿈된 라벨로 읽히는지 확인하는 항목을 추가한다.
+   - [ ] `MANUAL_TASKS.md`: 기존 "`2F`에서 새 계단을 포함한 우측 4블록 lane이 한 column으로 정렬되어 보이는지 확인" 문장을 찾아 계단 언급을 제거한다.
+   - [ ] `MANUAL_TASKS.md`: 기존 "`인생네컷 포토존 / 포렌코즈 / 파페치·TW 홍보 부스`가 2F 우측 컬럼에서 세로로 나란히 보이는지 확인" 문장을 찾아 "아리얼 아래 공백 뒤에 3개 block이 세로열로 보이는지" 문장으로 구체화한다.
+   - [ ] `MANUAL_TASKS.md`: `인생네컷 포토존`, `쿠팡 와우회원 인증존`, `헤어쇼 이벤트(4/18)` 3개가 각각 2줄 라벨로 읽히는지 확인하는 항목을 추가한다.
 
 ### Phase 4: 정적 검증과 시각 회귀 확인 경로를 남긴다 (상위 2개 작업)
 
@@ -98,7 +104,8 @@
    - [ ] `package.json`: `npm run check` 명령이 여전히 `svelte-check` 기반 정적 검증임을 확인하고, 이번 작업의 기본 자동 검증 명령으로 고정한다.
    - [ ] `src/lib/data/lootItems.ts`: 계단 삭제 직후 모듈 평가 단계에서 `assertCoupangMegaBeautyLayoutContract()`가 throw하지 않는지 `npm run check` 결과로 확인한다.
    - [ ] `src/lib/components/ExhibitionMap.svelte`: 새 `getOverlayLabelLines()` 분기가 Svelte 타입/템플릿 오류를 만들지 않는지 `npm run check` 결과로 확인한다.
-   - [ ] `package.json`, `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`: 필요하면 `npm run build`까지 실행해 production 번들 단계에서도 같은 데이터/템플릿 변경이 통과하는지 추가 확인한다.
+   - [ ] `package.json`: `npm run build` 명령이 존재하는지 확인해 production 검증 경로를 유지한다.
+   - [ ] `src/lib/data/lootItems.ts`, `src/lib/components/ExhibitionMap.svelte`: 수정이 끝나면 `npm run build`까지 실행해 data assertion과 Svelte 템플릿이 production 번들 단계에서도 통과하는지 확인한다.
 
 10. - [ ] **육안 확인 포인트를 새 요청 순서대로 다시 묶는다** — 사용자가 바로 확인할 수 있는 acceptance 기준을 남긴다
    - [ ] `src/routes/+page.svelte`, `MANUAL_TASKS.md`: `map` 탭 진입 후 `전체` overview에서 1F/2F 모두 새 배치가 반영되는지 확인하는 순서를 수동 확인 기준에 적는다.
