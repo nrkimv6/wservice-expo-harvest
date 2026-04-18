@@ -203,7 +203,7 @@
 
 	$effect(() => {
 		exhibition.id;
-		selectedMapSection = null;
+		selectedMapSection = exhibition.defaultMapSectionId;
 		hoveredItemId = null;
 		lastFocusedSelectionKey = '';
 		mapSectionViewportStates = {};
@@ -1108,19 +1108,6 @@
 	</div>
 
 	<div class="sticky top-4 z-10 -mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1 pt-1">
-		<button
-			type="button"
-			class={[
-				'shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition',
-				activeMapSection === 'all'
-					? 'border-gold/40 bg-gold text-black'
-					: 'border-border bg-navy-elevated text-muted-foreground'
-			]}
-			onclick={() => handleMapSectionSelect('all')}
-		>
-			전체
-		</button>
-
 		{#each exhibition.mapSections as section (section.id)}
 			<button
 				type="button"
@@ -1135,6 +1122,19 @@
 				{section.label}
 			</button>
 		{/each}
+
+		<button
+			type="button"
+			class={[
+				'shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition',
+				activeMapSection === 'all'
+					? 'border-gold/40 bg-gold text-black'
+					: 'border-border bg-navy-elevated text-muted-foreground'
+			]}
+			onclick={() => handleMapSectionSelect('all')}
+		>
+			전체
+		</button>
 	</div>
 
 	<div class="mb-4 min-h-[88px] rounded-[24px] border border-border bg-black/25 px-4 py-3">
