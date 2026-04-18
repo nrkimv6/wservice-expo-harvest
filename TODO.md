@@ -6,6 +6,7 @@
 - [ ] **refine: booth view stair removal and 2f lane spacing** — [plan](docs/plan/2026-04-18_refine-booth-view-stair-removal-and-2f-lane-spacing.md) (9/10, 90%, merge-test 대기)
 
 ## Pending
+- [ ] **fix: agent merge completion reporting guard** — [plan](docs/plan/2026-04-18_fix-agent-merge-completion-reporting-guard.md) (0/8, 0%)
 - [ ] **fix: preview process cleanup before raw build smoke** — [plan](docs/plan/2026-04-18_fix-preview-process-cleanup-before-raw-build-smoke.md) (0/8, 0%)
 - [ ] **test: map booth interaction regression coverage** — [plan](docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md) (0/8, 0%)
 - [ ] **refactor: dedup exhibition map render contract** — [plan](docs/plan/2026-04-18_refactor-dedup-exhibition-map-render-contract.md) (0/8, 0%)
