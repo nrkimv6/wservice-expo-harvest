@@ -1575,6 +1575,7 @@ Mission 3
 		isCompleted: false,
 		memo: '',
 		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-dewytree'),
+		hiddenSocialPlatforms: ['kakao'],
 		socialLinks: [
 			createSocialLink(
 				'dewytree-instagram',
