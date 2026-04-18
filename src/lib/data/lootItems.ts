@@ -1338,6 +1338,7 @@ Mission 2
 		isCompleted: false,
 		memo: '',
 		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-tonymoly'),
+		hiddenSocialPlatforms: ['kakao'],
 		socialLinks: [
 			createSocialLink(
 				'tonymoly-instagram',
