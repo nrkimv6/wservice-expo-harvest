@@ -1092,6 +1092,7 @@ Mission 2
 		isCompleted: false,
 		memo: '',
 		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-aestura'),
+		hiddenSocialPlatforms: ['kakao'],
 		socialLinks: [
 			createSocialLink(
 				'aestura-instagram',
