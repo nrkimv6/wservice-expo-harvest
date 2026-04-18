@@ -1606,7 +1606,7 @@ Mission 3
 - 포렌코즈 쿠팡 브랜드 찜 후 트리플 쉴드 선세럼 장바구니 담기
 
 Mission 2
-- 인스타 게시글 업로드 후 가차 참여`,
+- 본품이 나온 사진으로 인스타 게시글 업로드 후 가차 참여`,
 		instagramUploadType: 'feed',
 		isBookmarked: false,
 		isCompleted: false,
