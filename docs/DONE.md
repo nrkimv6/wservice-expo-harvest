@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-18: dedup exhibition map render contract
+  - `src/lib/components/ExhibitionMap.svelte`에서 booth/event-zone/stairs 중복 SVG를 `renderBooth`와 `renderSharedOverlay` 경로로 수렴
+  - `src/lib/data/lootItems.ts`에서 required render 좌표 selector와 right-lane descriptor를 도입해 contract 검사를 string special case 없이 정리
+  - `MANUAL_TASKS.md`를 회귀 확인 포인트로 보강했고 `npm run check`, `npm run build`를 통과
+
 - [x] 2026-04-18: adopt plans worktree doc isolation
   - `plan/_path-rules.md`, `plan/SKILL.md`, `plan/_template.md`에 plans-first 문서 경로 해석과 bootstrap 절차를 추가
   - `review-plan`, `expand-todo`, `reflect`, `implement`, `merge-test`, `done`, `plan-list`, `next`, `pull-sync`, `batch-done`의 문서 cwd 규칙을 같은 plan root 기준으로 정리
