@@ -3,7 +3,6 @@
 > 마지막 업데이트: 2026-04-18
 
 ## In Progress
-- [ ] **refine: booth view viewport compaction and label density** — [plan](docs/plan/2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md) (9/9, 100%)
 
 ## Pending
 - [ ] **fix: agent merge completion reporting guard** — [plan](docs/plan/2026-04-18_fix-agent-merge-completion-reporting-guard.md) (0/8, 0%)

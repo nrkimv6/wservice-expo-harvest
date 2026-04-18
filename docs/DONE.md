@@ -1,5 +1,10 @@
 # DONE
 
+- [x] 2026-04-18: booth view viewport compaction and label density
+  - `src/lib/data/lootItems.ts`에서 `1F` 우측 column과 `2F` 우측 lane 좌표를 압축하고, 두 section의 `displayViewBox`를 실제 점유 bounds 기준으로 다시 고정
+  - `src/lib/components/ExhibitionMap.svelte`에서 요청된 overlay 2줄 라벨 분기와 booth/event-zone 텍스트 밀도를 함께 조정
+  - `MANUAL_TASKS.md`를 새 viewport/라벨 기대치로 갱신했고 main에서 `npm run check`, `npm run build`를 통과
+
 - [x] 2026-04-18: booth view stair removal and 2f lane spacing
   - `src/lib/data/lootItems.ts`에서 `1F`/`2F` 계단 overlay를 제거하고, `1F` 중앙 4부스를 `renderY: 51`로 올리고, `2F` 우측 3블록을 `아리얼` 아래 공백이 보이도록 재배치
   - `src/lib/components/ExhibitionMap.svelte`에 `인생네컷 포토존`, `쿠팡 와우회원 인증존`, `헤어쇼 이벤트(4/18)` 2줄 라벨 분기를 추가

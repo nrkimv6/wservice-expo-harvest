@@ -1,12 +1,13 @@
 # refine: booth view viewport compaction and label density
 
+> 완료일: 2026-04-18
+> 아카이브됨
 > 작성일시: 2026-04-18 09:21
 > 기준커밋: cca5d8d
 > 대상 프로젝트: expo-harvest
-> branch: impl/refine-booth-view-viewport-compaction-and-label-density
-> worktree: .worktrees/impl-refine-booth-view-viewport-compaction-and-label-density
-> worktree-owner: D:/work/project/service/wtools/expo-harvest/docs/plan/2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md
-> 상태: 머지대기
+> 상태: 구현완료
+> 반영일시: 2026-04-18 09:40
+> 머지커밋: a551d4b
 > 진행률: 9/9 (100%)
 > 요약: 현재 `부스보기`는 계단 삭제와 우측 lane 재배치 이후에도 `1F/2F` single-section viewport가 원본 bounds를 거의 그대로 유지해 실제로 비어 있는 공간이 많이 남는다. 이번 계획은 `THE FACE SHOP` 우측/`AHC` 사이 여백, `2F` 우측 column 상단 여백을 viewport와 좌표 양쪽에서 다시 압축하고, booth/eventZone 라벨 개행과 폰트 점유율을 함께 높여 지도가 더 꽉 차 보이게 만드는 데 목적이 있다.
 
@@ -112,4 +113,4 @@
 
 ---
 
-*상태: 머지대기 | 진행률: 9/9 (100%)*
+*상태: 구현완료 | 진행률: 9/9 (100%)*
