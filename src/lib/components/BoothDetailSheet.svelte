@@ -103,10 +103,6 @@
 	const hasCategory = $derived((item?.category.trim().length ?? 0) > 0);
 	const floorBadge = $derived(item ? getPhysicalFloorLabel(item.floorId) : '');
 	const hasDetailedLocation = $derived(Boolean(item && item.location.trim().length > 0 && item.location !== floorBadge));
-	const detailTitle = $derived(
-		item ? (item.englishTitle ? `${item.title} (${item.englishTitle})` : item.title) : ''
-	);
-
 	$effect(() => {
 		if (!item || !browser) return;
 		closeButton?.focus();
@@ -198,8 +194,13 @@
 						</div>
 
 						<h2 id={`sheet-title-${item.id}`} class="mt-3 font-heading text-2xl font-semibold text-foreground">
-							{detailTitle}
+							{item.title}
 						</h2>
+						{#if item.englishTitle}
+							<p class="mt-1 text-xs font-medium tracking-[0.04em] text-muted-foreground">
+								{item.englishTitle}
+							</p>
+						{/if}
 
 						{#if hasDetailedLocation}
 							<div class="mt-2 flex items-center gap-2 text-sm text-muted-foreground">

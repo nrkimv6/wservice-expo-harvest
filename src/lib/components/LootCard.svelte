@@ -93,6 +93,11 @@
 			>
 				{item.title}
 			</h3>
+			{#if item.englishTitle}
+				<p class="mt-1 text-xs font-medium tracking-[0.04em] text-muted-foreground">
+					{item.englishTitle}
+				</p>
+			{/if}
 
 			{#if hasPrize}
 				<div class="mt-3 flex items-center gap-2 text-sm text-gold">
