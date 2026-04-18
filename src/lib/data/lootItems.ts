@@ -1472,6 +1472,12 @@ Mission 2
 				'instagram',
 				'ariul_official'
 			),
+			createSocialLink(
+				'ariul-capture-event',
+				'캡쳐 이벤트 링크',
+				'https://www.instagram.com/p/DXJC5ZXCHhj/?img_index=4',
+				'instagram'
+			),
 			createSocialLink('ariul-kakao', '카카오톡 채널', 'https://pf.kakao.com/_KUsxjM', 'kakao')
 		]
 	},
