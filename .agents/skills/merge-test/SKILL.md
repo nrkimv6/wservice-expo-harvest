@@ -36,7 +36,7 @@ triggers: ["머지 테스트", "merge-test", "머지후테스트", "통합테스
 - 미완료 체크박스 → "미완료 항목이 있습니다: {목록}. 계속하시겠습니까?"
 - 루트 브랜치 자동 전환 실패 → "원본 프로젝트 루트가 {브랜치}이며 main 전환에 실패했습니다.({실패단계}) merge-test를 중단합니다."
 - 소유권 불일치 → "현재 plan은 다른 부모 계획서의 worktree를 가리키고 있어 merge-test를 중단합니다."
-- owner 계획서 dirty 감지 → "MERGE_PRECHECK_FAILED[owner_plan_dirty]: root 계획서를 먼저 별도 커밋하거나 수동 정리 후 재시도하세요."
+- owner 계획서 dirty 감지 → "MERGE_PRECHECK_FAILED[owner_plan_dirty]: plans worktree의 owner 문서를 먼저 별도 커밋하거나 수동 정리 후 재시도하세요."
 ```
 
 ## main 기존 수정사항 무시 모드 (사용자 명시 지시 시)
@@ -107,9 +107,10 @@ plan 헤더에서 다음을 읽는다:
 slug, branch명, worktree 경로를 변수로 저장.
 
 **plans 워크트리 도입 프로젝트 (`.worktrees/plans/` 존재 시):**
-- plan 파일 자체는 `.worktrees/plans/docs/plan/` 하위에 있음
+- plan 파일 자체는 `.worktrees/plans/docs/plan/` 하위 실경로에 있음
 - `반영일시`/`머지커밋` Edit 대상은 plans 워크트리 내 절대경로 사용
 - Edit 후 plans 워크트리에서 `Resolve-DocsCommitRoot` 반환 cwd로 이동하고 `Resolve-DocsCommitCandidates` 반환 파일만 `git add`한 뒤 `git commit -m "chore: {slug} 머지 완료 기록"` + `git push origin plans` 수행
+- archive 이동, 완료 헤더 갱신, 머지 완료 기록은 모두 위 plans cwd 묶음 안에서 순서대로 처리한다.
 - `git add -A`는 plans 워크트리에서도 금지한다.
 
 ### 1.1단계: 부모 계획서(owner) 식별
@@ -239,18 +240,18 @@ $ownerDirty = $rootDirtyPaths | Where-Object { $ownerDocCandidates -contains $_ 
 
 - `$ownerDirty`가 1개 이상이면 **stash 전에 즉시 중단**:
   - 로그 prefix: `MERGE_PRECHECK_FAILED[owner_plan_dirty]`
-  - 안내 문구: `root 계획서를 먼저 별도 커밋하거나 수동 정리 후 재시도하세요. merge-test는 stash/apply를 시도하지 않습니다.`
+  - 안내 문구: `plans worktree의 owner 문서를 먼저 별도 커밋하거나 수동 정리 후 재시도하세요. merge-test는 stash/apply를 시도하지 않습니다.`
   - 상태 보존 계약: **merge 시작 전 중단**이므로 root/main, worktree, branch 상태를 그대로 보존한다.
 - `$ownerDirty`가 0개면 그때만 아래 stash-merge-apply로 진행한다.
-- 이 guard는 **현재 owner에만 적용**한다. unrelated root dirty는 기존 stash 흐름을 유지한다.
+- 이 guard는 **현재 owner에만 적용**한다. plans 문서 dirty는 별도 중단 대상으로 유지하고, unrelated root dirty만 기존 stash 흐름을 유지한다.
 
 경로 예시:
-- 단일 plan 프로젝트: 현재 `parent_plan_path`가 `docs/plan/2026-04-17_fix-foo.md`면, 그 파일 자체만 dirty 차단 대상으로 본다.
-- sibling plan/TODO 프로젝트: `docs/plan/2026-04-17_fix-foo_todo-1.md`를 머지 중이고 root의 `docs/plan/2026-04-17_fix-foo.md` 또는 같은 `> worktree-owner:`를 가진 `_todo-2.md`가 dirty면 모두 차단 대상으로 본다.
+- 단일 plan 프로젝트: 현재 `parent_plan_path`가 `.worktrees/plans/docs/plan/2026-04-17_fix-foo.md`면, 그 파일 자체만 dirty 차단 대상으로 본다.
+- sibling plan/TODO 프로젝트: `.worktrees/plans/docs/plan/2026-04-17_fix-foo_todo-1.md`를 머지 중이고 plans worktree의 `2026-04-17_fix-foo.md` 또는 같은 `> worktree-owner:`를 가진 `_todo-2.md`가 dirty면 모두 차단 대상으로 본다.
 
 **루트(main) dirty 처리 — stash-merge-apply:**
 
-머지 전 루트에 staged/unstaged 변경이 있으면 stash로 임시 보관 후 머지한다:
+머지 전 루트에 staged/unstaged 변경이 있으면 stash로 임시 보관 후 머지한다. 단, 이 절차는 **unrelated root dirty 전용**이며 plans worktree 문서 dirty는 포함하지 않는다.
 
 ```powershell
 $rootDirty = git status --porcelain
@@ -302,7 +303,7 @@ if ($stashRef) {
 }
 ```
 
-`MERGE_PRECHECK_FAILED[owner_plan_dirty]` 경로에서는 이 stash 블록으로 진입하지 않는다. 이미 merge 이후 충돌이 난 상태라면 이 guard의 복구 범위를 벗어난 것이므로, stash/apply 재시도 대신 수동 복구 절차를 따른다.
+`MERGE_PRECHECK_FAILED[owner_plan_dirty]` 경로에서는 이 stash 블록으로 진입하지 않는다. 이미 merge 이후 충돌이 난 상태라면 이 guard의 복구 범위를 벗어난 것이므로, stash/apply 재시도 대신 plans worktree 수동 복구 절차를 따른다.
 
 완료 기준: **같은 owner 계획서 dirty가 있으면 stash 전에 중단하고, unrelated dirty만 stash 대상으로 유지한다.**
 

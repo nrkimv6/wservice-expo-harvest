@@ -19,10 +19,10 @@ plans 워크트리가 dirty인 경우에도 `Test-PlansDirty`는 경고용으로
 
 **스캔 대상:**
 1. **wtools 감지**: 현재 디렉토리에 `common/` 폴더 존재 여부 확인
-   - **있으면**: AGENTS.md 문서 위치 규칙의 plan 경로도 스캔 (공통 계획)
+   - **있으면**: `.worktrees/plans` 실경로가 있으면 그 plan 경로를 먼저 스캔하고, 없으면 AGENTS.md 문서 위치 규칙의 plan 경로를 스캔
    - **없으면**: AGENTS.md 문서 위치 규칙의 plan 경로만 스캔 (기본: `docs/plan/`)
 
-2. **프로젝트별 계획**: `.agents/projects.json`의 각 `{proj.path}/docs/plan/*.md` 파일들 스캔(없을 경우 `.claude/projects.json` fallback) (모든 15개 프로젝트)
+2. **프로젝트별 계획**: `.agents/projects.json`의 각 프로젝트에서 resolved plan root 기준 `docs/plan/*.md` 파일들 스캔(없을 경우 `.claude/projects.json` fallback) (모든 15개 프로젝트)
 
 ```powershell
 # 프로젝트 목록 읽기
@@ -37,9 +37,9 @@ if (Test-Path "common\") {
     # AGENTS.md 문서 위치 규칙의 plan 경로 스캔
 }
 
-# 각 프로젝트의 docs/plan/*.md 스캔
+# 각 프로젝트의 resolved plan root 아래 docs/plan/*.md 스캔
 foreach ($proj in $config.projects) {
-    # $proj.path\docs\plan\*.md 스캔
+    # plans worktree가 있으면 $proj.path\.worktrees\plans\docs\plan\*.md 우선, 없으면 $proj.path\docs\plan\*.md 스캔
 }
 ```
 
