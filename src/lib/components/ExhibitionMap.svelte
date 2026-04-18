@@ -84,6 +84,43 @@
 		};
 	};
 
+	type BoothRect = {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
+
+	type BoothVisual = {
+		fill: string;
+		stroke: string;
+		text: string;
+		badge: string;
+	};
+
+	type BoothBadgeSymbol = '✓' | '★' | '!';
+
+	type BoothRenderModel = {
+		ariaLabel: string;
+		badgeSymbol: BoothBadgeSymbol | null;
+		fontSize: number;
+		isSelected: boolean;
+		labelLines: string[];
+		lineGap: number;
+		rect: BoothRect;
+		textOffset: number;
+		visual: BoothVisual;
+	};
+
+	type OverlayTextModel = {
+		centerX: number;
+		centerY: number;
+		fontSize: number;
+		labelLines: string[];
+		lineGap: number;
+		textOffset: number;
+	};
+
 	type GestureIntent = 'drag' | 'pinch';
 
 	const MIN_SINGLE_FLOOR_SCALE = 1;
@@ -413,7 +450,7 @@
 		return `${nextCenter.x - viewportWidth / 2} ${nextCenter.y - viewportHeight / 2} ${viewportWidth} ${viewportHeight}`;
 	}
 
-	function getBoothRect(item: LootItem) {
+	function getBoothRect(item: LootItem): BoothRect {
 		return {
 			x: item.renderX ?? item.mapX,
 			y: item.renderY ?? item.mapY,
@@ -503,7 +540,7 @@
 		return getEventZoneFontSize(overlay) * 0.82;
 	}
 
-	function getBoothVisual(item: LootItem) {
+	function getBoothVisual(item: LootItem): BoothVisual {
 		if (item.isCompleted) {
 			return { fill: '#14372d', stroke: '#84f2c0', text: '#e6fff4', badge: '#84f2c0' };
 		}
@@ -521,6 +558,90 @@
 
 	function getFloorBadge(item: LootItem) {
 		return item.location || getPhysicalFloorLabel(item.floorId);
+	}
+
+	function getBoothBadgeSymbol(item: LootItem): BoothBadgeSymbol | null {
+		if (item.isCompleted) return '✓';
+		if (item.isBookmarked) return '★';
+		if (item.firstComeEvent.trim().length > 0) return '!';
+		return null;
+	}
+
+	function getBoothRenderModel(item: LootItem): BoothRenderModel {
+		const rect = getBoothRect(item);
+		const labelLines = getLabelLines(item);
+		const fontSize = getLabelFontSize(item);
+		const visual = getBoothVisual(item);
+
+		return {
+			ariaLabel: `${item.title} 상세 보기 - ${getFloorBadge(item)}`,
+			badgeSymbol: getBoothBadgeSymbol(item),
+			fontSize,
+			isSelected: item.id === selectedItemId,
+			labelLines,
+			lineGap: getBoothLineGap(item),
+			rect,
+			textOffset: getBoothTextOffset(item, labelLines.length),
+			visual
+		};
+	}
+
+	function getEventZoneTextModel(overlay: EventZoneOverlay): OverlayTextModel {
+		const labelLines = getOverlayLabelLines(overlay.label);
+		return {
+			centerX: overlay.x + overlay.width / 2,
+			centerY: overlay.y + overlay.height / 2,
+			fontSize: getEventZoneFontSize(overlay),
+			labelLines,
+			lineGap: getEventZoneLineGap(overlay),
+			textOffset: getEventZoneTextOffset(overlay, labelLines.length)
+		};
+	}
+
+	function handleBoothMouseEnter(itemId: string) {
+		if (!isCoarsePointer) {
+			hoveredItemId = itemId;
+		}
+	}
+
+	function handleBoothMouseLeave(itemId: string) {
+		if (hoveredItemId === itemId) {
+			hoveredItemId = null;
+		}
+	}
+
+	function handleBoothFocus(itemId: string) {
+		hoveredItemId = itemId;
+	}
+
+	function handleBoothBlur(itemId: string) {
+		if (hoveredItemId === itemId) {
+			hoveredItemId = null;
+		}
+	}
+
+	function handleBoothPointerDown(event: PointerEvent, itemId: string) {
+		event.stopPropagation();
+		if (event.button !== 0) return;
+
+		const currentTarget = event.currentTarget as SVGGElement & {
+			blur?: () => void;
+		};
+		currentTarget.blur?.();
+
+		if (gestureIntent !== null) {
+			gestureIntent = null;
+			return;
+		}
+
+		handleItemPinClick(itemId);
+	}
+
+	function handleBoothKeyDown(event: KeyboardEvent, itemId: string) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			handleItemPinClick(itemId);
+		}
 	}
 
 	function getArrowPath(overlay: ArrowOverlay) {
@@ -820,6 +941,142 @@
 	}
 </script>
 
+<!-- Shared booth/overlay renderers stay inside their wrappers so overview transforms and viewport handlers remain local to each caller. -->
+{#snippet renderSharedOverlay(overlay)}
+	{#if overlay.kind === 'eventZone'}
+		{@const overlayTextModel = getEventZoneTextModel(overlay)}
+		<g pointer-events="none" opacity="0.78">
+			<rect
+				x={overlay.x}
+				y={overlay.y}
+				width={overlay.width}
+				height={overlay.height}
+				fill={EVENT_ZONE_FILL}
+				stroke={EVENT_ZONE_STROKE}
+				stroke-width={EVENT_ZONE_STROKE_WIDTH}
+				rx={EVENT_ZONE_RADIUS}
+			/>
+			<text
+				x={overlayTextModel.centerX}
+				y={overlayTextModel.centerY - overlayTextModel.textOffset}
+				text-anchor="middle"
+				dominant-baseline="middle"
+				fill={EVENT_ZONE_TEXT}
+				font-size={overlayTextModel.fontSize}
+				font-weight="600"
+			>
+				{#each overlayTextModel.labelLines as line, lineIndex (line)}
+					<tspan x={overlayTextModel.centerX} dy={lineIndex === 0 ? 0 : overlayTextModel.lineGap}>
+						{line}
+					</tspan>
+				{/each}
+			</text>
+		</g>
+	{:else if overlay.kind === 'stairs'}
+		<g pointer-events="none" opacity="0.7">
+			<rect
+				x={overlay.x}
+				y={overlay.y}
+				width={overlay.width}
+				height={overlay.height}
+				fill="#f5f5f5"
+				stroke="#8db794"
+				stroke-width="1"
+			/>
+			{#each getStairsLines(overlay) as lineY}
+				<line
+					x1={overlay.x}
+					y1={lineY}
+					x2={overlay.x + overlay.width}
+					y2={lineY}
+					stroke="#8db794"
+					stroke-width="0.5"
+				/>
+			{/each}
+		</g>
+	{/if}
+{/snippet}
+
+{#snippet renderBooth(item, boothModel)}
+	<g
+		role="button"
+		tabindex="0"
+		class="map-booth-target cursor-pointer"
+		aria-label={boothModel.ariaLabel}
+		onmouseenter={() => handleBoothMouseEnter(item.id)}
+		onmouseleave={() => handleBoothMouseLeave(item.id)}
+		onfocus={() => handleBoothFocus(item.id)}
+		onblur={() => handleBoothBlur(item.id)}
+		onpointerdown={(event) => handleBoothPointerDown(event, item.id)}
+		onkeydown={(event) => handleBoothKeyDown(event, item.id)}
+	>
+		<title>{item.title}</title>
+		{#if boothModel.isSelected}
+			<rect
+				x={boothModel.rect.x - 3}
+				y={boothModel.rect.y - 3}
+				width={boothModel.rect.width + 6}
+				height={boothModel.rect.height + 6}
+				rx="2"
+				fill="none"
+				stroke="#f5c35c"
+				stroke-width="2.25"
+				stroke-dasharray="5 3"
+			/>
+		{/if}
+		<rect
+			x={boothModel.rect.x}
+			y={boothModel.rect.y}
+			width={boothModel.rect.width}
+			height={boothModel.rect.height}
+			rx="1.5"
+			fill={boothModel.visual.fill}
+			stroke={boothModel.isSelected ? '#f5c35c' : boothModel.visual.stroke}
+			stroke-width={boothModel.isSelected ? '2' : '1.2'}
+		/>
+		<text
+			x={boothModel.rect.x + boothModel.rect.width / 2}
+			y={boothModel.rect.y + boothModel.rect.height / 2 - boothModel.textOffset}
+			text-anchor="middle"
+			dominant-baseline="middle"
+			fill={boothModel.visual.text}
+			font-size={boothModel.fontSize}
+			font-weight="700"
+		>
+			{#each boothModel.labelLines as line, lineIndex (line)}
+				<tspan
+					x={boothModel.rect.x + boothModel.rect.width / 2}
+					dy={lineIndex === 0 ? 0 : boothModel.lineGap}
+				>
+					{line}
+				</tspan>
+			{/each}
+		</text>
+
+		{#if boothModel.badgeSymbol}
+			<circle
+				cx={boothModel.rect.x + boothModel.rect.width - 7}
+				cy={boothModel.rect.y + 7}
+				r="7"
+				fill={boothModel.visual.badge}
+				stroke="#0f1724"
+				stroke-width="1"
+			/>
+			<text
+				x={boothModel.rect.x + boothModel.rect.width - 7}
+				y={boothModel.rect.y + 7}
+				text-anchor="middle"
+				dominant-baseline="middle"
+				fill="#0f1724"
+				font-size="8"
+				font-weight="700"
+			>
+				{boothModel.badgeSymbol}
+			</text>
+		{/if}
+	</g>
+{/snippet}
+
 <section class="rounded-[32px] border border-border bg-navy-surface p-4 shadow-[0_24px_50px_rgba(0,0,0,0.35)]">
 	<div class="mb-4 flex items-start justify-between gap-3">
 		<div>
@@ -1007,61 +1264,8 @@
 									{sectionItems.length} booths
 								</text>
 								{#each section.overlays as overlay, index (`overview-${section.id}-${overlay.kind}-${index}`)}
-									{#if overlay.kind === 'eventZone'}
-										{@const overlayLabelLines = getOverlayLabelLines(overlay.label)}
-										{@const overlayFontSize = getEventZoneFontSize(overlay)}
-										<g pointer-events="none" opacity="0.78">
-											<rect
-												x={overlay.x}
-												y={overlay.y}
-												width={overlay.width}
-												height={overlay.height}
-												fill={EVENT_ZONE_FILL}
-												stroke={EVENT_ZONE_STROKE}
-												stroke-width={EVENT_ZONE_STROKE_WIDTH}
-												rx={EVENT_ZONE_RADIUS}
-											/>
-										<text
-											x={overlay.x + overlay.width / 2}
-											y={overlay.y + overlay.height / 2 - getEventZoneTextOffset(overlay, overlayLabelLines.length)}
-												text-anchor="middle"
-												dominant-baseline="middle"
-												fill={EVENT_ZONE_TEXT}
-												font-size={overlayFontSize}
-												font-weight="600"
-											>
-												{#each overlayLabelLines as line, lineIndex (line)}
-													<tspan
-														x={overlay.x + overlay.width / 2}
-														dy={lineIndex === 0 ? 0 : getEventZoneLineGap(overlay)}
-													>
-														{line}
-													</tspan>
-												{/each}
-											</text>
-										</g>
-									{:else if overlay.kind === 'stairs'}
-										<g pointer-events="none" opacity="0.7">
-											<rect
-												x={overlay.x}
-												y={overlay.y}
-												width={overlay.width}
-												height={overlay.height}
-												fill="#f5f5f5"
-												stroke="#8db794"
-												stroke-width="1"
-											/>
-											{#each getStairsLines(overlay) as lineY}
-												<line
-													x1={overlay.x}
-													y1={lineY}
-													x2={overlay.x + overlay.width}
-													y2={lineY}
-													stroke="#8db794"
-													stroke-width="0.5"
-												/>
-											{/each}
-										</g>
+									{#if overlay.kind === 'eventZone' || overlay.kind === 'stairs'}
+										{@render renderSharedOverlay(overlay)}
 									{:else if overlay.kind === 'arrow'}
 										<g pointer-events="none" opacity="0.86">
 											<path
@@ -1095,158 +1299,8 @@
 								{/each}
 
 								{#each sectionItems as item (item.id)}
-									{@const visual = getBoothVisual(item)}
-									{@const boothRect = getBoothRect(item)}
-									{@const labelLines = getLabelLines(item)}
-									{@const isSelected = item.id === selectedItemId}
-									<g
-										role="button"
-										tabindex="0"
-										class="map-booth-target cursor-pointer"
-										aria-label={`${item.title} 상세 보기 - ${getFloorBadge(item)}`}
-										onmouseenter={() => {
-											if (!isCoarsePointer) {
-												hoveredItemId = item.id;
-											}
-										}}
-										onmouseleave={() => {
-											if (hoveredItemId === item.id) {
-												hoveredItemId = null;
-											}
-										}}
-										onfocus={() => {
-											hoveredItemId = item.id;
-										}}
-										onblur={() => {
-											if (hoveredItemId === item.id) {
-												hoveredItemId = null;
-											}
-										}}
-										onpointerdown={(event) => {
-											event.stopPropagation();
-											if (event.button !== 0) return;
-											const currentTarget = event.currentTarget as SVGGElement & {
-												blur?: () => void;
-											};
-											currentTarget.blur?.();
-											if (gestureIntent !== null) {
-												gestureIntent = null;
-												return;
-											}
-											handleItemPinClick(item.id);
-										}}
-										onkeydown={(event) => {
-											if (event.key === 'Enter' || event.key === ' ') {
-												event.preventDefault();
-												handleItemPinClick(item.id);
-											}
-										}}
-									>
-										<title>{item.title}</title>
-										{#if isSelected}
-											<rect
-												x={boothRect.x - 3}
-												y={boothRect.y - 3}
-												width={boothRect.width + 6}
-												height={boothRect.height + 6}
-												rx="2"
-												fill="none"
-												stroke="#f5c35c"
-												stroke-width="2.25"
-												stroke-dasharray="5 3"
-											/>
-										{/if}
-										<rect
-											x={boothRect.x}
-											y={boothRect.y}
-											width={boothRect.width}
-											height={boothRect.height}
-											rx="1.5"
-											fill={visual.fill}
-											stroke={isSelected ? '#f5c35c' : visual.stroke}
-											stroke-width={isSelected ? '2' : '1.2'}
-										/>
-										<text
-											x={boothRect.x + boothRect.width / 2}
-											y={boothRect.y + boothRect.height / 2 - getBoothTextOffset(item, labelLines.length)}
-											text-anchor="middle"
-											dominant-baseline="middle"
-											fill={visual.text}
-											font-size={getLabelFontSize(item)}
-											font-weight="700"
-										>
-											{#each labelLines as line, lineIndex (line)}
-												<tspan
-													x={boothRect.x + boothRect.width / 2}
-													dy={lineIndex === 0 ? 0 : getBoothLineGap(item)}
-												>
-													{line}
-												</tspan>
-											{/each}
-										</text>
-
-										{#if item.isCompleted}
-											<circle
-												cx={boothRect.x + boothRect.width - 7}
-												cy={boothRect.y + 7}
-												r="7"
-												fill={visual.badge}
-												stroke="#0f1724"
-												stroke-width="1"
-											/>
-											<text
-												x={boothRect.x + boothRect.width - 7}
-												y={boothRect.y + 7}
-												text-anchor="middle"
-												dominant-baseline="middle"
-												fill="#0f1724"
-												font-size="8"
-												font-weight="700"
-											>
-												✓
-											</text>
-										{:else if item.isBookmarked}
-											<circle
-												cx={boothRect.x + boothRect.width - 7}
-												cy={boothRect.y + 7}
-												r="7"
-												fill={visual.badge}
-												stroke="#0f1724"
-												stroke-width="1"
-											/>
-											<text
-												x={boothRect.x + boothRect.width - 7}
-												y={boothRect.y + 7}
-												text-anchor="middle"
-												dominant-baseline="middle"
-												fill="#0f1724"
-												font-size="8"
-												font-weight="700"
-											>
-												★
-											</text>
-										{:else if item.firstComeEvent.trim().length > 0}
-											<circle
-												cx={boothRect.x + boothRect.width - 7}
-												cy={boothRect.y + 7}
-												r="7"
-												fill={visual.badge}
-												stroke="#0f1724"
-												stroke-width="1"
-											/>
-											<text
-												x={boothRect.x + boothRect.width - 7}
-												y={boothRect.y + 7}
-												text-anchor="middle"
-												dominant-baseline="middle"
-												fill="#0f1724"
-												font-size="8"
-												font-weight="700"
-											>
-												!
-											</text>
-										{/if}
-									</g>
+									{@const boothModel = getBoothRenderModel(item)}
+									{@render renderBooth(item, boothModel)}
 								{/each}
 							</g>
 						{/each}
@@ -1323,61 +1377,8 @@
 				>
 					<svg viewBox={getRenderedViewBox(sectionTarget)} class="h-full w-full">
 						{#each section.overlays as overlay, index (`${section.id}-${overlay.kind}-${index}`)}
-							{#if overlay.kind === 'eventZone'}
-								{@const overlayLabelLines = getOverlayLabelLines(overlay.label)}
-								{@const overlayFontSize = getEventZoneFontSize(overlay)}
-								<g pointer-events="none" opacity="0.78">
-									<rect
-										x={overlay.x}
-										y={overlay.y}
-										width={overlay.width}
-										height={overlay.height}
-										fill={EVENT_ZONE_FILL}
-										stroke={EVENT_ZONE_STROKE}
-										stroke-width={EVENT_ZONE_STROKE_WIDTH}
-										rx={EVENT_ZONE_RADIUS}
-									/>
-									<text
-										x={overlay.x + overlay.width / 2}
-										y={overlay.y + overlay.height / 2 - getEventZoneTextOffset(overlay, overlayLabelLines.length)}
-										text-anchor="middle"
-										dominant-baseline="middle"
-										fill={EVENT_ZONE_TEXT}
-										font-size={overlayFontSize}
-										font-weight="600"
-									>
-										{#each overlayLabelLines as line, lineIndex (line)}
-											<tspan
-												x={overlay.x + overlay.width / 2}
-												dy={lineIndex === 0 ? 0 : getEventZoneLineGap(overlay)}
-											>
-												{line}
-											</tspan>
-										{/each}
-									</text>
-								</g>
-							{:else if overlay.kind === 'stairs'}
-								<g pointer-events="none" opacity="0.7">
-									<rect
-										x={overlay.x}
-										y={overlay.y}
-										width={overlay.width}
-										height={overlay.height}
-										fill="#f5f5f5"
-										stroke="#8db794"
-										stroke-width="1"
-									/>
-									{#each getStairsLines(overlay) as lineY}
-										<line
-											x1={overlay.x}
-											y1={lineY}
-											x2={overlay.x + overlay.width}
-											y2={lineY}
-											stroke="#8db794"
-											stroke-width="0.5"
-										/>
-									{/each}
-								</g>
+							{#if overlay.kind === 'eventZone' || overlay.kind === 'stairs'}
+								{@render renderSharedOverlay(overlay)}
 							{:else if overlay.kind === 'arrow'}
 								<g pointer-events="none" opacity="0.86">
 									<path
@@ -1411,158 +1412,8 @@
 						{/each}
 
 						{#each sectionItems as item (item.id)}
-							{@const visual = getBoothVisual(item)}
-							{@const boothRect = getBoothRect(item)}
-							{@const labelLines = getLabelLines(item)}
-							{@const isSelected = item.id === selectedItemId}
-							<g
-								role="button"
-								tabindex="0"
-								class="map-booth-target cursor-pointer"
-								aria-label={`${item.title} 상세 보기 - ${getFloorBadge(item)}`}
-								onmouseenter={() => {
-									if (!isCoarsePointer) {
-										hoveredItemId = item.id;
-									}
-								}}
-								onmouseleave={() => {
-									if (hoveredItemId === item.id) {
-										hoveredItemId = null;
-									}
-								}}
-								onfocus={() => {
-									hoveredItemId = item.id;
-								}}
-								onblur={() => {
-									if (hoveredItemId === item.id) {
-										hoveredItemId = null;
-									}
-								}}
-								onpointerdown={(event) => {
-									event.stopPropagation();
-									if (event.button !== 0) return;
-									const currentTarget = event.currentTarget as SVGGElement & {
-										blur?: () => void;
-									};
-									currentTarget.blur?.();
-									if (gestureIntent !== null) {
-										gestureIntent = null;
-										return;
-									}
-									handleItemPinClick(item.id);
-								}}
-								onkeydown={(event) => {
-									if (event.key === 'Enter' || event.key === ' ') {
-										event.preventDefault();
-										handleItemPinClick(item.id);
-									}
-								}}
-							>
-								<title>{item.title}</title>
-								{#if isSelected}
-									<rect
-										x={boothRect.x - 3}
-										y={boothRect.y - 3}
-										width={boothRect.width + 6}
-										height={boothRect.height + 6}
-										rx="2"
-										fill="none"
-										stroke="#f5c35c"
-										stroke-width="2.25"
-										stroke-dasharray="5 3"
-									/>
-								{/if}
-								<rect
-									x={boothRect.x}
-									y={boothRect.y}
-									width={boothRect.width}
-									height={boothRect.height}
-									rx="1.5"
-									fill={visual.fill}
-									stroke={isSelected ? '#f5c35c' : visual.stroke}
-									stroke-width={isSelected ? '2' : '1.2'}
-								/>
-								<text
-									x={boothRect.x + boothRect.width / 2}
-									y={boothRect.y + boothRect.height / 2 - getBoothTextOffset(item, labelLines.length)}
-									text-anchor="middle"
-									dominant-baseline="middle"
-									fill={visual.text}
-									font-size={getLabelFontSize(item)}
-									font-weight="700"
-								>
-									{#each labelLines as line, lineIndex (line)}
-										<tspan
-											x={boothRect.x + boothRect.width / 2}
-											dy={lineIndex === 0 ? 0 : getBoothLineGap(item)}
-										>
-											{line}
-										</tspan>
-									{/each}
-								</text>
-
-								{#if item.isCompleted}
-									<circle
-										cx={boothRect.x + boothRect.width - 7}
-										cy={boothRect.y + 7}
-										r="7"
-										fill={visual.badge}
-										stroke="#0f1724"
-										stroke-width="1"
-									/>
-									<text
-										x={boothRect.x + boothRect.width - 7}
-										y={boothRect.y + 7}
-										text-anchor="middle"
-										dominant-baseline="middle"
-										fill="#0f1724"
-										font-size="8"
-										font-weight="700"
-									>
-										✓
-									</text>
-								{:else if item.isBookmarked}
-									<circle
-										cx={boothRect.x + boothRect.width - 7}
-										cy={boothRect.y + 7}
-										r="7"
-										fill={visual.badge}
-										stroke="#0f1724"
-										stroke-width="1"
-									/>
-									<text
-										x={boothRect.x + boothRect.width - 7}
-										y={boothRect.y + 7}
-										text-anchor="middle"
-										dominant-baseline="middle"
-										fill="#0f1724"
-										font-size="8"
-										font-weight="700"
-									>
-										★
-									</text>
-								{:else if item.firstComeEvent.trim().length > 0}
-									<circle
-										cx={boothRect.x + boothRect.width - 7}
-										cy={boothRect.y + 7}
-										r="7"
-										fill={visual.badge}
-										stroke="#0f1724"
-										stroke-width="1"
-									/>
-									<text
-										x={boothRect.x + boothRect.width - 7}
-										y={boothRect.y + 7}
-										text-anchor="middle"
-										dominant-baseline="middle"
-										fill="#0f1724"
-										font-size="8"
-										font-weight="700"
-									>
-										!
-									</text>
-								{/if}
-							</g>
+							{@const boothModel = getBoothRenderModel(item)}
+							{@render renderBooth(item, boothModel)}
 						{/each}
 					</svg>
 				</div>
