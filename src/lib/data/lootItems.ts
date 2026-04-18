@@ -1498,6 +1498,7 @@ Mission 2
 		isCompleted: false,
 		memo: '',
 		...getCoupangMegaBeautyHashtagBlock('cmbs-2026-avene'),
+		hiddenSocialPlatforms: ['instagram'],
 		socialLinks: [
 			createSocialLink(
 				'avene-instagram',
