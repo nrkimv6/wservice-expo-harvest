@@ -1295,11 +1295,11 @@ Mission 2
 		time: 'Always',
 		category: 'SNS 업로드',
 		mission: `Mission 1
-- 인스타 팔로우, 업로드
+- 인스타 팔로우, 스토리 업로드
 
 Mission 2
 - 뽑기 참여`,
-		instagramUploadType: 'upload',
+		instagramUploadType: 'story',
 		isBookmarked: false,
 		isCompleted: false,
 		memo: '',
