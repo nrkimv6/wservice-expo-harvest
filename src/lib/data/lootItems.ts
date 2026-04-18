@@ -1503,7 +1503,7 @@ Mission 2
 			createSocialLink(
 				'avene-coupang',
 				'쿠팡 브랜드샵',
-				'https://www.coupang.com/np/products/brand-shop?brandName=%EC%95%84%EB%B2%A4%EB%8A%90',
+				'https://shop.coupang.com/A00383625/164991?locale=ko_KR&platform=m',
 				'website'
 			),
 			createSocialLink('avene-kakao', '카카오톡 채널', 'https://pf.kakao.com/_VGFXxl', 'kakao')
