@@ -1188,7 +1188,6 @@
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
 						<h3 class="font-heading text-lg font-semibold text-foreground">전체 Overview</h3>
-						<p class="mt-1 text-[11px] text-muted-foreground">한 장으로 보고 필요한 구역만 확대하세요.</p>
 					</div>
 
 					<div class="flex items-center gap-2">
@@ -1334,7 +1333,6 @@
 				<div class="mb-3 flex items-center justify-between gap-3 px-1">
 					<div>
 						<h3 class="font-heading text-lg font-semibold text-foreground">{section.label}</h3>
-						<p class="mt-1 text-[11px] text-muted-foreground">드래그로 이동하고 핀치나 버튼으로 확대하세요.</p>
 					</div>
 
 					<div class="flex items-center gap-2">
