@@ -3,12 +3,14 @@
 > 마지막 업데이트: 2026-04-18
 
 ## In Progress
+- [ ] **refactor: dedup exhibition map render contract** — [plan](docs/plan/2026-04-18_refactor-dedup-exhibition-map-render-contract.md) (7/8, 87%, merge-test 대기)
 
 ## Pending
 - [ ] **fix: agent merge completion reporting guard** — [plan](docs/plan/2026-04-18_fix-agent-merge-completion-reporting-guard.md) (0/8, 0%)
 - [ ] **fix: preview process cleanup before raw build smoke** — [plan](docs/plan/2026-04-18_fix-preview-process-cleanup-before-raw-build-smoke.md) (0/8, 0%)
 - [ ] **test: map booth interaction regression coverage** — [plan](docs/plan/2026-04-18_test-map-booth-interaction-regression-coverage.md) (0/8, 0%)
 - [ ] **refactor: dedup exhibition map render contract** — [plan](docs/plan/2026-04-18_refactor-dedup-exhibition-map-render-contract.md) (0/8, 0%)
+- [ ] **refine: adopt plans worktree for doc isolation** — [plan](docs/plan/2026-04-17_refine-adopt-plans-worktree-for-doc-isolation.md) (0/20, 0%)
 
 ## Merged
 

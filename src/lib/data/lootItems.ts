@@ -194,6 +194,19 @@ type BoothLayout = {
 	mapLabelFontSize?: number;
 };
 
+type BoothLayoutWithRequiredRenderPosition = BoothLayout &
+	Required<Pick<BoothLayout, 'renderX' | 'renderY'>>;
+
+type Hall2fRightLaneDescriptor =
+	| {
+			kind: 'eventZone';
+			label: string;
+	  }
+	| {
+			kind: 'booth';
+			itemId: 'cmbs-2026-forencos';
+	  };
+
 type BaseLootItem = Omit<
 	LootItem,
 	| 'floorId'
@@ -272,7 +285,11 @@ const HALL_2F_LEFT_LANE_EVENT_ZONE_LABELS = [
 	'헤어쇼 이벤트(4/18)'
 ] as const;
 // The right lane now starts below `아리얼` with an intentional top gap and no stair block.
-const HALL_2F_RIGHT_LANE_LABELS = ['인생네컷 포토존', '포렌코즈', '파페치 / TW 홍보 부스'] as const;
+const HALL_2F_RIGHT_LANE_DESCRIPTORS: readonly Hall2fRightLaneDescriptor[] = [
+	{ kind: 'eventZone', label: '인생네컷 포토존' },
+	{ kind: 'booth', itemId: 'cmbs-2026-forencos' },
+	{ kind: 'eventZone', label: '파페치 / TW 홍보 부스' }
+] as const;
 const BOOTH_SIZED_EVENT_ZONE_LABELS = new Set<string>([
 	'쿠팡 어워즈 체험존',
 	'피부측정 이벤트',
@@ -763,17 +780,28 @@ function getCoupangMegaBeautyEventZone(
 	return overlay;
 }
 
-function getRequiredBoothRenderValue(
-	itemId: string,
-	key: 'renderX' | 'renderY'
-): number {
-	const value = COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId][key];
+function getRequiredBoothRenderLayout(itemId: string): BoothLayoutWithRequiredRenderPosition {
+	const layout = COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS[itemId];
 
-	if (value === undefined) {
-		throw new Error(`Missing ${key} for ${itemId}`);
+	if (!layout) {
+		throw new Error(`Missing booth layout for ${itemId}`);
 	}
 
-	return value;
+	if (layout.renderX === undefined || layout.renderY === undefined) {
+		throw new Error(`Missing required render position for ${itemId}`);
+	}
+
+	return layout as BoothLayoutWithRequiredRenderPosition;
+}
+
+function getHall2fRightLanePosition(descriptor: Hall2fRightLaneDescriptor) {
+	if (descriptor.kind === 'booth') {
+		const layout = getRequiredBoothRenderLayout(descriptor.itemId);
+		return { x: layout.renderX, y: layout.renderY };
+	}
+
+	const overlay = getCoupangMegaBeautyEventZone('hall-2f', descriptor.label);
+	return { x: overlay.x, y: overlay.y };
 }
 
 function assertSingleAxis(values: readonly number[], message: string) {
@@ -800,28 +828,28 @@ function assertStrictlyIncreasing(values: readonly number[], message: string) {
 
 function assertCoupangMegaBeautyLayoutContract() {
 	const hall1fLeftColumnX = HALL_1F_LEFT_COLUMN_BOOTH_IDS.map(
-		(itemId) => getRequiredBoothRenderValue(itemId, 'renderX')
+		(itemId) => getRequiredBoothRenderLayout(itemId).renderX
 	);
 	const hall1fLeftColumnY = HALL_1F_LEFT_COLUMN_BOOTH_IDS.map(
-		(itemId) => getRequiredBoothRenderValue(itemId, 'renderY')
+		(itemId) => getRequiredBoothRenderLayout(itemId).renderY
 	);
 	const hall1fCenterRowY = HALL_1F_CENTER_ROW_BOOTH_IDS.map(
-		(itemId) => getRequiredBoothRenderValue(itemId, 'renderY')
+		(itemId) => getRequiredBoothRenderLayout(itemId).renderY
 	);
 	const hall1fCenterRowX = HALL_1F_CENTER_ROW_BOOTH_IDS.map(
-		(itemId) => getRequiredBoothRenderValue(itemId, 'renderX')
+		(itemId) => getRequiredBoothRenderLayout(itemId).renderX
 	);
 	const hall1fRightColumnX = HALL_1F_RIGHT_COLUMN_BOOTH_IDS.map(
-		(itemId) => getRequiredBoothRenderValue(itemId, 'renderX')
+		(itemId) => getRequiredBoothRenderLayout(itemId).renderX
 	);
 	const hall1fRightColumnY = HALL_1F_RIGHT_COLUMN_BOOTH_IDS.map(
-		(itemId) => getRequiredBoothRenderValue(itemId, 'renderY')
+		(itemId) => getRequiredBoothRenderLayout(itemId).renderY
 	);
 	const hall2fTopRowY = HALL_2F_TOP_ROW_BOOTH_IDS.map(
-		(itemId) => getRequiredBoothRenderValue(itemId, 'renderY')
+		(itemId) => getRequiredBoothRenderLayout(itemId).renderY
 	);
 	const hall2fTopRowX = HALL_2F_TOP_ROW_BOOTH_IDS.map(
-		(itemId) => getRequiredBoothRenderValue(itemId, 'renderX')
+		(itemId) => getRequiredBoothRenderLayout(itemId).renderX
 	);
 	const hall2fLeftLaneX = HALL_2F_LEFT_LANE_EVENT_ZONE_LABELS.map(
 		(label) => getCoupangMegaBeautyEventZone('hall-2f', label).x
@@ -829,18 +857,11 @@ function assertCoupangMegaBeautyLayoutContract() {
 	const hall2fLeftLaneY = HALL_2F_LEFT_LANE_EVENT_ZONE_LABELS.map(
 		(label) => getCoupangMegaBeautyEventZone('hall-2f', label).y
 	);
-	const hall2fRightLaneX = HALL_2F_RIGHT_LANE_LABELS.map((label) =>
-		label === '포렌코즈'
-			? getRequiredBoothRenderValue('cmbs-2026-forencos', 'renderX')
-			: getCoupangMegaBeautyEventZone('hall-2f', label).x
-	);
-	const hall2fRightLaneY = HALL_2F_RIGHT_LANE_LABELS.map((label) =>
-		label === '포렌코즈'
-			? getRequiredBoothRenderValue('cmbs-2026-forencos', 'renderY')
-			: getCoupangMegaBeautyEventZone('hall-2f', label).y
-	);
+	const hall2fRightLanePositions = HALL_2F_RIGHT_LANE_DESCRIPTORS.map(getHall2fRightLanePosition);
+	const hall2fRightLaneX = hall2fRightLanePositions.map((position) => position.x);
+	const hall2fRightLaneY = hall2fRightLanePositions.map((position) => position.y);
 	const ariulBottomY =
-		getRequiredBoothRenderValue('cmbs-2026-ariul', 'renderY') + NORMALIZED_BOOTH_RENDER_HEIGHT;
+		getRequiredBoothRenderLayout('cmbs-2026-ariul').renderY + NORMALIZED_BOOTH_RENDER_HEIGHT;
 
 	assertSingleAxis(hall1fLeftColumnX, 'Hall 1F left booths must stay on a single x column.');
 	assertPackedAxis(

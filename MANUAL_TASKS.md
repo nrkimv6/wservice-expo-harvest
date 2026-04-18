@@ -47,5 +47,7 @@
 - [ ] `2F` 첫 진입에서 `인생네컷 포토존 / 포렌코즈 / 파페치·TW 홍보 부스`가 `아리얼` 아래에서 시작하면서 top/right blank가 이전보다 줄어든 상태로 보이는지 확인 — from: 2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md#9 (2026-04-18)
 - [ ] `쿠팡 어워즈 체험존 / 피부측정 이벤트 / 뷰티 디바이스 체험존 / 쿠팡 메가뷰티쇼 스토리 / 뷰티박스 수령존`이 모두 2줄 라벨로 읽히는지 확인 — from: 2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md#9 (2026-04-18)
 - [ ] booth 글자와 booth-sized event zone 글자가 이전보다 더 크게, 더 촘촘하게 느껴지는지 확인 — from: 2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md#9 (2026-04-18)
+- [ ] `전체` overview와 단일 section에서 선택 부스 halo, 완료/즐겨찾기/선착순 badge, 2줄 booth 라벨이 같은 시각 규칙으로 보이는지 확인 — from: 2026-04-18_refactor-dedup-exhibition-map-render-contract.md#8 (2026-04-18)
+- [ ] `전체` overview와 단일 section에서 `쿠팡 뉴존 체험존 / 뉴존 선물 수령존 / 파페치·TW 홍보 부스 / 인생네컷 포토존` event zone 라벨 줄바꿈이 동일하게 보이는지 확인 — from: 2026-04-18_refactor-dedup-exhibition-map-render-contract.md#8 (2026-04-18)
 
 ## 완료
