@@ -1391,7 +1391,7 @@ Mission 2
 		englishTitle: 'NATURE REPUBLIC',
 		firstComeEvent: '',
 		prize:
-			'5초 선스틱 체험 시 제주 탄산 클렌징 티슈 15매, 게시물 업로드 후 뽑기로 본품, 제품 구매 인증 시 신제품 토너 20ml',
+			'5초 선스틱 체험 시 제주 탄산 클렌징 티슈 15매, 게시물 업로드 후 뽑기로 본품, 구매인증 이벤트로 제품 구매 인증 시 신제품 토너 20ml',
 		time: 'Always',
 		category: 'SNS 업로드',
 		mission: `Mission 1
@@ -1401,7 +1401,7 @@ Mission 2
 - 해시태그 인스타그램 게시물 업로드 후 모공 고민 별 뽑기
 
 Mission 3
-- 쿠팡에서 제품 구매 후 직원에게 인증`,
+- 구매인증 이벤트: 쿠팡에서 제품 구매 후 직원에게 인증`,
 		instagramUploadType: 'feed',
 		isBookmarked: false,
 		isCompleted: false,
