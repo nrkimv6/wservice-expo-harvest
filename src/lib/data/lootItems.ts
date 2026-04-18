@@ -228,8 +228,8 @@ const BOOTH_SIZED_EVENT_ZONE_WIDTH = NORMALIZED_BOOTH_RENDER_WIDTH;
 const BOOTH_SIZED_EVENT_ZONE_HEIGHT = NORMALIZED_BOOTH_RENDER_HEIGHT;
 // Keep the 1F right column close to the center row: AHC right edge 420 + target gap 36 = x 456.
 const HALL_1F_RIGHT_COLUMN_X = 456;
-// Trim the blank right/bottom span while leaving a small breathing room around the occupied 1F bounds.
-const HALL_1F_DISPLAY_VIEW_BOX = createDisplayViewBoxFromBounds(12, 12, 588, 294);
+// Trim the blank right/bottom span while keeping a narrow 24px right margin beyond the moved 1F booth edge (528).
+const HALL_1F_DISPLAY_VIEW_BOX = createDisplayViewBoxFromBounds(12, 12, 552, 294);
 // Start the 2F right lane below Ariul with a visible but tighter gap, and stop short of the old far-right edge.
 const HALL_2F_RIGHT_LANE_X = 564;
 const HALL_2F_RIGHT_LANE_CENTER_X = HALL_2F_RIGHT_LANE_X + BOOTH_SIZED_EVENT_ZONE_WIDTH / 2;
