@@ -1068,7 +1068,7 @@ Mission 3
 			createSocialLink(
 				'innisfree-coupang',
 				'쿠팡 브랜드샵',
-				'https://link.coupang.com/re/SHOPPAGESHAREVID?pageKey=A00078956&lptag=A00078956&sourceType2=brandstore_share&title=(%EC%A3%BC)%EC%9D%B4%EB%8B%88%EC%8A%A4%ED%94%84%EB%A6%AC&destUrl=https%3A%2F%2Fshop.coupang.com%2Fvid%2FA00078956%3Fsource%3Dbrandstore_share',
+				'https://shop.coupang.com/innisfree/4016?locale=ko_KR&platform=m',
 				'website'
 			)
 		]
@@ -1498,6 +1498,12 @@ Mission 2
 				'https://www.instagram.com/avene/',
 				'instagram',
 				'avene'
+			),
+			createSocialLink(
+				'avene-coupang',
+				'쿠팡 브랜드샵',
+				'https://www.coupang.com/np/products/brand-shop?brandName=%EC%95%84%EB%B2%A4%EB%8A%90',
+				'website'
 			),
 			createSocialLink('avene-kakao', '카카오톡 채널', 'https://pf.kakao.com/_VGFXxl', 'kakao')
 		]
