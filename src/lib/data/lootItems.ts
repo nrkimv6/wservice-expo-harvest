@@ -1598,6 +1598,12 @@ Mission 2
 				'instagram',
 				'forencos_official'
 			),
+			createSocialLink(
+				'forencos-coupang',
+				'쿠팡 브랜드샵',
+				'https://www.coupang.com/np/products/brand-shop?brandName=%ED%8F%AC%EB%A0%8C%EC%BD%94%EC%A6%88',
+				'website'
+			),
 			createSocialLink('forencos-kakao', '카카오톡 채널', 'https://pf.kakao.com/_CyVZV', 'kakao')
 		]
 	}
