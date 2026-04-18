@@ -1510,14 +1510,8 @@ Mission 2
 				'avene'
 			),
 			createSocialLink(
-				'avene-coupang',
-				'쿠팡 브랜드샵',
-				'https://www.coupang.com/np/products/brand-shop?brandName=%EC%95%84%EB%B2%A4%EB%8A%90',
-				'website'
-			),
-			createSocialLink(
 				'avene-coupang-pierre-fabre',
-				'브랜드샵 (피에르 파브르 더모코스메틱 코리아)',
+				'쿠팡 브랜드샵',
 				'https://shop.coupang.com/A00383625/164991?locale=ko_KR&platform=m',
 				'website'
 			),
