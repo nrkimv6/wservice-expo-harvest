@@ -473,20 +473,24 @@
 			return normalized.split(/\s+/).slice(0, 2);
 		}
 
+		if (/[가-힣]/.test(normalized) && normalized.length >= 6) {
+			return [normalized.slice(0, 3), normalized.slice(3)].filter(Boolean);
+		}
+
 		return [normalized];
 	}
 
 	function getLabelFontSize(item: LootItem) {
-		return item.mapLabelFontSize ?? item.fontSize ?? 13;
+		return (item.mapLabelFontSize ?? item.fontSize ?? 13) + 1;
 	}
 
 	function getBoothTextOffset(item: LootItem, lineCount: number) {
 		if (lineCount <= 1) return 0;
-		return getLabelFontSize(item) * 0.24;
+		return (getBoothLineGap(item) * (lineCount - 1)) / 2;
 	}
 
 	function getBoothLineGap(item: LootItem) {
-		return getLabelFontSize(item) * 0.78;
+		return getLabelFontSize(item) * 0.92;
 	}
 
 	function getOverlayLabelLines(label: string) {
@@ -539,20 +543,17 @@
 	}
 
 	function getEventZoneFontSize(overlay: EventZoneOverlay) {
-		if (overlay.fontSize) {
-			return overlay.fontSize;
-		}
-
-		return isBoothSizedEventZone(overlay) ? 9.6 : 10;
+		const baseFontSize = overlay.fontSize ?? (isBoothSizedEventZone(overlay) ? 9.6 : 10);
+		return baseFontSize + 1.1;
 	}
 
 	function getEventZoneTextOffset(overlay: EventZoneOverlay, lineCount: number) {
 		if (lineCount <= 1) return 0;
-		return getEventZoneFontSize(overlay) * 0.24;
+		return (getEventZoneLineGap(overlay) * (lineCount - 1)) / 2;
 	}
 
 	function getEventZoneLineGap(overlay: EventZoneOverlay) {
-		return getEventZoneFontSize(overlay) * 0.76;
+		return getEventZoneFontSize(overlay) * 0.88;
 	}
 
 	function getBoothVisual(item: LootItem): BoothVisual {
@@ -957,7 +958,7 @@
 </script>
 
 <!-- Shared booth/overlay renderers stay inside their wrappers so overview transforms and viewport handlers remain local to each caller. -->
-{#snippet renderSharedOverlay(overlay)}
+{#snippet renderSharedOverlay(overlay: EventZoneOverlay | StairsOverlay)}
 	{#if overlay.kind === 'eventZone'}
 		{@const overlayTextModel = getEventZoneTextModel(overlay)}
 		<g pointer-events="none" opacity="0.78">
@@ -1012,7 +1013,7 @@
 	{/if}
 {/snippet}
 
-{#snippet renderBooth(item, boothModel)}
+{#snippet renderBooth(item: LootItem, boothModel: BoothRenderModel)}
 	<g
 		role="button"
 		tabindex="0"

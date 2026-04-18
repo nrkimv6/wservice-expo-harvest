@@ -453,8 +453,8 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		renderY: 132,
 		renderWidth: 72,
 		renderHeight: 54,
-		mapLabelLines: ['NATURE', 'REPUBLIC'],
-		mapLabelFontSize: 10.8
+		mapLabel: '네이처 리퍼블릭',
+		mapLabelFontSize: 12.1
 	},
 	'cmbs-2026-aestura': {
 		floorId: '1F',
