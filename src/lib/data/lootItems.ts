@@ -219,7 +219,6 @@ const NORMALIZED_BOOTH_RENDER_WIDTH = 72;
 const NORMALIZED_BOOTH_RENDER_HEIGHT = 54;
 const HALL_1F_REFERENCE_DISPLAY_WIDTH = 666;
 const HALL_1F_REFERENCE_DISPLAY_HEIGHT = 364;
-const HALL_2F_REFERENCE_DEFAULT_SCALE = 726 / HALL_1F_REFERENCE_DISPLAY_WIDTH;
 const HALL_1F_VIEW_BOX = '12 16 666 364';
 const HALL_2F_VIEW_BOX = '12 16 726 308';
 const BEAUTY_BOX_PICKUP_SOURCE_VIEW_BOX = '418 296 144 96';
@@ -227,6 +226,20 @@ const NORMALIZED_BOOTH_IDS = new Set<string>(['cmbs-2026-forencos']);
 const COUPANG_MEGA_BEAUTY_SOURCE_LAYOUT_COMMIT = '13f12bd';
 const BOOTH_SIZED_EVENT_ZONE_WIDTH = NORMALIZED_BOOTH_RENDER_WIDTH;
 const BOOTH_SIZED_EVENT_ZONE_HEIGHT = NORMALIZED_BOOTH_RENDER_HEIGHT;
+// Keep the 1F right column close to the center row: AHC right edge 420 + target gap 36 = x 456.
+const HALL_1F_RIGHT_COLUMN_X = 456;
+// Trim the blank right/bottom span while leaving a small breathing room around the occupied 1F bounds.
+const HALL_1F_DISPLAY_VIEW_BOX = createDisplayViewBoxFromBounds(12, 12, 588, 294);
+// Start the 2F right lane below Ariul with a visible but tighter gap, and stop short of the old far-right edge.
+const HALL_2F_RIGHT_LANE_X = 564;
+const HALL_2F_RIGHT_LANE_CENTER_X = HALL_2F_RIGHT_LANE_X + BOOTH_SIZED_EVENT_ZONE_WIDTH / 2;
+const HALL_2F_RIGHT_LANE_TOP_Y = 132;
+const HALL_2F_RIGHT_LANE_MIDDLE_Y = HALL_2F_RIGHT_LANE_TOP_Y + BOOTH_SIZED_EVENT_ZONE_HEIGHT;
+const HALL_2F_RIGHT_LANE_BOTTOM_Y = HALL_2F_RIGHT_LANE_MIDDLE_Y + BOOTH_SIZED_EVENT_ZONE_HEIGHT;
+const HALL_2F_RIGHT_LANE_TOP_CENTER_Y = HALL_2F_RIGHT_LANE_TOP_Y + BOOTH_SIZED_EVENT_ZONE_HEIGHT / 2;
+const HALL_2F_RIGHT_LANE_BOTTOM_CENTER_Y =
+	HALL_2F_RIGHT_LANE_BOTTOM_Y + BOOTH_SIZED_EVENT_ZONE_HEIGHT / 2;
+const HALL_2F_DISPLAY_VIEW_BOX = createDisplayViewBoxFromBounds(12, 12, 648, 306);
 const HALL_1F_LEFT_COLUMN_BOOTH_IDS = [
 	'cmbs-2026-romand',
 	'cmbs-2026-dewytree',
@@ -304,6 +317,10 @@ function createCenteredDisplayViewBox(
 	height = HALL_1F_REFERENCE_DISPLAY_HEIGHT
 ) {
 	return `${centerX - width / 2} ${centerY - height / 2} ${width} ${height}`;
+}
+
+function createDisplayViewBoxFromBounds(minX: number, minY: number, maxX: number, maxY: number) {
+	return `${minX} ${minY} ${maxX - minX} ${maxY - minY}`;
 }
 
 const COUPANG_MEGA_BEAUTY_HASHTAG_BLOCKS: Record<string, HashtagBlockPreset> = {
@@ -420,7 +437,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabelLines: ['NATURE', 'REPUBLIC'],
-		mapLabelFontSize: 10.2
+		mapLabelFontSize: 10.8
 	},
 	'cmbs-2026-aestura': {
 		floorId: '1F',
@@ -490,12 +507,12 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 90,
 		boxHeight: 45,
 		fontSize: 9,
-		renderX: 522,
+		renderX: HALL_1F_RIGHT_COLUMN_X,
 		renderY: 24,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabelLines: ['THE FACE', 'SHOP'],
-		mapLabelFontSize: 10.2
+		mapLabelFontSize: 10.8
 	},
 	'cmbs-2026-espoir': {
 		floorId: '1F',
@@ -505,7 +522,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 90,
 		boxHeight: 45,
 		fontSize: 10,
-		renderX: 522,
+		renderX: HALL_1F_RIGHT_COLUMN_X,
 		renderY: 78,
 		renderWidth: 72,
 		renderHeight: 54,
@@ -520,7 +537,7 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 90,
 		boxHeight: 45,
 		fontSize: 10,
-		renderX: 522,
+		renderX: HALL_1F_RIGHT_COLUMN_X,
 		renderY: 132,
 		renderWidth: 72,
 		renderHeight: 54,
@@ -655,24 +672,24 @@ const COUPANG_MEGA_BEAUTY_BOOTH_LAYOUTS: Record<string, BoothLayout> = {
 		boxWidth: 130,
 		boxHeight: 80,
 		fontSize: 10,
-		renderX: 654,
-		renderY: 216,
+		renderX: HALL_2F_RIGHT_LANE_X,
+		renderY: HALL_2F_RIGHT_LANE_MIDDLE_Y,
 		renderWidth: 72,
 		renderHeight: 54,
 		mapLabel: '포렌코즈',
-		mapLabelFontSize: 12.1
+		mapLabelFontSize: 12.5
 	}
 };
 
 // Keep event-zone and arrow ownership explicit so section split cannot drop them again.
 const COUPANG_MEGA_BEAUTY_OVERLAYS: MapOverlay[] = [
-	createBoothSizedEventZoneAtCenter('hall-1f', '쿠팡 어워즈 체험존', 276, 198, 8.8),
-	createBoothSizedEventZoneAtCenter('hall-1f', '피부측정 이벤트', 168, 252, 8.8),
-	createBoothSizedEventZoneAtCenter('hall-1f', '뷰티 디바이스 체험존', 240, 252, 8.2),
-	createBoothSizedEventZoneAtCenter('hall-1f', '쿠팡 뉴존 체험존', 312, 252, 8.4),
-	createBoothSizedEventZoneAtCenter('hall-1f', '뉴존 선물 수령존', 384, 252, 8.1),
+	createBoothSizedEventZoneAtCenter('hall-1f', '쿠팡 어워즈 체험존', 276, 198, 9.2),
+	createBoothSizedEventZoneAtCenter('hall-1f', '피부측정 이벤트', 168, 252, 9.1),
+	createBoothSizedEventZoneAtCenter('hall-1f', '뷰티 디바이스 체험존', 240, 252, 8.7),
+	createBoothSizedEventZoneAtCenter('hall-1f', '쿠팡 뉴존 체험존', 312, 252, 8.8),
+	createBoothSizedEventZoneAtCenter('hall-1f', '뉴존 선물 수령존', 384, 252, 8.6),
 	// Keep the pickup box centered inside the padded dedicated section so it does not over-zoom.
-	createBoothSizedEventZoneAtCenter('beauty-box-pickup', '뷰티박스 수령존', 497, 341, 9.2),
+	createBoothSizedEventZoneAtCenter('beauty-box-pickup', '뷰티박스 수령존', 497, 341, 9.4),
 	{
 		kind: 'arrow',
 		mapSectionId: 'hall-1f',
@@ -709,11 +726,23 @@ const COUPANG_MEGA_BEAUTY_OVERLAYS: MapOverlay[] = [
 		label: 'IN',
 		color: '#c62828'
 	},
-	createBoothSizedEventZoneAtCenter('hall-2f', '인생네컷 포토존', 690, 189, 8.8),
-	createBoothSizedEventZoneAtCenter('hall-2f', '쿠팡 메가뷰티쇼 스토리', 60, 237, 7.8),
-	createBoothSizedEventZoneAtCenter('hall-2f', '쿠팡 와우회원 인증존', 132, 237, 7.8),
-	createBoothSizedEventZoneAtCenter('hall-2f', '헤어쇼 이벤트(4/18)', 204, 237, 8.1),
-	createBoothSizedEventZoneAtCenter('hall-2f', '파페치 / TW 홍보 부스', 690, 297, 7.5)
+	createBoothSizedEventZoneAtCenter(
+		'hall-2f',
+		'인생네컷 포토존',
+		HALL_2F_RIGHT_LANE_CENTER_X,
+		HALL_2F_RIGHT_LANE_TOP_CENTER_Y,
+		9.2
+	),
+	createBoothSizedEventZoneAtCenter('hall-2f', '쿠팡 메가뷰티쇼 스토리', 60, 237, 8.4),
+	createBoothSizedEventZoneAtCenter('hall-2f', '쿠팡 와우회원 인증존', 132, 237, 8.4),
+	createBoothSizedEventZoneAtCenter('hall-2f', '헤어쇼 이벤트(4/18)', 204, 237, 8.6),
+	createBoothSizedEventZoneAtCenter(
+		'hall-2f',
+		'파페치 / TW 홍보 부스',
+		HALL_2F_RIGHT_LANE_CENTER_X,
+		HALL_2F_RIGHT_LANE_BOTTOM_CENTER_Y,
+		8.1
+	)
 ];
 
 function getCoupangMegaBeautyEventZone(
@@ -825,7 +854,10 @@ function assertCoupangMegaBeautyLayoutContract() {
 		NORMALIZED_BOOTH_RENDER_WIDTH,
 		'Hall 1F center booths must stay horizontally packed with no gap.'
 	);
-	assertSingleAxis(hall1fRightColumnX, 'Hall 1F right booths must stay on a single x column.');
+	assertSingleAxis(
+		hall1fRightColumnX,
+		`Hall 1F right booths must stay on a single x column at ${HALL_1F_RIGHT_COLUMN_X}.`
+	);
 	assertPackedAxis(
 		hall1fRightColumnY,
 		NORMALIZED_BOOTH_RENDER_HEIGHT,
@@ -843,7 +875,10 @@ function assertCoupangMegaBeautyLayoutContract() {
 		BOOTH_SIZED_EVENT_ZONE_WIDTH,
 		'Hall 2F left event zones must stay horizontally packed with no gap.'
 	);
-	assertSingleAxis(hall2fRightLaneX, 'Hall 2F right lane items must stay on a single x column.');
+	assertSingleAxis(
+		hall2fRightLaneX,
+		`Hall 2F right lane items must stay on a single x column at ${HALL_2F_RIGHT_LANE_X}.`
+	);
 	if (hall2fRightLaneY[0] <= ariulBottomY) {
 		throw new Error('Hall 2F right lane items must start below Ariul with a visible gap.');
 	}
@@ -905,7 +940,7 @@ const coupangMegaBeautyShow2026MapSections: MapSection[] = [
 		id: 'hall-1f',
 		label: '1F',
 		viewBox: HALL_1F_VIEW_BOX,
-		displayViewBox: HALL_1F_VIEW_BOX,
+		displayViewBox: HALL_1F_DISPLAY_VIEW_BOX,
 		defaultScale: 1,
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter((overlay) => overlay.mapSectionId === 'hall-1f')
 	},
@@ -913,8 +948,8 @@ const coupangMegaBeautyShow2026MapSections: MapSection[] = [
 		id: 'hall-2f',
 		label: '2F',
 		viewBox: HALL_2F_VIEW_BOX,
-		displayViewBox: HALL_2F_VIEW_BOX,
-		defaultScale: HALL_2F_REFERENCE_DEFAULT_SCALE,
+		displayViewBox: HALL_2F_DISPLAY_VIEW_BOX,
+		defaultScale: 1,
 		overlays: COUPANG_MEGA_BEAUTY_OVERLAYS.filter((overlay) => overlay.mapSectionId === 'hall-2f')
 	},
 	{

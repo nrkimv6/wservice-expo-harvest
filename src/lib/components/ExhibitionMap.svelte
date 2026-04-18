@@ -440,20 +440,35 @@
 	}
 
 	function getLabelFontSize(item: LootItem) {
-		return item.mapLabelFontSize ?? item.fontSize ?? 12.4;
+		return item.mapLabelFontSize ?? item.fontSize ?? 13;
 	}
 
 	function getBoothTextOffset(item: LootItem, lineCount: number) {
 		if (lineCount <= 1) return 0;
-		return getLabelFontSize(item) * 0.3;
+		return getLabelFontSize(item) * 0.24;
 	}
 
 	function getBoothLineGap(item: LootItem) {
-		return getLabelFontSize(item) * 0.84;
+		return getLabelFontSize(item) * 0.78;
 	}
 
 	function getOverlayLabelLines(label: string) {
 		const normalized = label.trim();
+		if (normalized === '쿠팡 어워즈 체험존') {
+			return ['쿠팡 어워즈', '체험존'];
+		}
+		if (normalized === '피부측정 이벤트') {
+			return ['피부측정', '이벤트'];
+		}
+		if (normalized === '뷰티 디바이스 체험존') {
+			return ['뷰티 디바이스', '체험존'];
+		}
+		if (normalized === '쿠팡 메가뷰티쇼 스토리') {
+			return ['메가뷰티쇼', '스토리'];
+		}
+		if (normalized === '뷰티박스 수령존') {
+			return ['뷰티박스', '수령존'];
+		}
 		if (normalized === '인생네컷 포토존') {
 			return ['인생네컷', '포토존'];
 		}
@@ -491,16 +506,16 @@
 			return overlay.fontSize;
 		}
 
-		return isBoothSizedEventZone(overlay) ? 9 : 9.6;
+		return isBoothSizedEventZone(overlay) ? 9.6 : 10;
 	}
 
 	function getEventZoneTextOffset(overlay: EventZoneOverlay, lineCount: number) {
 		if (lineCount <= 1) return 0;
-		return getEventZoneFontSize(overlay) * 0.3;
+		return getEventZoneFontSize(overlay) * 0.24;
 	}
 
 	function getEventZoneLineGap(overlay: EventZoneOverlay) {
-		return getEventZoneFontSize(overlay) * 0.82;
+		return getEventZoneFontSize(overlay) * 0.76;
 	}
 
 	function getBoothVisual(item: LootItem) {

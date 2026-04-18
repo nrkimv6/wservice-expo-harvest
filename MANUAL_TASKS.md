@@ -43,5 +43,9 @@
 - [ ] `1F → 2F → 뷰티박스 수령존` 순서로 탭을 바꿔도 기본 진입 시 부스 체감 크기가 1F 기준과 크게 다르지 않은지 확인 — from: 2026-04-18_fix-map-booth-viewport-normalization.md#7 (2026-04-18)
 - [ ] `2F` 첫 진입에서 좌측 lane과 우측 column이 모두 보이는 상태로 시작하면서도 상단 8부스가 1F보다 과하게 작아 보이지 않는지 확인 — from: 2026-04-18_fix-map-booth-viewport-normalization.md#7 (2026-04-18)
 - [ ] `뷰티박스 수령존`에서 `리셋` 후에도 같은 시야로 돌아오고, 단독 section 과대 확대처럼 보이지 않는지 확인 — from: 2026-04-18_fix-map-booth-viewport-normalization.md#7 (2026-04-18)
+- [ ] `1F` 첫 진입에서 `THE FACE SHOP` 우측/하단 blank가 이전보다 줄고, `AHC`와 우측 column 사이 간격이 좌측 `롬앤 ~ 에스트라` gap과 비슷하게 보이는지 확인 — from: 2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md#9 (2026-04-18)
+- [ ] `2F` 첫 진입에서 `인생네컷 포토존 / 포렌코즈 / 파페치·TW 홍보 부스`가 `아리얼` 아래에서 시작하면서 top/right blank가 이전보다 줄어든 상태로 보이는지 확인 — from: 2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md#9 (2026-04-18)
+- [ ] `쿠팡 어워즈 체험존 / 피부측정 이벤트 / 뷰티 디바이스 체험존 / 쿠팡 메가뷰티쇼 스토리 / 뷰티박스 수령존`이 모두 2줄 라벨로 읽히는지 확인 — from: 2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md#9 (2026-04-18)
+- [ ] booth 글자와 booth-sized event zone 글자가 이전보다 더 크게, 더 촘촘하게 느껴지는지 확인 — from: 2026-04-18_refine-booth-view-viewport-compaction-and-label-density.md#9 (2026-04-18)
 
 ## 완료
