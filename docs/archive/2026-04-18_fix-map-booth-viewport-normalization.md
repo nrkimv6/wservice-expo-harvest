@@ -1,13 +1,12 @@
 # fix: map booth viewport normalization
 
-> 작성일시: 2026-04-18 00:41
-> 기준커밋: cb1daf7
-> branch: main
-> worktree: .
-> 대상 프로젝트: expo-harvest
-> 상태: main 반영 완료
+> 완료일: 2026-04-18
+> 아카이브됨
 > 진행률: 8/8 (100%)
 > 요약: 현재 부스보기의 체감 크기 차이는 section별 zoom 값보다 raw `viewBox` 크기 차이에서 온다. `1F`를 기준 부스 체감 크기로 삼고 `2F`와 `뷰티박스 수령존`이 같은 기준 viewport를 쓰도록 section viewport 계약을 분리한다.
+> 작성일시: 2026-04-18 00:41
+> 기준커밋: cb1daf7
+> 대상 프로젝트: expo-harvest
 
 ---
 
