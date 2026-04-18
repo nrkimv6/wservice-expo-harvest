@@ -1423,7 +1423,7 @@ Mission 3
 		id: 'cmbs-2026-espoir',
 		title: '에스쁘아',
 		englishTitle: 'espoir',
-		firstComeEvent: '',
+		firstComeEvent: '선착순 틴트 증정',
 		prize: '같은 쿠션 그림 5개 찾기 성공 시 쿠션, 기본 보상은 미니 핸드크림',
 		time: 'Always',
 		category: 'SNS 업로드',
