@@ -83,7 +83,7 @@ git diff ${BEFORE_HASH} --name-only
 ```
 
 **plan 문서 필터링:**
-- 결과에서 resolved plan root 기준 `docs/plan/*.md` 패턴 매칭 (`.worktrees/plans`가 있으면 plans 브랜치 기준 diff 우선)
+- 결과에서 `docs/plan/*.md` 패턴 매칭
 - 변경된 plan 문서 없으면 → 해당 프로젝트 스킵
 - 있으면 → 변경된 plan 문서 목록 수집 (3단계로)
 
@@ -104,8 +104,8 @@ git diff ${BEFORE_HASH} --name-only
 
 **아카이빙:**
 1. plan 파일 이동:
-   - 프로젝트별 plan: resolved plan root의 `docs/plan/*.md` → 같은 cwd의 `docs/archive/*.md`
-   - plan: AGENTS.md 문서 위치 규칙의 plan 경로 → 같은 branch/cwd의 archive 경로
+   - 프로젝트별 plan: `{project}/docs/plan/*.md` → `{project}/docs/archive/*.md`
+   - plan: AGENTS.md 문서 위치 규칙의 plan 경로 → archive 경로
 
 2. plan 헤더 수정:
    ```markdown
@@ -139,7 +139,7 @@ git diff ${BEFORE_HASH} --name-only
 
 **동기화 로직 (기존 `/check-repos` 6단계와 동일):**
 
-1. root/main과 plans 브랜치 중 어느 cwd에서 문서를 읽고 쓰는지 먼저 확정한 뒤 wtools/TODO.md 열기
+1. wtools/TODO.md 열기
 2. 각 프로젝트 섹션 찾기
 3. 변경된 프로젝트의 항목/진행률 갱신
 4. 모든 TODO 완료된 프로젝트 → "완료 ✅" 섹션으로 이동

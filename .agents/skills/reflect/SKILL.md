@@ -160,7 +160,6 @@ grep -rn "TODO\|FIXME\|HACK\|WORKAROUND\|TEMP\|XXX" {수정된 파일들}
 **생성 절차:**
 1. 프로젝트 문서 위치 규칙(AGENTS.md/CLAUDE.md)의 plan 경로를 확인한다.
    (예: wtools는 `common/docs/plan`, 일반 프로젝트는 `docs/plan`)
-   plans worktree 도입 프로젝트면 위 경로는 repo root가 아니라 `Get-PlanRoot()`가 가리키는 cwd 기준으로 해석한다.
    **계획서 생성 위치 분기** — 발견 항목의 수정 대상에 따라 올바른 프로젝트에 생성:
    - 수정 대상이 `.claude/skills/`, `.claude/agents/`, 공통 스크립트 → **wtools** `common/docs/plan/`에 생성
    - 수정 대상이 특정 프로젝트의 `app/`, `frontend/`, `scripts/` 등 → **해당 프로젝트**의 `docs/plan/`에 생성
@@ -190,7 +189,7 @@ grep -rn "TODO\|FIXME\|HACK\|WORKAROUND\|TEMP\|XXX" {수정된 파일들}
 
 - 신규 계획서가 1개 이상 생성되면 **반드시 커밋한다**.
 - 기본 모드: 3단계에서 수행되는 `/review-plan`의 커밋으로 충족한다.
-- 예외(Fallback): `/review-plan` 단계가 실패/스킵되면, `reflect`가 직접 `Resolve-DocsCommitRoot`/`Resolve-DocsCommitCandidates` 기준 화이트리스트 커밋(필요 시 `TODO.md` 포함)을 수행하고 종료한다.
+- 예외(Fallback): `/review-plan` 단계가 실패/스킵되면, `reflect`가 직접 화이트리스트 커밋(`{plan경로}/*.md`, 필요 시 `TODO.md`)을 수행하고 종료한다.
 - 조사만/조사 모드: 3단계를 스킵하므로 `reflect`가 직접 화이트리스트 커밋을 수행한다.
 - 커밋 메시지 예: `docs: reflect — add follow-up plans`
 - 생성 계획서가 0건이면 커밋하지 않는다.

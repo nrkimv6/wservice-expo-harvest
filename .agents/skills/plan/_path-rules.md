@@ -16,33 +16,19 @@
 | 변경 이력 | `docs/history/` |
 | TODO | `TODO.md` |
 
-plans 워크트리(`.worktrees/plans/`)가 존재하면 **plan/archive/TODO/DONE 조회와 문서 커밋은 그 cwd를 우선 사용**한다. plans 워크트리가 없거나 bootstrap 전이면 동일 규칙을 원본 repo root에 적용한다.
-
 ## wtools 예외
 
 wtools(`common/tools/` 존재)에서는 CLAUDE.md에 `common/docs/plan/`, `common/docs/archive/` 등이 명시되어 있으므로 자연스럽게 해당 경로를 사용하게 된다. 별도 분기 로직 불필요.
 
 ### plans 워크트리 커밋 헬퍼
 
-`Get-PlanRoot()`는 별도 공통 함수가 있으면 그것을 재사용하고, 없으면 아래 계약을 인라인으로 구현한다.
-- 반환값은 `docs/plan`, `docs/archive`, `TODO.md`, `docs/DONE.md`를 읽고 쓸 **문서 작업 cwd**다.
-- `.worktrees/plans/docs/plan`이 존재하면 `"$RepoRoot\\.worktrees\\plans"`를 반환한다.
-- 그렇지 않으면 `$RepoRoot`를 반환한다.
-
 ```powershell
-function Get-PlanRoot {
-    param($RepoRoot)
-
-    if (Test-Path "$RepoRoot\.worktrees\plans\docs\plan") {
-        return "$RepoRoot\.worktrees\plans"
-    }
-    return $RepoRoot
-}
-
 function Resolve-DocsCommitRoot {
     param($RepoRoot)
 
-    return (Get-PlanRoot $RepoRoot)
+    $planRoot = Get-PlanRoot $RepoRoot
+    if ($planRoot -like "*\.worktrees\plans\*") { return "$RepoRoot\.worktrees\plans" }
+    return $RepoRoot
 }
 
 function Resolve-DocsCommitCandidates {
@@ -83,7 +69,6 @@ function Test-PlansDirty {
 }
 ```
 
-- `Resolve-DocsCommitRoot`는 문서 커밋이 실제로 일어날 cwd를 반환한다. plans worktree bootstrap이 끝나기 전에는 repo root가 반환된다.
-- `Resolve-DocsCommitCandidates`는 `docs/plan/`, `docs/archive/`, `TODO.md`, `docs/DONE.md` 네 경로만 add 대상으로 남긴다.
-- `Test-PlansDirty`가 `false`라고 해서 항상 clean이라는 뜻은 아니다. `.worktrees/plans`가 아직 없을 수도 있으므로 bootstrap 완료 여부를 함께 확인한다.
+- `Resolve-DocsCommitRoot` 반환 경로에서만 커밋한다.
+- `Resolve-DocsCommitCandidates` 반환 파일만 `git add`한다.
 - `git add -A` / `git add .` / `git add docs/`는 plans 워크트리에서도 금지한다.

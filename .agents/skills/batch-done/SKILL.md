@@ -37,7 +37,7 @@ $config = Get-Content $projectConfigPath | ConvertFrom-Json
 **스캔 대상:**
 
 ```
-resolved plan root(또는 `.worktrees/plans`)의 AGENTS.md 문서 위치 규칙 plan 경로/*_todo.md  (모든 프로젝트)
+AGENTS.md 문서 위치 규칙의 plan 경로/*_todo.md  (모든 프로젝트)
 ```
 
 **완료 판정 기준 (기계적 — LLM 불필요):**
@@ -62,8 +62,8 @@ resolved plan root(또는 `.worktrees/plans`)의 AGENTS.md 문서 위치 규칙 
 처리 예정 파일 목록:
 | 파일명 | 프로젝트 | 진행률 |
 |-------|---------|-------|
-| .worktrees/plans/docs/plan/2026-01-01_foo_todo.md | monitor-page | 10/10 (100%) |
-| .worktrees/plans/docs/plan/2026-01-02_bar_todo.md | wtools | 5/5 (100%) |
+| 2026-01-01_foo_todo.md | monitor-page | 10/10 (100%) |
+| 2026-01-02_bar_todo.md | wtools | 5/5 (100%) |
 
 스킵 (worktree/branch 존재):
 | 파일명 | 이유 |
